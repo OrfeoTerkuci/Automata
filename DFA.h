@@ -15,5 +15,6 @@ public:
     DFA(string filename);
     Node* transit(Node* begin , char a);
     bool accepts(string A);
+    void print();
     ~DFA();
 };

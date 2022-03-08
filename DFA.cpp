@@ -88,6 +88,55 @@ bool DFA::accepts(string A){
     return false;
 }
 
+void DFA::print(){
+    /*
+    // tonen op het scherm
+    cout << setw(4) << j << endl;
+
+    // manueel aanmaken
+    json j2;
+    j2["type"] = "DFA";
+    j2["alphabet"] = {"0", "1"};
+    cout << setw(4) << j2 << endl;
+    */
+   // Make json object
+   json j;
+   // Set type to DFA
+   j["type"] = "DFA";
+   // Add alphabet
+   // Make temp vector
+   vector<string> v_Alphabet;
+   for (char c : DFA::alphabet){
+       // Convert char to string and insert into vector
+       v_Alphabet.push_back(string(1,c));
+   }
+   j["alphabet"] = v_Alphabet;
+   // Add states
+   json states_array = json::array();
+   for(auto s : nodes){
+       // Make new object and add each element of state
+       json newObject = json::object();
+       newObject["name"] = s->getName();
+       newObject["starting"] = s->isStarting();
+       newObject["accepting"] = s->isAccepting();
+       states_array.push_back(newObject);
+   }
+   j["states"] = states_array;
+   // Add transitions
+   json transitions_array = json::array();
+   for (auto t : transitions){
+       // Make new object and add each element of transition
+       json newObject = json::object();
+       newObject["from"] = t->getBeginNode()->getName();
+       newObject["to"] = t->getEndNode()->getName();
+       newObject["input"] = string(1,t->getInput());
+       transitions_array.push_back(newObject);
+   }
+   j["transitions"] = transitions_array;
+   // Print to screen
+   cout<< setw(4) << j << endl;
+}
+
 DFA::~DFA()
 {
 
