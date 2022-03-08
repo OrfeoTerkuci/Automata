@@ -6,10 +6,16 @@ class transition;
 class Node
 {
 private:
-    vector<transition*>transitions;
+    string name;
+    bool starting;
+    bool accepting;
 public:
-    Node();
-    void addTransition(Node* beginNode, Node* endNode, char inputA);
-    Node* transit(Node* begin , char a);
+    Node(string name, bool starting, bool accepting);
+    void setStarting(bool starting);
+    bool isStarting()const;
+    void setAccepting(bool accepting);
+    bool isAccepting()const;
+    void setName(string name);
+    string getName()const;
     ~Node();
 };

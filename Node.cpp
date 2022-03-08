@@ -5,23 +5,30 @@
 
 using namespace std;
 
-Node::Node()
+Node::Node(string name, bool starting, bool accepting)
 {
-    transitions = {};
+    Node::name = name;
+    Node::starting = starting;
+    Node::accepting = accepting;
 }
 
-void Node::addTransition(Node* beginNode, Node* endNode, char inputA){
-    transition* newTrans = new transition(beginNode,endNode,inputA);
-    transitions.push_back(newTrans);
+void Node::setStarting(bool starting){
+    Node::starting = starting;
 }
-
-Node* Node::transit(Node* begin , char a){
-    for(transition* t : transitions){
-        if(t->getBeginNode() == begin && t->getInput() == a){
-            return t->getEndNode();
-        }
-    }
-    return begin;
+bool Node::isStarting()const{
+    return Node::starting;
+}
+void Node::setAccepting(bool accepting){
+    Node::accepting = accepting;
+}
+bool Node::isAccepting()const{
+    return Node::accepting;
+}
+void Node::setName(string name){
+    Node::name = name;
+}
+string Node::getName()const{
+    return Node::name;
 }
 
 Node::~Node()

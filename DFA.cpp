@@ -1,37 +1,84 @@
 #include "Node.h"
 #include "DFA.h"
+#include "transition.h"
 #include <iostream>
+#include <fstream>
+#include <iomanip>
+#include "json.hpp"
 using namespace std;
 
-DFA::DFA()
+using json = nlohmann::json;
+
+DFA::DFA(string filename)
 {
-    // Designate alphabet
-    alphabet = {'0','1'};
+    // inlezen uit file
+    ifstream input(filename);
+    json j;
+    input >> j;
+
+    for (json::iterator it = j.begin(); it != j.end(); ++it) {
+        // Designate alphabet
+        if(it.key() == "alphabet"){
+          vector<string> a = it.value();
+          for(string s : a){
+            alphabet.push_back(s[0]);
+            }
+        }
+    }
+    
     // Create the nodes
-    Node* s0 = new Node;
-    Node* s1 = new Node;
-    Node* s2 = new Node;
-    // Add nodes to nodes vector
-    nodes = {s0,s1,s2};
-    // Designate final nodes
-    finalNodes = {s0};
-    // Designate begin node
-    beginNode = s0;
+    auto states = j["states"];
+    for(auto state : states){
+        Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
+        nodes.push_back(newState);
+    }
+    // Designate begin and final nodes
+    for(Node* n : nodes){
+        if(n->isAccepting()){
+            finalNodes.push_back(n);
+        }
+        if(n->isStarting()){
+            beginNodes.push_back(n);
+        }
+    }
     // Add transitions
-    s0->addTransition(s0,s0,'0');
-    s0->addTransition(s0,s1,'1');
-    s1->addTransition(s1,s2,'0');
-    s1->addTransition(s1,s0,'1');
-    s2->addTransition(s2,s1,'0');
-    s2->addTransition(s2,s2,'1');
+        // Create transitions array
+    auto ts = j["transitions"];
+    Node* beginState;
+    Node* endState;
+    for(auto t : ts){
+        string beginNodeName = t["from"];
+        string endNodeName = t["to"];
+        string input = t["input"];
+        char inputA = input[0];
+        for(Node* n : nodes){
+            if(n->getName()==beginNodeName){
+                beginState = n;
+            }
+            if(n->getName()==endNodeName){
+                endState = n;
+            }
+        }
+        transition* newTransition = new transition(beginState,endState,inputA);
+        transitions.push_back(newTransition);
+    }
+}
+
+Node* DFA::transit(Node* begin , char a){
+    for(transition* t : transitions){
+        if(t->getBeginNode() == begin && t->getInput() == a){
+            return t->getEndNode();
+        }
+    }
+    return begin;
 }
 
 bool DFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
-    Node* currentNode = beginNode;
+    Node* currentNode = beginNodes[0];
     for(char inputA : v){
-        currentNode = currentNode->transit(currentNode,inputA);
+        currentNode = transit(currentNode,inputA);
     }
     for(Node* n : finalNodes){
         if(n == currentNode){
