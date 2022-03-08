@@ -89,16 +89,6 @@ bool DFA::accepts(string A){
 }
 
 void DFA::print(){
-    /*
-    // tonen op het scherm
-    cout << setw(4) << j << endl;
-
-    // manueel aanmaken
-    json j2;
-    j2["type"] = "DFA";
-    j2["alphabet"] = {"0", "1"};
-    cout << setw(4) << j2 << endl;
-    */
    // Make json object
    json j;
    // Set type to DFA
