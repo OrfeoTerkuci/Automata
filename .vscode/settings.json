@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "new": "cpp",
+        "iostream": "cpp",
+        "vector": "cpp",
+        "tuple": "cpp",
+        "fstream": "cpp",
+        "random": "cpp"
+    },
+    "cmake.sourceDirectory": "${workspaceFolder}/.",
+    "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",
+    "cmake.generator": "MinGW Makefiles",
+}
