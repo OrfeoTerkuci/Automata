@@ -1,3 +1,4 @@
+#include "DFA.h"
 #include "NFA.h"
 #include "Node.h"
 #include "transition.h"
@@ -63,29 +64,40 @@ NFA::NFA(string filename)
     }
 }
 
-Node* NFA::transit(Node* begin , char a){
+vector<Node*> NFA::transit(vector<Node*> begin , char a){
+    vector<Node*> c;
     for(transition* t : transitions){
-        if(t->getBeginNode() == begin && t->getInput() == a){
-            return t->getEndNode();
-        }
+        for(Node* n : begin){
+            if(t->getBeginNode() == n && t->getInput() == a){
+                c.push_back(t->getEndNode());
+            }
+        } 
     }
-    return begin;
+    return c;
 }
 
 bool NFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
-    Node* currentNode = beginNodes[0];
+    vector<Node*> currentNodes = beginNodes;
     for(char inputA : v){
-        currentNode = transit(currentNode,inputA);
+        currentNodes = transit(currentNodes,inputA);
     }
     for(Node* n : finalNodes){
-        if(n == currentNode){
-            return true;
+        for(Node* c : currentNodes){
+            if(c == n){
+                return true;
+            }
         }
     }
     return false;
 }
+
+/*
+DFA NFA::toDFA(){
+
+}
+*/
 
 void NFA::print(){
    // Make json object

@@ -4,6 +4,7 @@ using namespace std;
 
 class Node;
 class transition;
+class DFA;
 class NFA
 {
 private:
@@ -14,8 +15,9 @@ private:
     vector<transition*> transitions;
 public:
     NFA(string filename);
-    Node* transit(Node* begin , char a);
+    vector<Node*> transit(vector<Node*> begin , char a);
     bool accepts(string A);
+    //DFA toDFA();
     void print();
     ~NFA();
 };
