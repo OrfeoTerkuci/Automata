@@ -1,7 +1,6 @@
 #include "Node.h"
 #include "DFA.h"
 #include "transition.h"
-#include <iostream>
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
