@@ -20,7 +20,7 @@ NFA::NFA(string filename)
         if(it.key() == "alphabet"){
           vector<string> a = it.value();
           for(string s : a){
-            alphabet.push_back(s[0]);
+            alphabet.insert(s[0]);
             }
         }
     }
@@ -29,15 +29,15 @@ NFA::NFA(string filename)
     auto states = j["states"];
     for(auto state : states){
         Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
-        nodes.push_back(newState);
+        nodes.insert(newState);
     }
     // Designate begin and final nodes
     for(Node* n : nodes){
         if(n->isAccepting()){
-            finalNodes.push_back(n);
+            finalNodes.insert(n);
         }
         if(n->isStarting()){
-            beginNodes.push_back(n);
+            beginNodes.insert(n);
         }
     }
     // Add transitions
@@ -59,16 +59,16 @@ NFA::NFA(string filename)
             }
         }
         transition* newTransition = new transition(beginState,endState,inputA);
-        transitions.push_back(newTransition);
+        transitions.insert(newTransition);
     }
 }
 
-vector<Node*> NFA::transit(vector<Node*> begin , char a){
-    vector<Node*> c;
+set<Node*> NFA::transit(set<Node*> begin , char a){
+    set<Node*> c;
     for(transition* t : transitions){
         for(Node* n : begin){
             if(t->getBeginNode() == n && t->getInput() == a){
-                c.push_back(t->getEndNode());
+                c.insert(t->getEndNode());
             }
         } 
     }
@@ -77,42 +77,42 @@ vector<Node*> NFA::transit(vector<Node*> begin , char a){
 
 NFA::NFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
 
-vector<char> NFA::getAlphabet() const{
+set<char> NFA::getAlphabet() const{
     return NFA::alphabet;
 }
-vector<Node*> NFA::getNodes() const{
+set<Node*> NFA::getNodes() const{
     return NFA::nodes;
 }
-vector<Node*> NFA::getFinal() const{
+set<Node*> NFA::getFinal() const{
     return NFA::finalNodes;
 }
-vector<Node*> NFA::getBegin() const{
+set<Node*> NFA::getBegin() const{
     return NFA::beginNodes;
 }
-vector<transition*> NFA::getTransitions() const{
+set<transition*> NFA::getTransitions() const{
     return NFA::transitions;
 }
 
-void NFA::setAlphabet(vector<char>newAlphabet){
+void NFA::setAlphabet(set<char>newAlphabet){
     NFA::alphabet = newAlphabet;
 }
-void NFA::setNodes(vector<Node*>newNodes){
+void NFA::setNodes(set<Node*>newNodes){
     NFA::nodes = newNodes;
 }
-void NFA::setFinal(vector<Node*>newFinalNodes){
+void NFA::setFinal(set<Node*>newFinalNodes){
     NFA::finalNodes = newFinalNodes;
 }
-void NFA::setBegin(vector<Node*>newBeginNodes){
+void NFA::setBegin(set<Node*>newBeginNodes){
     NFA::beginNodes = newBeginNodes;
 }
-void NFA::setTransitions(vector<transition*>newTransitions){
+void NFA::setTransitions(set<transition*>newTransitions){
     NFA::transitions = newTransitions;
 }
 
 bool NFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
-    vector<Node*> currentNodes = beginNodes;
+    set<Node*> currentNodes = beginNodes;
     for(char inputA : v){
         currentNodes = transit(currentNodes,inputA);
     }
@@ -129,13 +129,14 @@ bool NFA::accepts(string A){
 
 
 DFA NFA::toDFA(){
+    /*
     DFA dfa;
     dfa.setAlphabet(getAlphabet());
     dfa.setBegin(getBegin());
     // Lazy evaluation begin
-    vector<Node*>newNodes;
-    vector<Node*>tempNodes = beginNodes;
-    vector<Node*>counter = beginNodes;
+    set<Node*>newNodes;
+    set<Node*>tempNodes = beginNodes;
+    set<Node*>counter = beginNodes;
     // Begin on beginNodes
     string newName;
     bool starting;
@@ -176,6 +177,7 @@ DFA NFA::toDFA(){
     // For each new state , repeat
     dfa.setNodes(newNodes);
     return dfa;
+    */
 }
 
 
@@ -186,10 +188,10 @@ void NFA::print(){
    j["type"] = "NFA";
    // Add alphabet
    // Make temp vector
-   vector<string> v_Alphabet;
+   set<string> v_Alphabet;
    for (char c : NFA::alphabet){
        // Convert char to string and insert into vector
-       v_Alphabet.push_back(string(1,c));
+       v_Alphabet.insert(string(1,c));
    }
    j["alphabet"] = v_Alphabet;
    // Add states

@@ -1,31 +1,32 @@
 #include <iostream>
 #include <vector>
+#include <set>
 using namespace std;
 class Node;
 class transition;
 class DFA
 {
 private:
-    vector<char> alphabet;
-    vector<Node*> nodes;
-    vector<Node*> finalNodes;
-    vector<Node*> beginNodes;
-    vector<transition*> transitions;
+    set<char> alphabet;
+    set<Node*> nodes;
+    set<Node*> finalNodes;
+    set<Node*> beginNodes;
+    set<transition*> transitions;
 public:
     DFA(string filename);
     DFA();
     // Getters
-    vector<char> getAlphabet() const;
-    vector<Node*> getNodes() const;
-    vector<Node*> getFinal() const;
-    vector<Node*> getBegin() const;
-    vector<transition*> getTransitions() const;
+    set<char> getAlphabet() const;
+    set<Node*> getNodes() const;
+    set<Node*> getFinal() const;
+    set<Node*> getBegin() const;
+    set<transition*> getTransitions() const;
     // Setters
-    void setAlphabet(vector<char>newAlphabet);
-    void setNodes(vector<Node*>newNodes);
-    void setFinal(vector<Node*>newFinalNodes);
-    void setBegin(vector<Node*>newBeginNodes);
-    void setTransitions(vector<transition*>newTransitions);
+    void setAlphabet(set<char>newAlphabet);
+    void setNodes(set<Node*>newNodes);
+    void setFinal(set<Node*>newFinalNodes);
+    void setBegin(set<Node*>newBeginNodes);
+    void setTransitions(set<transition*>newTransitions);
 
     Node* transit(Node* begin , char a);
     bool accepts(string A);

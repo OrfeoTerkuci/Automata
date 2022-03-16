@@ -20,7 +20,7 @@ DFA::DFA(string filename)
         if(it.key() == "alphabet"){
           vector<string> a = it.value();
           for(string s : a){
-            alphabet.push_back(s[0]);
+            alphabet.insert(s[0]);
             }
         }
     }
@@ -29,15 +29,15 @@ DFA::DFA(string filename)
     auto states = j["states"];
     for(auto state : states){
         Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
-        nodes.push_back(newState);
+        nodes.insert(newState);
     }
     // Designate begin and final nodes
     for(Node* n : nodes){
         if(n->isAccepting()){
-            finalNodes.push_back(n);
+            finalNodes.insert(n);
         }
         if(n->isStarting()){
-            beginNodes.push_back(n);
+            beginNodes.insert(n);
         }
     }
     // Add transitions
@@ -59,41 +59,41 @@ DFA::DFA(string filename)
             }
         }
         transition* newTransition = new transition(beginState,endState,inputA);
-        transitions.push_back(newTransition);
+        transitions.insert(newTransition);
     }
 }
 
 DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
 
-vector<char> DFA::getAlphabet() const{
+set<char> DFA::getAlphabet() const{
     return DFA::alphabet;
 }
-vector<Node*> DFA::getNodes() const{
+set<Node*> DFA::getNodes() const{
     return DFA::nodes;
 }
-vector<Node*> DFA::getFinal() const{
+set<Node*> DFA::getFinal() const{
     return DFA::finalNodes;
 }
-vector<Node*> DFA::getBegin() const{
+set<Node*> DFA::getBegin() const{
     return DFA::beginNodes;
 }
-vector<transition*> DFA::getTransitions() const{
+set<transition*> DFA::getTransitions() const{
     return DFA::transitions;
 }
 
-void DFA::setAlphabet(vector<char>newAlphabet){
+void DFA::setAlphabet(set<char>newAlphabet){
     DFA::alphabet = newAlphabet;
 }
-void DFA::setNodes(vector<Node*>newNodes){
+void DFA::setNodes(set<Node*>newNodes){
     DFA::nodes = newNodes;
 }
-void DFA::setFinal(vector<Node*>newFinalNodes){
+void DFA::setFinal(set<Node*>newFinalNodes){
     DFA::finalNodes = newFinalNodes;
 }
-void DFA::setBegin(vector<Node*>newBeginNodes){
+void DFA::setBegin(set<Node*>newBeginNodes){
     DFA::beginNodes = newBeginNodes;
 }
-void DFA::setTransitions(vector<transition*>newTransitions){
+void DFA::setTransitions(set<transition*>newTransitions){
     DFA::transitions = newTransitions;
 }
 
@@ -109,7 +109,7 @@ Node* DFA::transit(Node* begin , char a){
 bool DFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
-    Node* currentNode = beginNodes[0];
+    Node* currentNode = *beginNodes.begin();
     for(char inputA : v){
         currentNode = transit(currentNode,inputA);
     }
@@ -127,11 +127,11 @@ void DFA::print(){
    // Set type to DFA
    j["type"] = "DFA";
    // Add alphabet
-   // Make temp vector
-   vector<string> v_Alphabet;
+   // Make temp set
+   set<string> v_Alphabet;
    for (char c : DFA::alphabet){
        // Convert char to string and insert into vector
-       v_Alphabet.push_back(string(1,c));
+       v_Alphabet.insert(string(1,c));
    }
    j["alphabet"] = v_Alphabet;
    // Add states
