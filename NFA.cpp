@@ -1,4 +1,3 @@
-#include "DFA.h"
 #include "NFA.h"
 #include "Node.h"
 #include "transition.h"
@@ -76,6 +75,40 @@ vector<Node*> NFA::transit(vector<Node*> begin , char a){
     return c;
 }
 
+NFA::NFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
+
+vector<char> NFA::getAlphabet() const{
+    return NFA::alphabet;
+}
+vector<Node*> NFA::getNodes() const{
+    return NFA::nodes;
+}
+vector<Node*> NFA::getFinal() const{
+    return NFA::finalNodes;
+}
+vector<Node*> NFA::getBegin() const{
+    return NFA::beginNodes;
+}
+vector<transition*> NFA::getTransitions() const{
+    return NFA::transitions;
+}
+
+void NFA::setAlphabet(vector<char>newAlphabet){
+    NFA::alphabet = newAlphabet;
+}
+void NFA::setNodes(vector<Node*>newNodes){
+    NFA::nodes = newNodes;
+}
+void NFA::setFinal(vector<Node*>newFinalNodes){
+    NFA::finalNodes = newFinalNodes;
+}
+void NFA::setBegin(vector<Node*>newBeginNodes){
+    NFA::beginNodes = newBeginNodes;
+}
+void NFA::setTransitions(vector<transition*>newTransitions){
+    NFA::transitions = newTransitions;
+}
+
 bool NFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
@@ -93,11 +126,58 @@ bool NFA::accepts(string A){
     return false;
 }
 
-/*
-DFA NFA::toDFA(){
 
+
+DFA NFA::toDFA(){
+    DFA dfa;
+    dfa.setAlphabet(getAlphabet());
+    dfa.setBegin(getBegin());
+    // Lazy evaluation begin
+    vector<Node*>newNodes;
+    vector<Node*>tempNodes = beginNodes;
+    vector<Node*>counter = beginNodes;
+    // Begin on beginNodes
+    string newName;
+    bool starting;
+    bool accepting;
+    while(counter.size() < nodes.size()){
+        for(char c : alphabet){
+            tempNodes = transit(tempNodes,c);
+            for(Node* n : transit(tempNodes,c)){
+                // Add newly acquired nodes
+                if(find(tempNodes.begin(),tempNodes.end(),n) == tempNodes.end()){
+                    counter.push_back(n);
+                }
+            }
+        }
+
+        for(Node* n : tempNodes){
+            if(n == tempNodes.front()){
+                newName += "{";
+            }
+            newName += n->getName();
+            if(n->isStarting()){
+                starting = true;
+            }
+            if(n->isAccepting()){
+                accepting = true;
+            }
+            if(n != tempNodes.back()){
+                newName += ",";
+            }
+            else{
+                newName += "}";
+            }
+        }
+        Node* newNode;
+        newNode = new Node(newName,starting,accepting);
+        newNodes.push_back(newNode);
+    }
+    // For each new state , repeat
+    dfa.setNodes(newNodes);
+    return dfa;
 }
-*/
+
 
 void NFA::print(){
    // Make json object

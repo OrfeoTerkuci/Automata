@@ -63,6 +63,40 @@ DFA::DFA(string filename)
     }
 }
 
+DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
+
+vector<char> DFA::getAlphabet() const{
+    return DFA::alphabet;
+}
+vector<Node*> DFA::getNodes() const{
+    return DFA::nodes;
+}
+vector<Node*> DFA::getFinal() const{
+    return DFA::finalNodes;
+}
+vector<Node*> DFA::getBegin() const{
+    return DFA::beginNodes;
+}
+vector<transition*> DFA::getTransitions() const{
+    return DFA::transitions;
+}
+
+void DFA::setAlphabet(vector<char>newAlphabet){
+    DFA::alphabet = newAlphabet;
+}
+void DFA::setNodes(vector<Node*>newNodes){
+    DFA::nodes = newNodes;
+}
+void DFA::setFinal(vector<Node*>newFinalNodes){
+    DFA::finalNodes = newFinalNodes;
+}
+void DFA::setBegin(vector<Node*>newBeginNodes){
+    DFA::beginNodes = newBeginNodes;
+}
+void DFA::setTransitions(vector<transition*>newTransitions){
+    DFA::transitions = newTransitions;
+}
+
 Node* DFA::transit(Node* begin , char a){
     for(transition* t : transitions){
         if(t->getBeginNode() == begin && t->getInput() == a){

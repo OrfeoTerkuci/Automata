@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    NFA nfa("input-ssc1.json");
+    NFA nfa("NFA.json");
     nfa.toDFA().print();
     return 0;
 }
