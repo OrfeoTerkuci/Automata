@@ -127,56 +127,94 @@ bool NFA::accepts(string A){
 }
 
 DFA NFA::toDFA(){
-    /*
+    // Create a new DFA
     DFA dfa;
+    // Copy over the alphabet and begin state
     dfa.setAlphabet(getAlphabet());
     dfa.setBegin(getBegin());
     // Lazy evaluation begin
-    set<Node*>newNodes;
-    set<Node*>tempNodes = beginNodes;
+    // Create powerset to push to DFA
+    set<set<Node*>>newNodes = {beginNodes};
+    // Create counter set -> if all nodes are used
     set<Node*>counter = beginNodes;
     // Begin on beginNodes
-    string newName;
-    bool starting;
-    bool accepting;
-    while(counter.size() < nodes.size()){
-        for(char c : alphabet){
-            tempNodes = transit(tempNodes,c);
-            for(Node* n : transit(tempNodes,c)){
-                // Add newly acquired nodes
-                if(find(tempNodes.begin(),tempNodes.end(),n) == tempNodes.end()){
-                    counter.push_back(n);
-                }
+    // Create check variable
+    bool evaluate = true;
+    while(evaluate){
+        for(set<Node*>tempNodes : newNodes){
+            for(char c : alphabet){
+                // Transit for character c
+                tempNodes = transit(tempNodes,c);
+                // Add newly acquired set to newNodes
+                newNodes.insert(tempNodes);
             }
+            // Check if an all-state has been created
+            evaluate = (tempNodes.size() == nodes.size());
         }
-
-        for(Node* n : tempNodes){
-            if(n == tempNodes.front()){
-                newName += "{";
-            }
-            newName += n->getName();
-            if(n->isStarting()){
-                starting = true;
-            }
-            if(n->isAccepting()){
-                accepting = true;
-            }
-            if(n != tempNodes.back()){
+    }
+    // Create new containers
+    set<Node*> dfaNodes;
+    set<Node*> dfaFinalNodes;
+    set<transition*> dfaTransitions;
+    // Create new states
+    for(set<Node*> currentSet : newNodes){
+        int count = 0;
+        string newName;
+        bool starting = false;
+        bool accepting = false;
+        // Create combined name
+        newName += "{";
+        // Add each nodes name
+        for(Node* currentNode : currentSet){
+            newName += currentNode->getName();
+            if(count != currentSet.size() - 1){
                 newName += ",";
             }
             else{
                 newName += "}";
             }
+            // Check if accepting
+            if(currentNode->isAccepting()){
+                accepting = true;
+                }
+            if(currentNode->isStarting()){
+                starting = true;
+                }
+            count++;
+            }
+            // Create new node
+            Node* newNode;
+            newNode = new Node(newName , starting , accepting);
+            // Insert the node into the DFA
+            dfaNodes.insert(newNode);
+            // Check if accepting
+            if(newNode->isAccepting()){
+                dfaFinalNodes.insert(newNode);
+            }
         }
-        Node* newNode;
-        newNode = new Node(newName,starting,accepting);
-        newNodes.push_back(newNode);
+        // Create new transitions - work in progress
+        for(Node* n : dfaNodes){
+            // Split the name
+            for (int i = 1; i < n->getName().size() - 1; i++)
+            {
+                // Check transitions
+                char nodeName = n->getName()[i];
+                char beginName;
+                char endName;
+                for(transition* t : transitions){
+                    beginName = t->getBeginNode()->getName()[0];
+                    if(beginName == nodeName){
+                        // Create new transition
+                        transition* newTransition;
+                        newTransition = new transition(n , t->getEndNode() , t->getInput());
+                        dfaTransitions.insert(newTransition);
+                    }
+                }
+            }
+            
+        }
+        return dfa;
     }
-    // For each new state , repeat
-    dfa.setNodes(newNodes);
-    return dfa;
-    */
-}
 
 
 void NFA::print(){
