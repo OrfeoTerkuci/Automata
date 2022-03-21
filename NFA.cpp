@@ -41,7 +41,7 @@ NFA::NFA(string filename)
         }
     }
     // Add transitions
-        // Create transitions array
+    // Create transitions array
     auto ts = j["transitions"];
     Node* beginState;
     Node* endState;
@@ -61,18 +61,6 @@ NFA::NFA(string filename)
         transition* newTransition = new transition(beginState,endState,inputA);
         transitions.insert(newTransition);
     }
-}
-
-set<Node*> NFA::transit(set<Node*> begin , char a){
-    set<Node*> c;
-    for(transition* t : transitions){
-        for(Node* n : begin){
-            if(t->getBeginNode() == n && t->getInput() == a){
-                c.insert(t->getEndNode());
-            }
-        } 
-    }
-    return c;
 }
 
 NFA::NFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
@@ -109,6 +97,18 @@ void NFA::setTransitions(set<transition*>newTransitions){
     NFA::transitions = newTransitions;
 }
 
+set<Node*> NFA::transit(set<Node*> begin , char a){
+    set<Node*> c;
+    for(transition* t : transitions){
+        for(Node* n : begin){
+            if(t->getBeginNode() == n && t->getInput() == a){
+                c.insert(t->getEndNode());
+            }
+        } 
+    }
+    return c;
+}
+
 bool NFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
@@ -125,8 +125,6 @@ bool NFA::accepts(string A){
     }
     return false;
 }
-
-
 
 DFA NFA::toDFA(){
     /*
