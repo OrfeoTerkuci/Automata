@@ -12,6 +12,8 @@ Node::Node(string name, bool starting, bool accepting)
     Node::accepting = accepting;
 }
 
+Node::Node() : name("") , starting(false) , accepting(false) {}
+
 void Node::setStarting(bool starting){
     Node::starting = starting;
 }

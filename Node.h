@@ -11,6 +11,7 @@ private:
     bool accepting;
 public:
     Node(string name, bool starting, bool accepting);
+    Node();
     void setStarting(bool starting);
     bool isStarting()const;
     void setAccepting(bool accepting);
