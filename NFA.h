@@ -29,10 +29,12 @@ public:
     void setFinal(set<Node*>newFinalNodes);
     void setBegin(set<Node*>newBeginNodes);
     void setTransitions(set<transition*>newTransitions);
-
+    // Help functions
+    bool equalNodes(set<Node*> firstSet , set<Node*> secondSet);
     set<Node*> transit(set<Node*> begin , char a);
     bool accepts(string A);
     DFA toDFA();
     void print();
+    // Destructor
     ~NFA();
 };

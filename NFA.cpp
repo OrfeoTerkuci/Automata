@@ -1,6 +1,7 @@
 #include "NFA.h"
 #include "Node.h"
 #include "transition.h"
+#include "transitionNFA.h"
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
@@ -109,6 +110,8 @@ set<Node*> NFA::transit(set<Node*> begin , char a){
     return c;
 }
 
+
+
 bool NFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
@@ -126,6 +129,17 @@ bool NFA::accepts(string A){
     return false;
 }
 
+bool NFA::equalNodes(set<Node*> firstSet , set<Node*> secondSet){
+    for (Node* n : firstSet){
+        for (Node* m : secondSet){
+            if(m != n){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 DFA NFA::toDFA(){
     // Create a new DFA
     DFA dfa;
@@ -136,36 +150,57 @@ DFA NFA::toDFA(){
     set<Node*> dfaBegin;
     set<Node*> dfaFinalNodes;
     set<transition*> dfaTransitions;
-    // Copy all the transitions
-    transition* newTransition;
     // Lazy evaluation begin
     // Create powerset to push to DFA
     set<set<Node*>>newNodes = {beginNodes};
     // Create counter set -> if all nodes are used
     set<Node*>counter = beginNodes;
+    // Create temporary transitions container
+    set<transitionNFA*> tempTransitions;
+    transitionNFA* newTransition;
     // Begin on beginNodes
     // Create check variable
     bool evaluate = true;
     while(evaluate){
         for(set<Node*>tempNodes : newNodes){
-            // Copy all transitions
-            for(Node* n : tempNodes){
-            for(transition* t : transitions){
-                if(t->getBeginNode() == n){
-                    newTransition = new transition(t->getBeginNode() , t->getEndNode() , t->getInput());
-                    dfaTransitions.insert(newTransition);
-                    }
-                }
-            }
             // Remember old size
             int oldSize = newNodes.size();
             for(char c : alphabet){
+                // Add used transitions
+                newTransition = new transitionNFA();
+                newTransition->setBeginNodes(tempNodes);
                 // Transit for character c
                 tempNodes = transit(tempNodes,c);
                 // Add newly acquired set to newNodes
                 newNodes.insert(tempNodes);
+                // Add end nodes to transition
+                newTransition->setEndNodes(tempNodes);
+                newTransition->setInput(c);
+                // Add transition to container
+                tempTransitions.insert(newTransition);
             }
             evaluate = !(oldSize == newNodes.size());
+        }
+    }
+    // Eliminate extra transitions
+    for (auto it1 = tempTransitions.begin(); it1 != tempTransitions.end(); it1++){
+        for (auto it2 = tempTransitions.begin(); it2 != tempTransitions.end(); it2++){
+            if(it1 == it2){
+                continue;
+            }
+            // Check for duplicate
+            auto t1 = *it1;
+            auto t2 = *it2;
+            set<Node*> b1 = t1->getBeginNodes();
+            set<Node*> e1 = t1->getEndNodes();
+            set<Node*> b2 = t2->getBeginNodes();
+            set<Node*> e2 = t2->getEndNodes();
+            char c1 = t1->getInput();
+            char c2 = t2->getInput();
+            if( b1 == b2 && e1 == e2 && c1 == c2 ){
+                delete t2;
+                it2 = tempTransitions.erase(it2);
+            }
         }
     }
     // Create new states
@@ -194,18 +229,19 @@ DFA NFA::toDFA(){
             if(currentNode->isStarting()){
                 starting = true;
                 }
-            // Check all transitions
-            for (transition* t : dfaTransitions){
-                // Check if any transition comes from this node
-                if(t->getBeginNode() == currentNode){
-                    t->setBeginNode(newNode);
-                }
-                // Check if any transition comes to this node
-                if(t->getEndNode() == currentNode){
-                    t->setEndNode(newNode);
-                }
-            }
             count++;
+            }
+            // Check all transitions
+            for (transitionNFA* t : tempTransitions){
+                // Check if transition begins at this set
+                if(equalNodes(t->getBeginNodes() , currentSet)){
+                    t->setBeginNodes({newNode});
+                }
+                for ( char c : alphabet){
+                    if(equalNodes(transit(t->getBeginNodes() , c) , currentSet)){
+                        t->setEndNodes({newNode});
+                    }
+                }
             }
             newNode->setName(newName);
             newNode->setStarting(starting);

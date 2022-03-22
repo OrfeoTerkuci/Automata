@@ -17,6 +17,7 @@ set(NFA_sources
     NFA.cpp
     Node.cpp 
     transition.cpp
+    transitionNFA.cpp
 )
 
 set(SSC_sources
@@ -25,6 +26,7 @@ set(SSC_sources
     NFA.cpp 
     Node.cpp 
     transition.cpp 
+    transitionNFA.cpp
 )
 
 add_executable(DFA ${DFA_sources})
