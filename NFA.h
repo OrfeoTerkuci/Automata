@@ -6,6 +6,7 @@ using namespace std;
 
 class Node;
 class transition;
+class transitionNFA;
 class NFA
 {
 private:
@@ -30,6 +31,8 @@ public:
     void setBegin(set<Node*>newBeginNodes);
     void setTransitions(set<transition*>newTransitions);
     // Help functions
+    void eliminateExtra(set<transitionNFA*> &currentSet);
+    void evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions);
     set<Node*> transit(set<Node*> begin , char a);
     bool accepts(string A);
     DFA toDFA();

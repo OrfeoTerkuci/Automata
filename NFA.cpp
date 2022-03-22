@@ -110,7 +110,54 @@ set<Node*> NFA::transit(set<Node*> begin , char a){
     return c;
 }
 
+void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
+    for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
+        for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
+            if(it1 == it2){
+                continue;
+            }
+            // Check for duplicate
+            auto t1 = *it1;
+            auto t2 = *it2;
+            set<Node*> b1 = t1->getBeginNodes();
+            set<Node*> e1 = t1->getEndNodes();
+            set<Node*> b2 = t2->getBeginNodes();
+            set<Node*> e2 = t2->getEndNodes();
+            char c1 = t1->getInput();
+            char c2 = t2->getInput();
+            if( b1 == b2 && e1 == e2 && c1 == c2 ){
+                delete t2;
+                it2 = currentSet.erase(it2);
+            }
+        }
+    }
+}
 
+void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
+    bool evaluate = true;
+    transitionNFA* newTransition;
+    while(evaluate){
+        for(set<Node*>tempNodes : newNodes){
+            // Remember old size
+            int oldSize = newNodes.size();
+            for(char c : alphabet){
+                // Add used transitions
+                newTransition = new transitionNFA();
+                newTransition->setBeginNodes(tempNodes);
+                // Transit for character c
+                tempNodes = transit(tempNodes,c);
+                // Add newly acquired set to newNodes
+                newNodes.insert(tempNodes);
+                // Add end nodes to transition
+                newTransition->setEndNodes(tempNodes);
+                newTransition->setInput(c);
+                // Add transition to container
+                tempTransitions.insert(newTransition);
+            }
+            evaluate = !(oldSize == newNodes.size());
+        }
+    }
+}
 
 bool NFA::accepts(string A){
     // Split string into chars
@@ -146,52 +193,10 @@ DFA NFA::toDFA(){
     set<Node*>counter = beginNodes;
     // Create temporary transitions container
     set<transitionNFA*> tempTransitions;
-    transitionNFA* newTransition;
     // Begin on beginNodes
     // Create check variable
-    bool evaluate = true;
-    while(evaluate){
-        for(set<Node*>tempNodes : newNodes){
-            // Remember old size
-            int oldSize = newNodes.size();
-            for(char c : alphabet){
-                // Add used transitions
-                newTransition = new transitionNFA();
-                newTransition->setBeginNodes(tempNodes);
-                // Transit for character c
-                tempNodes = transit(tempNodes,c);
-                // Add newly acquired set to newNodes
-                newNodes.insert(tempNodes);
-                // Add end nodes to transition
-                newTransition->setEndNodes(tempNodes);
-                newTransition->setInput(c);
-                // Add transition to container
-                tempTransitions.insert(newTransition);
-            }
-            evaluate = !(oldSize == newNodes.size());
-        }
-    }
-    // Eliminate extra transitions
-    for (auto it1 = tempTransitions.begin(); it1 != tempTransitions.end(); it1++){
-        for (auto it2 = tempTransitions.begin(); it2 != tempTransitions.end(); it2++){
-            if(it1 == it2){
-                continue;
-            }
-            // Check for duplicate
-            auto t1 = *it1;
-            auto t2 = *it2;
-            set<Node*> b1 = t1->getBeginNodes();
-            set<Node*> e1 = t1->getEndNodes();
-            set<Node*> b2 = t2->getBeginNodes();
-            set<Node*> e2 = t2->getEndNodes();
-            char c1 = t1->getInput();
-            char c2 = t2->getInput();
-            if( b1 == b2 && e1 == e2 && c1 == c2 ){
-                delete t2;
-                it2 = tempTransitions.erase(it2);
-            }
-        }
-    }
+    evaluate(newNodes , tempTransitions);
+    eliminateExtra(tempTransitions);
     // Create new states
     for(set<Node*> currentSet : newNodes){
         int count = 0;
