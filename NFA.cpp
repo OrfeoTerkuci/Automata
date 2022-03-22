@@ -157,14 +157,15 @@ DFA NFA::toDFA(){
                     }
                 }
             }
+            // Remember old size
+            int oldSize = newNodes.size();
             for(char c : alphabet){
                 // Transit for character c
                 tempNodes = transit(tempNodes,c);
                 // Add newly acquired set to newNodes
                 newNodes.insert(tempNodes);
             }
-            // Check if an all-state has been created
-            evaluate = (tempNodes.size() == nodes.size());
+            evaluate = !(oldSize == newNodes.size());
         }
     }
     // Create new states
