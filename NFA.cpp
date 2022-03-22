@@ -129,17 +129,6 @@ bool NFA::accepts(string A){
     return false;
 }
 
-bool NFA::equalNodes(set<Node*> firstSet , set<Node*> secondSet){
-    for (Node* n : firstSet){
-        for (Node* m : secondSet){
-            if(m != n){
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
 DFA NFA::toDFA(){
     // Create a new DFA
     DFA dfa;
@@ -215,6 +204,7 @@ DFA NFA::toDFA(){
         newName += "{";
         // Add each nodes name
         for(Node* currentNode : currentSet){
+            // Get new node name
             newName += currentNode->getName();
             if(count != currentSet.size() - 1){
                 newName += ",";
@@ -226,6 +216,7 @@ DFA NFA::toDFA(){
             if(currentNode->isAccepting()){
                 accepting = true;
                 }
+            // Check if starting
             if(currentNode->isStarting()){
                 starting = true;
                 }
@@ -234,13 +225,12 @@ DFA NFA::toDFA(){
             // Check all transitions
             for (transitionNFA* t : tempTransitions){
                 // Check if transition begins at this set
-                if(equalNodes(t->getBeginNodes() , currentSet)){
+                if(t->getBeginNodes() == currentSet){
                     t->setBeginNodes({newNode});
                 }
-                for ( char c : alphabet){
-                    if(equalNodes(transit(t->getBeginNodes() , c) , currentSet)){
-                        t->setEndNodes({newNode});
-                    }
+                // Check if transition ends at this set
+                if(t->getEndNodes() == currentSet){
+                    t->setEndNodes({newNode});
                 }
             }
             newNode->setName(newName);
@@ -255,6 +245,12 @@ DFA NFA::toDFA(){
             if(newNode->isStarting()){
                 dfaBegin.insert(newNode);
             }
+        }
+        // Convert all transitions to dfa transitions
+        transition* nt;
+        for(transitionNFA* t : tempTransitions){
+            nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
+            dfaTransitions.insert(nt);
         }
         // Set all the containters to the dfa
         dfa.setNodes(dfaNodes);
