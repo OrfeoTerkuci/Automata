@@ -154,7 +154,7 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
                 // Add transition to container
                 tempTransitions.insert(newTransition);
             }
-            evaluate = !(oldSize == newNodes.size());
+            evaluate = oldSize != newNodes.size();
         }
     }
 }
