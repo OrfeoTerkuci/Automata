@@ -177,7 +177,7 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
                     cout << '\t' << "-> No new nodes acquired" << endl;
                 }
                 */
-                if( oldSize != newNodes.size() && tempNodes.size() > 0 ){
+                if( tempNodes.size() > 0 ){
                     // Add used transitions
                     newTransition = new transitionNFA();
                     newTransition->setBeginNodes(oldTemp);
