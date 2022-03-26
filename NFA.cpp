@@ -133,30 +133,75 @@ void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
+void printNode(set<Node*>tempNodes){
+    int count = 0;
+    cout << "{";
+    for (auto it = tempNodes.begin(); it!= tempNodes.end();it++){
+                Node* n = *it;
+                cout << n->getName();
+                if(count != tempNodes.size() - 1){
+                    cout << " , ";
+                }
+                else{
+                    cout << "}" << endl;
+                }
+                count++;
+            }
+}
+
 void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
     bool evaluate = true;
     transitionNFA* newTransition;
+
+    //cout << "Started Lazy Evaluation" << endl;
+
     while(evaluate){
         for(set<Node*>tempNodes : newNodes){
             // Remember old size
             int oldSize = newNodes.size();
+            //cout << '\t' << "-> Current Node: ";
+            //printNode(tempNodes);
+            set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
-                // Add used transitions
-                newTransition = new transitionNFA();
-                newTransition->setBeginNodes(tempNodes);
+                
                 // Transit for character c
                 tempNodes = transit(tempNodes,c);
                 // Add newly acquired set to newNodes
                 newNodes.insert(tempNodes);
-                // Add end nodes to transition
-                newTransition->setEndNodes(tempNodes);
-                newTransition->setInput(c);
-                // Add transition to container
-                tempTransitions.insert(newTransition);
+                /*
+                if(oldSize != newNodes.size()){
+                    cout << '\t' << "-> Acquired new node: ";
+                    printNode(tempNodes);
+                }
+                else{
+                    cout << '\t' << "-> No new nodes acquired" << endl;
+                }
+                */
+                if( oldSize != newNodes.size() && tempNodes.size() > 0 ){
+                    // Add used transitions
+                    newTransition = new transitionNFA();
+                    newTransition->setBeginNodes(oldTemp);
+                    // Add end nodes to transition
+                    newTransition->setEndNodes(tempNodes);
+                    newTransition->setInput(c);
+                    // Add transition to container
+                    tempTransitions.insert(newTransition);
+                }
+                
+                // Reset tempNodes
+                tempNodes = oldTemp;
             }
             evaluate = oldSize != newNodes.size();
         }
     }
+    /*
+    cout << "Total nodes: " << newNodes.size();
+    cout << '\t' << "Nodes: " << endl;
+    for (auto n : newNodes){
+        cout << '\t';
+        printNode(n);
+    }
+    */
 }
 
 bool NFA::accepts(string A){
