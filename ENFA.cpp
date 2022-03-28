@@ -187,9 +187,10 @@ void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransit
     bool evaluate = true;
     transitionNFA* newTransition;
     while(evaluate){
+        // Remember old size
+        int oldSize = newNodes.size();
         for(set<Node*>tempNodes : newNodes){
-            // Remember old size
-            int oldSize = newNodes.size();
+            
             //printNode(tempNodes);
             set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
@@ -211,10 +212,18 @@ void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransit
                 // Reset tempNodes
                 tempNodes = oldTemp;
             }
-            evaluate = oldSize != newNodes.size();
         }
+        evaluate = oldSize != newNodes.size();
     }
 }
+
+struct sortState
+{
+    bool operator () (const char& n1, const char& n2)
+    {
+          return n1 < n2;
+    }
+}; 
 
 bool ENFA::accepts(string A){
     // Split string into chars
@@ -240,20 +249,19 @@ DFA ENFA::toDFA(){
     dfa.setAlphabet(getAlphabet());
     // Create new containers
     set<Node*> dfaNodes;
-    set<Node*> dfaBegin;
+    set<Node*> dfaBegin = eclose(beginNodes);
     set<Node*> dfaFinalNodes;
     set<transition*> dfaTransitions;
     // Lazy evaluation begin
     // Create powerset to push to DFA
     set<set<Node*>>newNodes = {eclose(beginNodes)};
-    // Create counter set -> if all nodes are used
-    //set<Node*>counter = eclose(beginNodes);
     // Create temporary transitions container
     set<transitionNFA*> tempTransitions;
     // Begin on beginNodes
     // Create check variable
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
+    // Sort state
     // Create new states
     for(set<Node*> currentSet : newNodes){
         int count = 0;
@@ -264,21 +272,29 @@ DFA ENFA::toDFA(){
         bool accepting = false;
         // Create combined name
         newName += "{";
-        // Add each nodes name
+        // Get names of all nodes
+        vector<string> names;
         for(Node* currentNode : currentSet){
             // Get new node name
-            newName += currentNode->getName();
-            if(count != currentSet.size() - 1){
-                newName += ",";
-            }
+            names.push_back(currentNode->getName());
             // Check if accepting
             if(currentNode->isAccepting()){
                 accepting = true;
                 }
             // Check if starting
-            if(currentSet == beginNodes){
+            if(currentSet == dfaBegin){
                 starting = true;
                 }
+            count++;
+        }
+        // Combine all names
+        count = 0;
+        sort(names.begin() , names.end());
+        for(string n : names){
+            newName += n;
+            if(count != currentSet.size() - 1){
+                newName += ",";
+            }
             count++;
         }
         newName += "}";
