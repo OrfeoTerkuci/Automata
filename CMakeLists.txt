@@ -29,11 +29,22 @@ set(SSC_sources
     transitionNFA.cpp
 )
 
+set(MSSC_sources
+    MSSC_test.cpp
+    DFA.cpp 
+    ENFA.cpp 
+    Node.cpp 
+    transition.cpp 
+    transitionNFA.cpp 
+)
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
 
 add_executable(SSC ${SSC_sources})
+
+add_executable(MSSC ${MSSC_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 
