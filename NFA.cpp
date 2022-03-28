@@ -267,7 +267,7 @@ DFA NFA::toDFA(){
                 accepting = true;
                 }
             // Check if starting
-            if(currentNode->isStarting()){
+            if(currentSet == beginNodes){
                 starting = true;
                 }
             count++;
