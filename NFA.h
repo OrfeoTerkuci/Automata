@@ -31,8 +31,8 @@ public:
     void setBegin(set<Node*>newBeginNodes);
     void setTransitions(set<transition*>newTransitions);
     // Help functions
-    void eliminateExtra(set<transitionNFA*> &currentSet);
     void evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions);
+    void eliminateExtra(set<transitionNFA*> &currentSet);
     set<Node*> transit(set<Node*> begin , char a);
     bool accepts(string A);
     DFA toDFA();

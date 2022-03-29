@@ -110,6 +110,42 @@ set<Node*> NFA::transit(set<Node*> begin , char a){
     return c;
 }
 
+void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
+    bool evaluate = true;
+    transitionNFA* newTransition;
+
+    while(evaluate){
+        // Remember old size
+        int oldSize = newNodes.size();
+        for(set<Node*>tempNodes : newNodes){
+            //cout << '\t' << "-> Current Node: ";
+            //printNode(tempNodes);
+            set<Node*> oldTemp = tempNodes;
+            for(char c : alphabet){
+
+                // Transit for character c
+                tempNodes = transit(tempNodes,c);
+                // Add newly acquired set to newNodes
+                newNodes.insert(tempNodes);
+                if( tempNodes.size() > 0 ){
+                    // Add used transitions
+                    newTransition = new transitionNFA();
+                    newTransition->setBeginNodes(oldTemp);
+                    // Add end nodes to transition
+                    newTransition->setEndNodes(tempNodes);
+                    newTransition->setInput(c);
+                    // Add transition to container
+                    tempTransitions.insert(newTransition);
+                }
+
+                // Reset tempNodes
+                tempNodes = oldTemp;
+            }
+        }
+        evaluate = oldSize != newNodes.size();
+    }
+}
+
 void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
@@ -129,56 +165,6 @@ void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
                 delete t2;
                 it2 = currentSet.erase(it2);
             }
-        }
-    }
-}
-
-void printNode(set<Node*>tempNodes){
-    int count = 0;
-    cout << "{";
-    for (auto it = tempNodes.begin(); it!= tempNodes.end();it++){
-                Node* n = *it;
-                cout << n->getName();
-                if(count != tempNodes.size() - 1){
-                    cout << " , ";
-                }
-                else{
-                    cout << "}" << endl;
-                }
-                count++;
-            }
-}
-
-void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
-    bool evaluate = true;
-    transitionNFA* newTransition;
-
-    while(evaluate){
-        for(set<Node*>tempNodes : newNodes){
-            // Remember old size
-            int oldSize = newNodes.size();
-            //cout << '\t' << "-> Current Node: ";
-            //printNode(tempNodes);
-            set<Node*> oldTemp = tempNodes;
-            for(char c : alphabet){
-                
-                // Transit for character c
-                tempNodes = transit(tempNodes,c);
-                if( tempNodes.size() > 0 ){
-                    // Add used transitions
-                    newTransition = new transitionNFA();
-                    newTransition->setBeginNodes(oldTemp);
-                    // Add end nodes to transition
-                    newTransition->setEndNodes(tempNodes);
-                    newTransition->setInput(c);
-                    // Add transition to container
-                    tempTransitions.insert(newTransition);
-                }
-                
-                // Reset tempNodes
-                tempNodes = oldTemp;
-            }
-            evaluate = oldSize != newNodes.size();
         }
     }
 }
@@ -287,7 +273,7 @@ DFA NFA::toDFA(){
         dfa.setFinal(dfaFinalNodes);
         dfa.setTransitions(dfaTransitions);
         return dfa;
-    }
+}
 
 
 void NFA::print(){

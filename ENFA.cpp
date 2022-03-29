@@ -167,22 +167,6 @@ void ENFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
-void printNode(set<Node*>tempNodes){
-    int count = 0;
-    cout << "{";
-    for (auto it = tempNodes.begin(); it!= tempNodes.end();it++){
-                Node* n = *it;
-                cout << n->getName();
-                if(count != tempNodes.size() - 1){
-                    cout << " , ";
-                }
-                else{
-                    cout << "}" << endl;
-                }
-                count++;
-            }
-}
-
 void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
     bool evaluate = true;
     transitionNFA* newTransition;
@@ -190,7 +174,6 @@ void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransit
         // Remember old size
         int oldSize = newNodes.size();
         for(set<Node*>tempNodes : newNodes){
-            
             //printNode(tempNodes);
             set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
@@ -249,8 +232,7 @@ DFA ENFA::toDFA(){
     set<set<Node*>>newNodes = {eclose(beginNodes)};
     // Create temporary transitions container
     set<transitionNFA*> tempTransitions;
-    // Begin on beginNodes
-    // Create check variable
+    // Evaluate
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     // Sort state
