@@ -38,6 +38,14 @@ set(MSSC_sources
     transitionNFA.cpp 
 )
 
+set(Productautomaton_sources
+    Product_test.cpp
+    DFA.cpp
+    Node.cpp
+    transition.cpp
+    transitionNFA.cpp
+)
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -45,6 +53,8 @@ add_executable(NFA ${NFA_sources})
 add_executable(SSC ${SSC_sources})
 
 add_executable(MSSC ${MSSC_sources})
+
+add_executable(Productautomaton ${Productautomaton_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 

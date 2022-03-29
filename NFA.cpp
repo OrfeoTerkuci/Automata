@@ -118,8 +118,6 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
         // Remember old size
         int oldSize = newNodes.size();
         for(set<Node*>tempNodes : newNodes){
-            //cout << '\t' << "-> Current Node: ";
-            //printNode(tempNodes);
             set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
 
@@ -127,7 +125,7 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
                 tempNodes = transit(tempNodes,c);
                 // Add newly acquired set to newNodes
                 newNodes.insert(tempNodes);
-                if( tempNodes.size() > 0 ){
+                if(!tempNodes.empty()){
                     // Add used transitions
                     newTransition = new transitionNFA();
                     newTransition->setBeginNodes(oldTemp);
@@ -137,7 +135,6 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
                     // Add transition to container
                     tempTransitions.insert(newTransition);
                 }
-
                 // Reset tempNodes
                 tempNodes = oldTemp;
             }

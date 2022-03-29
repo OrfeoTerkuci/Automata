@@ -4,6 +4,7 @@
 using namespace std;
 class Node;
 class transition;
+class transitionNFA;
 class DFA
 {
 private:
@@ -14,6 +15,7 @@ private:
     set<transition*> transitions;
 public:
     DFA(string filename);
+    DFA(DFA dfa1 , DFA dfa2 , bool intersect);
     DFA();
     // Getters
     set<char> getAlphabet() const;
@@ -27,6 +29,9 @@ public:
     void setFinal(set<Node*>newFinalNodes);
     void setBegin(set<Node*>newBeginNodes);
     void setTransitions(set<transition*>newTransitions);
+
+    void evaluate(set<set<Node*>>&begin , set<transitionNFA*> &tempTransitions );
+    void eliminateExtra(set<transitionNFA*> &currentSet);
 
     Node* transit(Node* begin , char a);
     bool accepts(string A);

@@ -1,6 +1,7 @@
 #include "Node.h"
 #include "DFA.h"
 #include "transition.h"
+#include "transitionNFA.h"
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
@@ -24,7 +25,7 @@ DFA::DFA(string filename)
             }
         }
     }
-    
+
     // Create the nodes
     auto states = j["states"];
     for(auto state : states){
@@ -63,6 +64,116 @@ DFA::DFA(string filename)
     }
 }
 
+DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
+    // Copy alphabet
+    if(intersect){
+        // Find intersection
+        for(char c : dfa1.getAlphabet()){
+            for( char c1 : dfa2.getAlphabet()){
+                if (c == c1){
+                    alphabet.insert(c);
+                }
+            }
+        }
+    }
+    else{
+        for( char c : dfa1.getAlphabet() ){
+            alphabet.insert(c);
+        }
+        for( char c : dfa2.getAlphabet() ){
+            alphabet.insert(c);
+        }
+    }
+    // Set begin state as the pair of both begin states
+    beginNodes.insert( *dfa1.getBegin().begin() );
+    beginNodes.insert( *dfa2.getBegin().begin() );
+    // Copy all the nodes
+    for( Node* n : dfa1.getNodes() ){
+        nodes.insert(n);
+    }
+    for( Node* n : dfa2.getNodes() ){
+        nodes.insert(n);
+    }
+    // Copy all the transitions
+    for( transition* t : dfa1.getTransitions() ){
+        transitions.insert(t);
+    }
+    for( transition* t : dfa2.getTransitions() ){
+        transitions.insert(t);
+    }
+    // Begin lazy evaluation
+    set<transitionNFA*> tempTransitions;
+    set<set<Node*>> newNodes = {beginNodes};
+    evaluate(newNodes , tempTransitions);
+    eliminateExtra(tempTransitions);
+    // Reset nodes
+    beginNodes.clear();
+    nodes.clear();
+    transitions.clear();
+    // Create new states
+    for(set<Node*> currentSet : newNodes){
+        int count = 0;
+        // Create new node
+        Node* newNode = new Node();
+        string newName;
+        bool starting = false;
+        bool accepting = false;
+        // Create combined name
+        newName += ")";
+        // Add each nodes name
+        //vector<string> names;
+        for(Node* currentNode : currentSet){
+            // Get new node name
+            newName += currentNode->getName();
+            if(count != currentSet.size() - 1){
+                newName += ",";
+                }
+            else{
+                newName += "(";
+                }
+            // Check if accepting
+            if(currentNode->isAccepting()){
+                accepting = true;
+                }
+            // Check if starting
+            if(currentNode->isStarting()){
+                starting = true;
+                }
+            count++;
+            }
+        // Check all transitions
+        for (transitionNFA* t : tempTransitions){
+            // Check if transition begins at this set
+            if(t->getBeginNodes() == currentSet){
+                t->setBeginNodes({newNode});
+                }
+            // Check if transition ends at this set
+            if(t->getEndNodes() == currentSet){
+                t->setEndNodes({newNode});
+                }
+            }
+        reverse(newName.begin() , newName.end());
+        newNode->setName(newName);
+        newNode->setStarting(starting);
+        newNode->setAccepting(accepting);
+        // Insert the node into the DFA
+        nodes.insert(newNode);
+        // Check if accepting
+        if(newNode->isAccepting()){
+            finalNodes.insert(newNode);
+            }
+        if(newNode->isStarting()){
+            beginNodes.insert(newNode);
+            }
+    }
+    // Convert all transitions to dfa transitions
+    transition* nt;
+    for(transitionNFA* t : tempTransitions){
+        nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
+        transitions.insert(nt);
+    }
+}
+
 DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
 
 set<char> DFA::getAlphabet() const{
@@ -77,10 +188,10 @@ set<Node*> DFA::getFinal() const{
 set<Node*> DFA::getBegin() const{
     return DFA::beginNodes;
 }
+
 set<transition*> DFA::getTransitions() const{
     return DFA::transitions;
 }
-
 void DFA::setAlphabet(set<char>newAlphabet){
     DFA::alphabet = newAlphabet;
 }
@@ -93,8 +204,71 @@ void DFA::setFinal(set<Node*>newFinalNodes){
 void DFA::setBegin(set<Node*>newBeginNodes){
     DFA::beginNodes = newBeginNodes;
 }
+
 void DFA::setTransitions(set<transition*>newTransitions){
     DFA::transitions = newTransitions;
+}
+
+void DFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions) {
+    bool evaluate = true;
+    // Create containers
+    transitionNFA* newTransition;
+    while(evaluate){
+        // Remember old size
+        int oldSize = static_cast<int>(newNodes.size());
+        // Loop through all node pairs
+        for(set<Node*> currentNodes : newNodes){
+            // Remember beginning
+            set<Node*> oldTemp;
+            // Loop through the alphabet
+            for( char c: alphabet){
+                // Loop through both nodes
+                for(Node* tempNode : currentNodes){
+                    // Add end node of transition
+                    oldTemp.insert( transit(tempNode , c ) );
+                }
+                // Add newly acquired pair
+                newNodes.insert(oldTemp);
+                // Add transitions
+                if(!oldTemp.empty()){
+                    // Add used transitions
+                    newTransition = new transitionNFA();
+                    newTransition->setBeginNodes(currentNodes);
+                    // Add end nodes to transition
+                    newTransition->setEndNodes(oldTemp);
+                    newTransition->setInput(c);
+                    // Add transition to container
+                    tempTransitions.insert(newTransition);
+                }
+                // Reset the new node
+                oldTemp.clear();
+            }
+        }
+        evaluate = oldSize != newNodes.size();
+    }
+}
+
+void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
+    for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
+        for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
+            if(it1 == it2){
+                continue;
+            }
+            // Check for duplicate
+            auto t1 = *it1;
+            auto t2 = *it2;
+            set<Node*> b1 = t1->getBeginNodes();
+            set<Node*> e1 = t1->getEndNodes();
+            set<Node*> b2 = t2->getBeginNodes();
+            set<Node*> e2 = t2->getEndNodes();
+            char c1 = t1->getInput();
+            char c2 = t2->getInput();
+            if( b1 == b2 && e1 == e2 && c1 == c2 ){
+                delete t2;
+                it2 = currentSet.erase(it2);
+            }
+        }
+    }
 }
 
 Node* DFA::transit(Node* begin , char a){
