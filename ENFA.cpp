@@ -217,14 +217,6 @@ void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransit
     }
 }
 
-struct sortState
-{
-    bool operator () (const char& n1, const char& n2)
-    {
-          return n1 < n2;
-    }
-}; 
-
 bool ENFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());

@@ -153,8 +153,6 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
     bool evaluate = true;
     transitionNFA* newTransition;
 
-    //cout << "Started Lazy Evaluation" << endl;
-
     while(evaluate){
         for(set<Node*>tempNodes : newNodes){
             // Remember old size
@@ -166,17 +164,6 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
                 
                 // Transit for character c
                 tempNodes = transit(tempNodes,c);
-                // Add newly acquired set to newNodes
-                newNodes.insert(tempNodes);
-                /*
-                if(oldSize != newNodes.size()){
-                    cout << '\t' << "-> Acquired new node: ";
-                    printNode(tempNodes);
-                }
-                else{
-                    cout << '\t' << "-> No new nodes acquired" << endl;
-                }
-                */
                 if( tempNodes.size() > 0 ){
                     // Add used transitions
                     newTransition = new transitionNFA();
@@ -194,14 +181,6 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
             evaluate = oldSize != newNodes.size();
         }
     }
-    /*
-    cout << "Total nodes: " << newNodes.size();
-    cout << '\t' << "Nodes: " << endl;
-    for (auto n : newNodes){
-        cout << '\t';
-        printNode(n);
-    }
-    */
 }
 
 bool NFA::accepts(string A){
