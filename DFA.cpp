@@ -66,23 +66,11 @@ DFA::DFA(string filename)
 
 DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
     // Copy alphabet
-    if(intersect){
-        // Find intersection
-        for(char c : dfa1.getAlphabet()){
-            for( char c1 : dfa2.getAlphabet()){
-                if (c == c1){
-                    alphabet.insert(c);
-                }
-            }
-        }
+    for( char c : dfa1.getAlphabet() ){
+        alphabet.insert(c);
     }
-    else{
-        for( char c : dfa1.getAlphabet() ){
-            alphabet.insert(c);
-        }
-        for( char c : dfa2.getAlphabet() ){
-            alphabet.insert(c);
-        }
+    for( char c : dfa2.getAlphabet() ){
+        alphabet.insert(c);
     }
     // Set begin state as the pair of both begin states
     beginNodes.insert( *dfa1.getBegin().begin() );
@@ -117,9 +105,17 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
         Node* newNode = new Node();
         string newName;
         bool starting = false;
-        bool accepting = false;
+        bool accepting;
+        // Intersection: initialize true
+        if(intersect){
+            accepting = true;
+        }
+        else{
+            accepting = false;
+        }
+        
         // Create combined name
-        newName += ")";
+        newName += "(";
         // Add each nodes name
         //vector<string> names;
         for(Node* currentNode : currentSet){
@@ -129,16 +125,21 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
                 newName += ",";
                 }
             else{
-                newName += "(";
-                }
-            // Check if accepting
-            if(currentNode->isAccepting()){
-                accepting = true;
+                newName += ")";
                 }
             // Check if starting
             if(currentNode->isStarting()){
                 starting = true;
                 }
+            // Check if accepting
+            // If union: one accepting = accepting
+            if(!intersect && currentNode->isAccepting()){
+                accepting = true;
+            }
+            // If intersection: one not accepting = not accepting
+            else if(intersect && !currentNode->isAccepting()){
+                accepting = false;
+            }
             count++;
             }
         // Check all transitions
@@ -152,19 +153,20 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
                 t->setEndNodes({newNode});
                 }
             }
-        reverse(newName.begin() , newName.end());
+        //reverse(newName.begin() , newName.end());
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
         // Insert the node into the DFA
         nodes.insert(newNode);
-        // Check if accepting
-        if(newNode->isAccepting()){
-            finalNodes.insert(newNode);
-            }
+        // Check if starting
         if(newNode->isStarting()){
             beginNodes.insert(newNode);
             }
+        if(newNode->isAccepting()){
+            finalNodes.insert(newNode);
+            }
+        
     }
     // Convert all transitions to dfa transitions
     transition* nt;

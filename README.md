@@ -11,7 +11,7 @@ Blank = TODO
 |ENFA                   | V |
 |SSC                    | V |
 |MSSC                   | V |
-|Product Automata       |   |
+|Product Automata       | V |
 |REGEX to ENFA          |   |
 |State Elimination      |   |
 |Table Filling Algorithm|   |
