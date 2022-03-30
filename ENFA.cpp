@@ -205,7 +205,10 @@ bool ENFA::accepts(string A){
     vector<char> v(A.begin(),A.end());
     set<Node*> currentNodes = beginNodes;
     for(char inputA : v){
+        // Transit with character
         currentNodes = transit(currentNodes,inputA);
+        // Get all epsilon transitions
+        currentNodes = eclose(currentNodes);
     }
     for(Node* n : finalNodes){
         for(Node* c : currentNodes){
