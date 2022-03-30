@@ -3,7 +3,7 @@
 ### Overview
 V = Implemented   
 X = Not implemented  
-Blank = TODO
+Blank = TODO  
 | Functionality         |Status |
 |-----------------------|:-:|
 |DFA                    | V | 
