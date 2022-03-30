@@ -42,6 +42,7 @@ public:
     bool accepts(string A);
     DFA toDFA();
     void print();
+    void printStats();
     // Destructor
     ~ENFA();
 };

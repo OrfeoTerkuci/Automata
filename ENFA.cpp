@@ -352,6 +352,44 @@ void ENFA::print(){
    cout<< setw(4) << j << endl;
 }
 
+void ENFA::printStats() {
+    // Print number of states
+    cout << "no_of_states="<<nodes.size()<<endl;
+    // Print all epsilon transitions
+    cout << "no_of_transitions[" << eps << "]=" << epsTransitions.size() << endl;
+    // Print all the transitions
+    for( char c : alphabet){
+        int no_transitions = 0;
+        for(transition* t : transitions){
+            if (t->getInput() == c){
+                no_transitions++;
+            }
+        }
+        cout << "no_of_transitions[" << c << "]=" << no_transitions << endl;
+    }
+    // Get degree : number of transitions from this state. degree[i] = number of states with grade i
+    //int degree = 0;
+    bool getDegree = true;
+    map<int , int> degrees;
+    // Loop through states
+    for(Node* n : nodes){
+        // Get number of transitions
+        int node_degree = 0;
+        for( transition* t : transitions){
+            if (t->getBeginNode() == n){
+                // Increase degree
+                node_degree++;
+            }
+        }
+        // Insert into map
+        degrees[node_degree] += 1;
+    }
+    // Print all degrees
+    for(const auto degree : degrees){
+        cout << "degree[" << degree.first << "]=" << degree.second << endl;
+    }
+}
+
 ENFA::~ENFA()
 {
 
