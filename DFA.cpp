@@ -104,18 +104,13 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
         // Create new node
         Node* newNode = new Node();
         string newName;
-        bool starting = false;
-        bool accepting;
+        // Both states must be starting
+        bool starting = true;
         // Intersection: initialize true
-        if(intersect){
-            accepting = true;
-        }
-        else{
-            accepting = false;
-        }
+        bool accepting = intersect;
         
         // Create combined name
-        newName += "(";
+        newName += ")";
         // Add each nodes name
         //vector<string> names;
         for(Node* currentNode : currentSet){
@@ -125,12 +120,12 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
                 newName += ",";
                 }
             else{
-                newName += ")";
+                newName += "(";
                 }
-            // Check if starting
-            if(currentNode->isStarting()){
-                starting = true;
-                }
+            // If union: one accepting = accepting
+            if(!currentNode->isStarting()){
+                starting = false;
+            }
             // Check if accepting
             // If union: one accepting = accepting
             if(!intersect && currentNode->isAccepting()){
@@ -153,7 +148,7 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
                 t->setEndNodes({newNode});
                 }
             }
-        //reverse(newName.begin() , newName.end());
+        reverse(newName.begin() , newName.end());
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
