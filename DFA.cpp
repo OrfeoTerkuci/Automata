@@ -1,5 +1,5 @@
-#include "Node.h"
 #include "DFA.h"
+#include "Node.h"
 #include "transition.h"
 #include "transitionNFA.h"
 #include <fstream>

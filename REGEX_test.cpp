@@ -1,5 +1,4 @@
 #include "RE.h"
-#include "ENFA.h"
 #include <iostream>
 using namespace std;
 

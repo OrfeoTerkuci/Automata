@@ -1,7 +1,3 @@
-//
-// Created by student on 30.03.22.
-//
-
 #ifndef AUTOMATA_RE_H
 #define AUTOMATA_RE_H
 
@@ -11,10 +7,6 @@
 #include <set>
 
 using namespace std;
-
-class Node;
-class transition;
-class transitionNFA;
 
 class RE {
 private:
@@ -29,14 +21,15 @@ public:
     char getEps() const;
     void setEps(char eps);
     // Basic automatons
-    ENFA createEpsilon();
-    ENFA createEmpty();
-    ENFA createSingleChar(char a);
+    ENFA createEpsilon(string beginName , string endName);
+    ENFA createEmpty(string beginName , string endName);
+    ENFA createSingleChar(string beginName , string endName , char a);
     // Induction automatons
-    ENFA createPlus();
-    ENFA createConcatenation();
-    ENFA createStar();
+    ENFA createPlus(string beginName , string endName , ENFA &R , ENFA &S);
+    ENFA createConcatenation(ENFA &R , ENFA &S);
+    ENFA createStar(string beginName , string endName , ENFA &R);
     // Convert function
+    void splitRegex(vector<string> beginReg , string reg);
     ENFA toENFA();
     // Destructor
     virtual ~RE();

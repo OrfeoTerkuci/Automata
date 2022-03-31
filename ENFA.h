@@ -4,9 +4,6 @@
 #include "DFA.h"
 using namespace std;
 
-class Node;
-class transition;
-class transitionNFA;
 class ENFA
 {
 private:

@@ -50,8 +50,8 @@ set(PA_sources
 set(RE_sources
         REGEX_test.cpp
         RE.cpp
-        DFA.cpp
         ENFA.cpp
+        DFA.cpp
         Node.cpp
         transition.cpp
         transitionNFA.cpp
