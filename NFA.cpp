@@ -148,7 +148,7 @@ void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
             if(it1 == it2){
                 continue;
-            }
+            }   
             // Check for duplicate
             auto t1 = *it1;
             auto t2 = *it2;
@@ -263,6 +263,7 @@ DFA NFA::toDFA(){
         for(transitionNFA* t : tempTransitions){
             nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
             dfaTransitions.insert(nt);
+            delete t;
         }
         // Set all the containters to the dfa
         dfa.setNodes(dfaNodes);
@@ -314,5 +315,11 @@ void NFA::print(){
 
 NFA::~NFA()
 {
-
+    for(auto &n : nodes){
+        delete n;
+    }
+    for (auto &t : transitions)
+    {
+        delete t;
+    }
 }
