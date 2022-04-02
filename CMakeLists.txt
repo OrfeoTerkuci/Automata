@@ -5,7 +5,7 @@ project(Automata VERSION 0.4.0)
 #enable_testing()
 
 set(DFA_sources
-        DFA_test.cpp
+        Test_files/DFA_test.cpp
         DFA.cpp
         Node.cpp
         transition.cpp
@@ -13,7 +13,7 @@ set(DFA_sources
     )
 
 set(NFA_sources
-        NFA_test.cpp
+        Test_files/NFA_test.cpp
         DFA.cpp
         NFA.cpp
         Node.cpp
@@ -22,7 +22,7 @@ set(NFA_sources
 )
 
 set(SSC_sources
-        SSC_test.cpp
+        Test_files/SSC_test.cpp
         DFA.cpp
         NFA.cpp
         Node.cpp
@@ -31,7 +31,7 @@ set(SSC_sources
 )
 
 set(MSSC_sources
-        MSSC_test.cpp
+        Test_files/MSSC_test.cpp
         ENFA.cpp
         DFA.cpp
         Node.cpp
@@ -40,7 +40,7 @@ set(MSSC_sources
 )
 
 set(PA_sources
-        Product_test.cpp
+        Test_files/Product_test.cpp
         DFA.cpp
         Node.cpp
         transition.cpp
@@ -48,7 +48,7 @@ set(PA_sources
 )
 
 set(RE_sources
-        REGEX_test.cpp
+        Test_files/REGEX_test.cpp
         RE.cpp
         ENFA.cpp
         DFA.cpp

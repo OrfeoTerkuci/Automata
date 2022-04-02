@@ -1,5 +1,4 @@
-#include "RE.h"
-#include <iostream>
+#include "../RE.h"
 using namespace std;
 
 int main() {

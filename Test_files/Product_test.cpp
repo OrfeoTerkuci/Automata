@@ -1,4 +1,4 @@
-#include "DFA.h"
+#include "../DFA.h"
 
 using namespace std;
 

@@ -1,4 +1,4 @@
-#include "ENFA.h"
+#include "../ENFA.h"
 
 using namespace std;
 

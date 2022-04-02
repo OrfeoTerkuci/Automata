@@ -1,4 +1,4 @@
-#include "NFA.h"
+#include "../NFA.h"
 
 using namespace std;
 
