@@ -333,5 +333,10 @@ void DFA::print(){
 
 DFA::~DFA()
 {
-
+    for(auto n : nodes){
+        delete n;
+    }
+    for(auto t : transitions){
+        delete t;
+    }
 }
