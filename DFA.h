@@ -15,7 +15,7 @@ private:
     set<transition*> transitions;
 public:
     DFA(string filename);
-    DFA(DFA dfa1 , DFA dfa2 , bool intersect);
+    DFA(DFA &dfa1 , DFA &dfa2 , bool intersect);
     DFA();
     // Getters
     set<char> getAlphabet() const;

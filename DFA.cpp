@@ -64,7 +64,7 @@ DFA::DFA(string filename)
     }
 }
 
-DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
+DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
     // Copy alphabet
     for( char c : dfa1.getAlphabet() ){
         alphabet.insert(c);
@@ -168,6 +168,7 @@ DFA::DFA(DFA dfa1, DFA dfa2 , bool intersect) {
     for(transitionNFA* t : tempTransitions){
         nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
         transitions.insert(nt);
+        delete t;
     }
 }
 
@@ -269,6 +270,9 @@ void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
 }
 
 Node* DFA::transit(Node* begin , char a){
+    if(alphabet.find(a) == alphabet.end()){
+        return nullptr;
+    }
     for(transition* t : transitions){
         if(t->getBeginNode() == begin && t->getInput() == a){
             return t->getEndNode();
@@ -278,18 +282,14 @@ Node* DFA::transit(Node* begin , char a){
 }
 
 bool DFA::accepts(string A){
-    // Split string into chars
-    vector<char> v(A.begin(),A.end());
     Node* currentNode = *beginNodes.begin();
-    for(char inputA : v){
+    for(char inputA : A){
         currentNode = transit(currentNode,inputA);
-    }
-    for(Node* n : finalNodes){
-        if(n == currentNode){
-            return true;
+        if(currentNode == nullptr){
+            return false;
         }
     }
-    return false;
+    return currentNode->isAccepting();
 }
 
 void DFA::print(){
@@ -298,7 +298,6 @@ void DFA::print(){
    // Set type to DFA
    j["type"] = "DFA";
    // Add alphabet
-   // Make temp set
    set<string> v_Alphabet;
    for (char c : DFA::alphabet){
        // Convert char to string and insert into vector
