@@ -15,6 +15,8 @@ private:
 public:
     // Constructor
     RE(const string &regex, char eps);
+    RE(RE* refRE);
+    RE();
     // Getters and setters
     const string &getRegex() const;
     void setRegex(const string &regex);

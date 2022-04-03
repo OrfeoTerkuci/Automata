@@ -5,6 +5,10 @@
 
 RE::RE(const string &regex, char eps) : regex(regex), eps(eps) {}
 
+RE::RE(RE* refRE) : regex(refRE->getRegex()) , eps(refRE->getEps()) {}
+
+RE::RE() : regex(" ") , eps(' ') {}
+
 const string &RE::getRegex() const {
     return regex;
 }
