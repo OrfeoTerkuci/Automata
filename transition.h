@@ -1,5 +1,6 @@
 #include <iostream>
 using namespace std;
+
 class Node;
 class transition
 {
@@ -9,6 +10,8 @@ private:
     char inputA;
 public:
     transition(Node* beginNode, Node* endNode, char inputA);
+    transition(transition* refTran);
+    transition();
     Node* getBeginNode();
     void setBeginNode(Node* n);
     Node* getEndNode();

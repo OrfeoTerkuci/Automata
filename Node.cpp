@@ -5,12 +5,9 @@
 
 using namespace std;
 
-Node::Node(string name, bool starting, bool accepting)
-{
-    Node::name = name;
-    Node::starting = starting;
-    Node::accepting = accepting;
-}
+Node::Node(string name, bool starting, bool accepting) : name(name) , starting(starting) , accepting(accepting){}
+
+Node::Node(Node* refNode) : name(refNode->getName()) , starting(refNode->isStarting()) , accepting(refNode->isAccepting()){}
 
 Node::Node() : name("") , starting(false) , accepting(false) {}
 
