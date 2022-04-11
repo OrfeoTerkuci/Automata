@@ -209,7 +209,7 @@ void RE::splitRegex(vector<string> beginReg , string reg){
 }
 
 ENFA RE::toENFA() {
-    // "(m+y)*+(e+y+m+i)s"
+    // "ab + bc + cdf + e"
     vector<string> reg;
     splitRegex(reg , RE::regex);
     return ENFA();

@@ -2,7 +2,9 @@
 using namespace std;
 
 int main() {
-    RE re("(m+y)*+(e+y+m+i)s",'e');
+    RE re("ab + bc + cdf + e",'e');
+    //RE re("ab + ab(c+d)g" , 'e');
+    //RE re("(m+y)*+(e+y+m+i)s",'e');
     ENFA enfa = re.toENFA();
     enfa.printStats();
     // geven true
