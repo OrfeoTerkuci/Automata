@@ -5,7 +5,9 @@
         "vector": "cpp",
         "tuple": "cpp",
         "fstream": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "deque": "cpp",
+        "string": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.",
     "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",

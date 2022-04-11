@@ -208,14 +208,40 @@ ENFA RE::createStar(string beginName , string endName , ENFA &R) {
     return newENFA;
 }
 
-void RE::splitRegex(vector<string> beginReg , string reg){
-        
+vector<string> RE::splitRegex(string &reg){
+    // "ab+bc+cdf+e"
+    vector<string> beginReg;
+    string current = "";
+    for( char c : reg){
+        if(c == '+'){
+            beginReg.push_back(current);
+            current = "";
+            continue;
+        }
+        current += c;
+        if(c == *reg.rbegin()){
+            beginReg.push_back(current);
+        }
+    }
+    return beginReg;
 }
 
 ENFA RE::toENFA() {
-    // "ab + bc + cdf + e"
-    vector<string> reg;
-    splitRegex(reg , RE::regex);
+    // "ab+bc+cdf+e"
+    // Vector of concatenation strings
+    vector<string> reg = splitRegex(RE::regex);
+    vector<ENFA> conc;
+    ENFA newENFA;
+    int count = 0;
+    for(string s : reg){
+        // Build ENFA for each concatenation
+        for(char c : s){
+           conc.push_back( createSingleChar(to_string(count) , to_string(count + 1) , c) );
+           count += 2;
+        }
+        // Link them all
+        
+    }
     return ENFA();
 }
 

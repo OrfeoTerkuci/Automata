@@ -31,7 +31,8 @@ public:
     ENFA createConcatenation(ENFA &R , ENFA &S);
     ENFA createStar(string beginName , string endName , ENFA &R);
     // Convert function
-    void splitRegex(vector<string> beginReg , string reg);
+    vector<string> splitRegex(string &reg);
+
     ENFA toENFA();
     // Destructor
     virtual ~RE();
