@@ -100,6 +100,9 @@ void NFA::setTransitions(set<transition*>newTransitions){
 
 set<Node*> NFA::transit(set<Node*> begin , char a){
     set<Node*> c;
+    if(alphabet.find(a) == alphabet.end()){
+        return {nullptr};
+    }
     for(transition* t : transitions){
         for(Node* n : begin){
             if(t->getBeginNode() == n && t->getInput() == a){
@@ -172,12 +175,13 @@ bool NFA::accepts(string A){
     set<Node*> currentNodes = beginNodes;
     for(char inputA : v){
         currentNodes = transit(currentNodes,inputA);
+        if( currentNodes.size() == 1 && *currentNodes.begin() == nullptr ){
+            return false;
+        }
     }
-    for(Node* n : finalNodes){
-        for(Node* c : currentNodes){
-            if(c == n){
-                return true;
-            }
+    for(Node* c : currentNodes){
+        if(c->isAccepting()){
+            return true;
         }
     }
     return false;
@@ -196,12 +200,8 @@ DFA NFA::toDFA(){
     // Lazy evaluation begin
     // Create powerset to push to DFA
     set<set<Node*>>newNodes = {beginNodes};
-    // Create counter set -> if all nodes are used
-    set<Node*>counter = beginNodes;
     // Create temporary transitions container
     set<transitionNFA*> tempTransitions;
-    // Begin on beginNodes
-    // Create check variable
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     // Create new states
@@ -259,10 +259,8 @@ DFA NFA::toDFA(){
             }
         }
         // Convert all transitions to dfa transitions
-        transition* nt;
         for(transitionNFA* t : tempTransitions){
-            nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
-            dfaTransitions.insert(nt);
+            dfaTransitions.insert(new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput()));
             delete t;
         }
         // Set all the containters to the dfa

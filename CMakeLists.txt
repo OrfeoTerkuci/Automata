@@ -6,55 +6,55 @@ project(Automata VERSION 0.4.0)
 
 set(DFA_sources
         Test_files/DFA_test.cpp
-        DFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/DFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
     )
 
 set(NFA_sources
         Test_files/NFA_test.cpp
-        DFA.cpp
-        NFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/DFA.cpp
+        main_sources/NFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
 )
 
 set(SSC_sources
         Test_files/SSC_test.cpp
-        DFA.cpp
-        NFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/DFA.cpp
+        main_sources/NFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
 )
 
 set(MSSC_sources
         Test_files/MSSC_test.cpp
-        ENFA.cpp
-        DFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/ENFA.cpp
+        main_sources/DFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
 )
 
 set(PA_sources
         Test_files/Product_test.cpp
-        DFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/DFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
 )
 
 set(RE_sources
         Test_files/REGEX_test.cpp
-        RE.cpp
-        ENFA.cpp
-        DFA.cpp
-        Node.cpp
-        transition.cpp
-        transitionNFA.cpp
+        main_sources/RE.cpp
+        main_sources/ENFA.cpp
+        main_sources/DFA.cpp
+        help_sources/Node.cpp
+        help_sources/transition.cpp
+        help_sources/transitionNFA.cpp
 )
 
 add_executable(DFA ${DFA_sources})

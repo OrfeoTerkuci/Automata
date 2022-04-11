@@ -10,6 +10,7 @@ private:
     char inputA;
 public:
     transitionNFA(set<Node*> beginNodes, set<Node*> endNodes, char inputA);
+    transitionNFA(transitionNFA* refTran);
     transitionNFA();
     set<Node*> getBeginNodes();
     void setBeginNodes(set<Node*> n);
