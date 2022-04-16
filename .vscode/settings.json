@@ -7,7 +7,8 @@
         "fstream": "cpp",
         "random": "cpp",
         "deque": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "*.tcc": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.",
     "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",

@@ -62,6 +62,8 @@ DFA::DFA(string filename)
         transition* newTransition = new transition(beginState,endState,inputA);
         transitions.insert(newTransition);
     }
+    // Create beginning TFA table
+    table = createTable();
 }
 
 DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
@@ -170,9 +172,11 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         transitions.insert(nt);
         delete t;
     }
+    // Create beginning TFA table
+    table = createTable();
 }
 
-DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
+DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}) , table({}){}
 
 set<char> DFA::getAlphabet() const{
     return DFA::alphabet;
@@ -328,6 +332,41 @@ void DFA::print(){
    j["transitions"] = transitions_array;
    // Print to screen
    cout<< setw(4) << j << endl;
+}
+
+map<set<Node*> , bool> DFA::createTable(){
+    // Create empty map
+    map<set<Node*> , bool> newTable;
+    // Create empty set
+    set<Node*> newSet;
+    // Cross?
+    bool diff;
+    // Create all the pairs
+    for(Node* n : nodes){
+        for(Node* m : nodes){
+            newSet.insert(n);
+            newSet.insert(m);
+            if(newSet.size() == 2){
+                diff = ( (n->isAccepting() && !m->isAccepting()) || (!n->isAccepting() && m->isAccepting()) );
+                newTable.insert({newSet , diff});
+            }
+            // Reset newSet
+            newSet = {};
+        }
+    }
+    return newTable;
+}
+
+DFA DFA::minimize(){
+
+}
+
+void DFA::printTable(){
+
+}
+
+bool DFA::operator==(DFA dfa2){
+
 }
 
 DFA::~DFA()

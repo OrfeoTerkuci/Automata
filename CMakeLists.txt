@@ -10,7 +10,7 @@ set(DFA_sources
         Node.cpp
         transition.cpp
         transitionNFA.cpp
-    )
+)
 
 set(NFA_sources
         Test_files/NFA_test.cpp
@@ -57,6 +57,14 @@ set(RE_sources
         transitionNFA.cpp
 )
 
+set(TFA_sources
+        Test_files/TFA_test.cpp
+        DFA.cpp
+        Node.cpp
+        transition.cpp
+        transitionNFA.cpp
+)
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -68,6 +76,8 @@ add_executable(MSSC ${MSSC_sources})
 add_executable(PA ${PA_sources})
 
 add_executable(RE ${RE_sources})
+
+add_executable(TFA ${TFA_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 
