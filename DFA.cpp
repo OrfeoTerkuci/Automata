@@ -63,7 +63,7 @@ DFA::DFA(string filename)
         transitions.insert(newTransition);
     }
     // Create beginning TFA table
-    table = createTable();
+    createTable();
 }
 
 DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
@@ -173,7 +173,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         delete t;
     }
     // Create beginning TFA table
-    table = createTable();
+    createTable();
 }
 
 DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}) , table({}){}
@@ -334,11 +334,10 @@ void DFA::print(){
    cout<< setw(4) << j << endl;
 }
 
-map<set<string> , bool> DFA::createTable(){
-    // Create empty map
-    map<set<string> , bool> newTable;
-    // Create empty set
+void DFA::createTable(){
+    // Create empty sets
     set<string> newSet;
+    set<Node*> newMarked;
     // Crossed?
     bool diff;
     // Create all the pairs
@@ -346,19 +345,105 @@ map<set<string> , bool> DFA::createTable(){
         for(Node* m : nodes){
             newSet.insert(n->getName());
             newSet.insert(m->getName());
+            newMarked.insert(n);
+            newMarked.insert(m);
             if(newSet.size() == 2){
                 diff = ( (n->isAccepting() && !m->isAccepting()) || (!n->isAccepting() && m->isAccepting()) );
-                newTable.insert( {newSet , diff} );
+                table.insert( {newSet , diff} );   
+                if(diff){
+                    markedPairs.insert( newMarked );
+                }
             }
-            // Reset newSet
+            // Reset sets
             newSet = {};
+            newMarked = {};
         }
     }
-    return newTable;
 }
 
 DFA DFA::minimize(){
+    map<set<string> , bool> originalTable = table;
+    set<set<Node*>> originalMarkedPairs = markedPairs;
+    fillTable();
+    DFA newDFA = DFA();
+    // Set alphabet
+    newDFA.setAlphabet(alphabet);
+    // Merge all the equivalent states
+    Node* newNode;
+    string newName;
+    bool accepting;
+    bool starting;
+    for(auto p : markedPairs){
+        // Merge the name : {state1,state2}
+        newName = "{";
+        for(Node* n : p){
+            newName += n->getName();
+            if(n!= *p.rbegin()){
+                newName += ",";
+            }
+            else{
+                newName += "}";
+            }
+        }
+        // Create new state
+        newNode->setName(newName);     
+    }
+    // Reset table and marked pairs
+    table = originalTable;
+    markedPairs = originalMarkedPairs;
+}
 
+set<Node*> DFA::findTransition(set<Node*> &beginNodes , char c){
+    // Find a pair of nodes that transits to the given set with char c
+    set<Node*> tempNode = {};
+    for(auto n : nodes){
+        for(auto m : nodes){
+            tempNode = { transit(n , c) , transit(m , c) };
+            if( tempNode == beginNodes){
+                return {n , m};
+            }
+            tempNode = {};
+        }
+    }
+    return tempNode;
+}
+
+void DFA::fillTable(){
+    bool evaluate = true;
+    set<Node*> newPair;
+    set<Node*> tempPair;
+    set<string> newMarked;
+    Node* newB;
+    Node* newE;
+    int oldSize;
+    while(evaluate){
+        // Print table
+        printTable();
+        // Remember old size
+        oldSize = markedPairs.size();
+        // Loop through marked pairs
+        for(auto p : markedPairs){
+            // Loop through alphabet
+            for(char c : alphabet){
+                // Find a transition to this marked pair
+                newPair = findTransition(p , c);
+                // Check if transition is valid
+                if(!newPair.empty()){
+                    newB = *newPair.begin();
+                    newE = *newPair.rbegin();
+                    newMarked = {newB->getName() , newE->getName()};
+                    // Insert new pair into markedPairs set
+                    markedPairs.insert(newPair);
+                    // Insert new pair names into table
+                    table[newMarked] = true;
+                }
+                // Reset newPair
+                newPair = {};
+                tempPair = {};
+            }
+        }
+        evaluate = (oldSize != markedPairs.size());
+    } 
 }
 
 void DFA::printTable(){
@@ -391,10 +476,23 @@ void DFA::printTable(){
            cout << '\t';
        }
    }
+   cout << endl;
+   cout << endl;
 }
 
 bool DFA::operator==(DFA dfa2){
-
+    // Save originl nodes and transitions
+    set<Node*> originalNodes = nodes;
+    set<transition*> originalTransitions = transitions;
+    nodes.emplace(dfa2.getNodes());
+    transitions.emplace(dfa2.getTransitions());
+    createTable();
+    fillTable();
+    Node* b1 = *beginNodes.begin();
+    Node* b2 = *dfa2.getBegin().begin();
+    nodes = originalNodes;
+    transitions = originalTransitions;
+    return( table[ {b1->getName() , b2->getName()} ] );
 }
 
 DFA::~DFA()
