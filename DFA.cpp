@@ -391,6 +391,7 @@ DFA DFA::minimize(){
     // Reset table and marked pairs
     table = originalTable;
     markedPairs = originalMarkedPairs;
+    return newDFA;
 }
 
 set<Node*> DFA::findTransition(set<Node*> &beginNodes , char c){
@@ -484,11 +485,15 @@ bool DFA::operator==(DFA dfa2){
     // Save originl nodes and transitions
     set<Node*> originalNodes = nodes;
     set<transition*> originalTransitions = transitions;
-    nodes.emplace(dfa2.getNodes());
-    transitions.emplace(dfa2.getTransitions());
+    for(auto n : dfa2.getNodes()){
+        nodes.insert(n);
+    }
+    for(auto t : dfa2.getTransitions()){
+        transitions.insert(t);
+    }
     createTable();
     fillTable();
-    Node* b1 = *beginNodes.begin();
+    Node* b1 = *getBegin().begin();
     Node* b2 = *dfa2.getBegin().begin();
     nodes = originalNodes;
     transitions = originalTransitions;
