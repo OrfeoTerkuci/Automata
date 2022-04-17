@@ -14,7 +14,7 @@ private:
     set<Node*> finalNodes;
     set<Node*> beginNodes;
     set<transition*> transitions;
-    map<set<Node*> , bool> table;
+    map<set<string> , bool> table;
 public:
     DFA(string filename);
     DFA(DFA &dfa1 , DFA &dfa2 , bool intersect);
@@ -40,7 +40,7 @@ public:
     bool accepts(string A);
     void print();
     // TFA implementation
-    map<set<Node*> , bool> createTable();
+    map<set<string> , bool> createTable();
     DFA minimize();
     void printTable();
     bool operator==(DFA dfa2);

@@ -334,21 +334,21 @@ void DFA::print(){
    cout<< setw(4) << j << endl;
 }
 
-map<set<Node*> , bool> DFA::createTable(){
+map<set<string> , bool> DFA::createTable(){
     // Create empty map
-    map<set<Node*> , bool> newTable;
+    map<set<string> , bool> newTable;
     // Create empty set
-    set<Node*> newSet;
-    // Cross?
+    set<string> newSet;
+    // Crossed?
     bool diff;
     // Create all the pairs
     for(Node* n : nodes){
         for(Node* m : nodes){
-            newSet.insert(n);
-            newSet.insert(m);
+            newSet.insert(n->getName());
+            newSet.insert(m->getName());
             if(newSet.size() == 2){
                 diff = ( (n->isAccepting() && !m->isAccepting()) || (!n->isAccepting() && m->isAccepting()) );
-                newTable.insert({newSet , diff});
+                newTable.insert( {newSet , diff} );
             }
             // Reset newSet
             newSet = {};
@@ -362,7 +362,35 @@ DFA DFA::minimize(){
 }
 
 void DFA::printTable(){
-
+   vector<string> tempNodes;
+   for(auto n : nodes){
+       tempNodes.push_back( n->getName() );
+   }
+   sort( tempNodes.begin() , tempNodes.end() );
+   int count = 1;
+   // Loop from 2nd element to last element
+   for(int i = 1; i < tempNodes.size(); i++){
+       // Print row name
+       cout << tempNodes[i] << '\t';
+       // Loop until count
+       for(int j = 0; j < count; j++){
+           if( table[ { tempNodes[i] , tempNodes[j] }] ){
+               cout << 'X' << '\t';
+           }
+           else{
+               cout << '-' << '\t';
+           }
+       }
+       cout << endl;
+       count++;
+   }
+   cout << '\t';
+   for(int i = 0; i < tempNodes.size() - 1; i++){
+       cout << tempNodes[i];
+       if(i != tempNodes.size() - 1){
+           cout << '\t';
+       }
+   }
 }
 
 bool DFA::operator==(DFA dfa2){
