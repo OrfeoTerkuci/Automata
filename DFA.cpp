@@ -273,6 +273,29 @@ void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
+void DFA::eliminateExtra(set<transition*>&trans){
+    for (auto it1 = trans.begin(); it1 != trans.end(); it1++){
+        for (auto it2 = trans.begin(); it2 != trans.end(); it2++){
+            if(it1 == it2){
+                continue;
+            }
+            // Check for duplicate
+            auto t1 = *it1;
+            auto t2 = *it2;
+            Node* b1 = t1->getBeginNode();
+            Node* e1 = t1->getEndNode();
+            Node* b2 = t2->getBeginNode();
+            Node* e2 = t2->getEndNode();
+            char c1 = t1->getInput();
+            char c2 = t2->getInput();
+            if( b1 == b2 && e1 == e2 && c1 == c2 ){
+                delete t2;
+                it2 = trans.erase(it2);
+            }
+        }
+    }
+}
+
 Node* DFA::transit(Node* begin , char a){
     if(alphabet.find(a) == alphabet.end()){
         return nullptr;
@@ -368,26 +391,94 @@ DFA DFA::minimize(){
     DFA newDFA = DFA();
     // Set alphabet
     newDFA.setAlphabet(alphabet);
-    // Merge all the equivalent states
+    // Create new containers
+    set<Node*> newDFA_nodes;
+    set<transition*> newDFA_transitions;
+    for(auto t : transitions){
+        newDFA_transitions.insert(new transition(t->getBeginNode() , t->getEndNode() , t->getInput()));
+    }
+    set<Node*> newDFA_final;
+    set<Node*> newDFA_begin;
+    // Get all equivalent sets of states
+    set<set<Node*>> newStates;
+    set<Node*> newSet;
     Node* newNode;
+    transition* newTransition;
     string newName;
-    bool accepting;
-    bool starting;
-    for(auto p : markedPairs){
+    bool accepting = false;
+    bool starting = false;
+    // Get all the unmarked pairs
+    set<set<Node*>> unmarked;
+    for(auto p : table){
+        if(!p.second){
+            for(auto n : nodes){
+                if(p.first.find(n->getName()) != p.first.end()){
+                    newSet.insert(n);
+                }
+            }
+            unmarked.insert(newSet);
+            newSet = {};
+        }
+    }
+    for(auto p : unmarked){
+        newSet = p;
+        // Check if there is a common element with another set
+        for(auto q : unmarked){
+            for(auto n : q){
+                if(newSet.find(n) != newSet.end()){
+                    newSet.insert(q.begin() , q.end());
+                    break;
+                }
+            }
+        }
+        newStates.insert(newSet);
+    }
+    for(auto s : newStates){
+        newNode = new Node();
         // Merge the name : {state1,state2}
         newName = "{";
-        for(Node* n : p){
+        for(Node* n : s){
             newName += n->getName();
-            if(n!= *p.rbegin()){
+            if(n!= *s.rbegin()){
                 newName += ",";
             }
             else{
                 newName += "}";
             }
+            // Check if starting
+            if(n->isStarting()){
+                starting = true;
+            }
+            if(n->isAccepting()){
+                accepting = true;
+            }
+            for(auto t : newDFA_transitions){
+                if(t->getBeginNode() == n){
+                    t->setBeginNode(newNode);
+                }
+                if(t->getEndNode() == n){
+                    t->setEndNode(newNode);
+                }
+            }
         }
         // Create new state
-        newNode->setName(newName);     
+        newNode->setName(newName);
+        newNode->setStarting(starting);
+        newNode->setAccepting(accepting);
+        newDFA_nodes.insert(newNode);
+        if(newNode->isStarting()){
+            newDFA_begin.insert(newNode);
+        }
+        if(newNode->isAccepting()){
+            newDFA_final.insert(newNode);
+        }
     }
+    // Remove extra transitions
+    eliminateExtra(newDFA_transitions);
+    newDFA.setNodes(newDFA_nodes);
+    newDFA.setTransitions(newDFA_transitions);
+    newDFA.setBegin(newDFA_begin);
+    newDFA.setFinal(newDFA_final);
     // Reset table and marked pairs
     table = originalTable;
     markedPairs = originalMarkedPairs;
@@ -497,7 +588,7 @@ bool DFA::operator==(DFA dfa2){
     Node* b2 = *dfa2.getBegin().begin();
     nodes = originalNodes;
     transitions = originalTransitions;
-    return( table[ {b1->getName() , b2->getName()} ] );
+    return( !table[ {b1->getName() , b2->getName()} ] );
 }
 
 DFA::~DFA()

@@ -35,6 +35,7 @@ public:
 
     void evaluate(set<set<Node*>>&begin , set<transitionNFA*> &tempTransitions );
     void eliminateExtra(set<transitionNFA*> &currentSet);
+    void eliminateExtra(set<transition*>&trans);
 
     // Standard DFA operations
     Node* transit(Node* begin , char a);
