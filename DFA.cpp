@@ -437,12 +437,13 @@ DFA DFA::minimize(){
         newStates.insert(newSet);
     }
     // Get all the marked pairs (which remain)
-
+    set<Node*> marked = nodes;
     unmarked = {};
     for(auto s : newStates){
         newNode = new Node();
         vector<string> names;
         for(Node* n : s){
+            marked.erase(n);
             names.push_back(n->getName());
             // Check if starting
             if(n->isStarting()){
@@ -464,10 +465,10 @@ DFA DFA::minimize(){
         sort(names.begin() , names.end());
         // Merge the name : {state1,state2}
         newName = "{";
-        for(string s : names){
-            newName += s;
-            if(s!= *names.rbegin()){
-                newName += ",";
+        for(string name : names){
+            newName += name;
+            if(name!= *names.rbegin()){
+                newName += ", ";
             }
             else{
                 newName += "}";
@@ -478,13 +479,24 @@ DFA DFA::minimize(){
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
         newDFA_nodes.insert(newNode);
+        starting = false;
+        accepting = false;
     }
     // Remove extra transitions
     eliminateExtra(newDFA_transitions);
-    // Get remaining nodes
-    for(auto t : newDFA_transitions){
-        newDFA_nodes.insert(t->getBeginNode());
-        newDFA_nodes.insert(t->getEndNode());
+    for(auto n : marked){
+        // Create new node
+        newNode = new Node("{" + n->getName() + "}" , n->isStarting() , n->isAccepting());
+        newDFA_nodes.insert(newNode);
+        // Relink transitions
+        for(auto t : newDFA_transitions){
+            if(t->getBeginNode() == n){
+                t->setBeginNode(newNode);
+            }
+            if(t->getEndNode() == n){
+                t->setEndNode(newNode);
+            }
+        }
     }
     for(auto n : newDFA_nodes){
         if(n->isStarting()){
@@ -597,7 +609,6 @@ void DFA::printTable(){
        }
    }
    cout << endl;
-   cout << endl;
 }
 
 bool DFA::operator==(DFA &dfa2){
@@ -613,6 +624,7 @@ bool DFA::operator==(DFA &dfa2){
     }
     createTable();
     fillTable();
+    printTable();
     Node* b1 = *getBegin().begin();
     Node* b2 = *dfa2.getBegin().begin();
     beginNames.insert(b1->getName());
@@ -620,7 +632,7 @@ bool DFA::operator==(DFA &dfa2){
     //sort(beginNames.begin() , beginNames.end());
     nodes = originalNodes;
     transitions = originalTransitions;
-    return( !table[ beginNames ] );
+    return !table[ beginNames ];
 }
 
 DFA::~DFA()
