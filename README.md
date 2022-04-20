@@ -14,6 +14,6 @@ Blank = TODO
 |Product Automata       | V |
 |REGEX to ENFA          |   |
 |State Elimination      |   |
-|Table Filling Algorithm|   |
+|Table Filling Algorithm| V |
 
 ### Commentary
