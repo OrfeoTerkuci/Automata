@@ -45,8 +45,8 @@ public:
     void createTable();
     void printTable();
     void fillTable();
-    set<Node*> findTransition(set<Node*> &beginNodes , char c);
+    set<set<Node*>> findTransition(set<Node*> &beginNodes , char c);
     DFA minimize();
-    bool operator==(DFA dfa2);
+    bool operator==(DFA &dfa2);
     ~DFA();
 };
