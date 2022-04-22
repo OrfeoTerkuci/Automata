@@ -6,9 +6,9 @@ using namespace std;
 
 transition::transition(Node* beginNode, Node* endNode, char inputA) : beginNode(beginNode) , endNode(endNode) , inputA(inputA){}
 
-transition::transition(transition* refTran) :   beginNode(new Node(refTran->getBeginNode())) ,
-                                                endNode(new Node(refTran->getEndNode())) ,
-                                                inputA(refTran->getInput()){}
+transition::transition(transition* refTran) :   beginNode( refTran->getBeginNode() ) ,
+                                                endNode( refTran->getEndNode() ) ,
+                                                inputA( refTran->getInput() ){}
 transition::transition() : beginNode(nullptr) , endNode(nullptr) , inputA(' ') {}
 
 Node* transition::getBeginNode(){
