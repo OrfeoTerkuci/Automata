@@ -387,26 +387,25 @@ void DFA::createTable(){
 }
 
 DFA DFA::minimize(){
-    map<set<string> , bool> originalTable = table;
-    set<set<Node*>> originalMarkedPairs = markedPairs;
-    fillTable();
+    // Create new empty DFA and containers for it
     DFA newDFA = DFA();
-    // Set alphabet
-    newDFA.setAlphabet(alphabet);
-    // Create new containers
     set<Node*> newDFA_nodes;
     set<transition*> newDFA_transitions;
-    for(auto t : transitions){
-        newDFA_transitions.insert(new transition(t->getBeginNode() , t->getEndNode() , t->getInput()));
-    }
     set<Node*> newDFA_final;
     set<Node*> newDFA_begin;
+    // Set alphabet
+    newDFA.setAlphabet(alphabet);
+    // Copy the transitions
+    for(auto t : transitions){
+        newDFA_transitions.insert(new transition(t));
+    }
+    // Execute TFA
+    fillTable();
     // Get all equivalent sets of states
     set<set<Node*>> newStates;
     set<Node*> newSet;
-    // New node components
+    // Create new node and components for it
     Node* newNode;
-    transition* newTransition;
     string newName;
     bool accepting = false;
     bool starting = false;
@@ -423,7 +422,8 @@ DFA DFA::minimize(){
             newSet = {};
         }
     }
-    for(auto p : unmarked){
+    // Merge the pairs with common elements
+    for(const auto &p : unmarked){
         newSet = p;
         // Check if there is a common element with another set
         for(auto q : unmarked){
@@ -436,12 +436,13 @@ DFA DFA::minimize(){
         }
         newStates.insert(newSet);
     }
-    // Get all the marked pairs (which remain)
-    set<Node*> marked = nodes;
+    // Reset container
     unmarked = {};
+    // Get all the marked pairs
+    set<Node*> marked = nodes;
+    vector<string> names;
     for(auto s : newStates){
         newNode = new Node();
-        vector<string> names;
         for(Node* n : s){
             marked.erase(n);
             names.push_back(n->getName());
@@ -452,7 +453,7 @@ DFA DFA::minimize(){
             if(n->isAccepting()){
                 accepting = true;
             }
-            // Get the transitions
+            // Relink the transitions
             for(auto t : newDFA_transitions){
                 if(t->getBeginNode() == n){
                     t->setBeginNode(newNode);
@@ -465,7 +466,7 @@ DFA DFA::minimize(){
         sort(names.begin() , names.end());
         // Merge the name : {state1,state2}
         newName = "{";
-        for(string name : names){
+        for(const string &name : names){
             newName += name;
             if(name!= *names.rbegin()){
                 newName += ", ";
@@ -478,12 +479,17 @@ DFA DFA::minimize(){
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
+        // Insert state into the states vector
         newDFA_nodes.insert(newNode);
+        // Reset components
         starting = false;
         accepting = false;
+        // Reset container
+        names = {};
     }
     // Remove extra transitions
     eliminateExtra(newDFA_transitions);
+    // Create new nodes from the marked ones
     for(auto n : marked){
         // Create new node
         newNode = new Node("{" + n->getName() + "}" , n->isStarting() , n->isAccepting());
@@ -537,7 +543,7 @@ set<set<Node*>> DFA::findTransition(set<Node*> &beginNodes , char c){
 
 void DFA::fillTable(){
     bool evaluate = true;
-    set<set<Node*>> newPair;
+    set< set<Node*> > newPair;
     set<string> newNames;
     vector<string> newMarked;
     set<Node*> tempPair;
@@ -554,26 +560,29 @@ void DFA::fillTable(){
                 // Find a transition to this marked pair
                 newPair = findTransition(p , c);
                 // Check if transition is valid
-                for(auto newP : newPair){
+                for(const auto &newP : newPair){
+                    // Get first and second node of the pair
                     newB = *newP.begin();
                     newE = *newP.rbegin();
+                    // Get node names
                     newMarked.push_back(newB->getName());
                     newMarked.push_back(newE->getName());
                     sort(newMarked.begin() , newMarked.end());
                     newNames.insert(newMarked.begin() , newMarked.end());
-                    //cout << '{' << *newNames.begin() << ',' << *newNames.rbegin() << '}' << endl;
                     // Insert new pair into markedPairs set
                     markedPairs.insert(newP);
                     // Insert new pair names into table
                     table[newNames] = true;
+                    // Reset containers
                     newMarked = {};
                     newNames = {};
                 }
-                // Reset newPair
+                // Reset pairs
                 newPair = {};
                 tempPair = {};
             }
         }
+        // Evaluate?
         evaluate = (oldSize != markedPairs.size());
     } 
 }
@@ -612,35 +621,37 @@ void DFA::printTable(){
 }
 
 bool DFA::operator==(DFA &dfa2){
-    // Save originl nodes and transitions
+    // Save original nodes and transitions
     set<Node*> originalNodes = nodes;
     set<transition*> originalTransitions = transitions;
-    set<string> beginNames;
+    // Get all the nodes from both DFAs
     for(auto n : dfa2.getNodes()){
         nodes.insert(n);
     }
     for(auto t : dfa2.getTransitions()){
         transitions.insert(t);
     }
+    // Execute TFA
     createTable();
     fillTable();
+    // Print filled table
     printTable();
+    // Check whether the pair of begin nodes has been filled
     Node* b1 = *getBegin().begin();
     Node* b2 = *dfa2.getBegin().begin();
-    beginNames.insert(b1->getName());
-    beginNames.insert(b2->getName());
-    //sort(beginNames.begin() , beginNames.end());
+    // Reset the nodes and transitions
     nodes = originalNodes;
     transitions = originalTransitions;
-    return !table[ beginNames ];
+
+    return !table[ { b1->getName() , b2->getName() } ];
 }
 
 DFA::~DFA()
 {
-//    for(auto n : nodes){
-//        delete n;
-//    }
-//    for(auto t : transitions){
-//        delete t;
-//    }
+    for(auto n : nodes){
+        delete n;
+    }
+    for(auto t : transitions){
+        delete t;
+    }
 }
