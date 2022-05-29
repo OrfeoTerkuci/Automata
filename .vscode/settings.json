@@ -13,4 +13,12 @@
     "cmake.sourceDirectory": "${workspaceFolder}/.",
     "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",
     "cmake.generator": "MinGW Makefiles",
+    "cSpell.words": [
+        "eclose",
+        "ENFA"
+    ],
+    "cSpell.ignoreWords": [
+        "mimis",
+        "mmyyymmmym"
+    ],
 }

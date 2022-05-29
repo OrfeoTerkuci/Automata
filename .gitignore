@@ -1,3 +1,4 @@
 Build
 .vscode
 cmake-build-debug
+.cache

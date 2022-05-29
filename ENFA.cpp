@@ -91,6 +91,10 @@ set<transition*> ENFA::getTransitions() const{
     return ENFA::transitions;
 }
 
+set<transition*> ENFA::getEpsTransitions() const{
+    return ENFA::epsTransitions;
+}
+
 char ENFA::getEps() const{
     return ENFA::eps;
 }
@@ -109,6 +113,10 @@ void ENFA::setBegin(set<Node*>newBeginNodes){
 }
 void ENFA::setTransitions(set<transition*>newTransitions){
     ENFA::transitions = newTransitions;
+}
+
+void ENFA::setEpsTransitions(set<transition*> newEpsTransitions){
+    ENFA::epsTransitions = newEpsTransitions;
 }
 
 void ENFA::setEps(char newEps){
@@ -204,11 +212,18 @@ bool ENFA::accepts(string A){
     // Split string into chars
     vector<char> v(A.begin(),A.end());
     set<Node*> currentNodes = beginNodes;
+    set<Node*> temp;
     for(char inputA : v){
         // Transit with character
+        temp = currentNodes;
         currentNodes = transit(currentNodes,inputA);
         // Get all epsilon transitions
+        if(currentNodes.empty()){
+            currentNodes = eclose(temp);
+        }
+        else{
         currentNodes = eclose(currentNodes);
+        }
     }
     for(Node* c : currentNodes){
         if(c->isAccepting()){

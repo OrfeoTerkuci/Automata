@@ -23,6 +23,7 @@ public:
     set<Node*> getFinal() const;
     set<Node*> getBegin() const;
     set<transition*> getTransitions() const;
+    set<transition*> getEpsTransitions() const;
     char getEps() const;
     // Setters
     void setAlphabet(set<char>newAlphabet);
@@ -30,6 +31,7 @@ public:
     void setFinal(set<Node*>newFinalNodes);
     void setBegin(set<Node*>newBeginNodes);
     void setTransitions(set<transition*>newTransitions);
+    void setEpsTransitions(set<transition*> newEpsTransitions);
     void setEps(char newEps);
     // Help functions
     void eliminateExtra(set<transitionNFA*> &currentSet);
