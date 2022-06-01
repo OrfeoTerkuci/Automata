@@ -299,7 +299,12 @@ ENFA RE::toENFA() {
     for(string s : reg){
         // Build ENFA for each concatenation
         for(char c : s){
-            newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            if(c != eps){
+                newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            }
+            else{
+                newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
+            }
             temp.push_back( newENFA );
             count += 2;
         }
