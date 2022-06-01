@@ -216,16 +216,16 @@ bool ENFA::accepts(string A){
     for(char inputA : v){
         // Transit with character
         temp = currentNodes;
-        currentNodes = transit(currentNodes,inputA);
         // Get all epsilon transitions
         if(currentNodes.empty()){
             currentNodes = eclose(temp);
         }
         else{
-        currentNodes = eclose(currentNodes);
+            currentNodes = eclose(currentNodes);
         }
+        currentNodes = transit(currentNodes,inputA);
     }
-    for(Node* c : currentNodes){
+    for(Node* c : eclose(currentNodes)){
         if(c->isAccepting()){
             return true;
         }
