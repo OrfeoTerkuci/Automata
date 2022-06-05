@@ -303,50 +303,57 @@ vector<string> RE::splitRegex(string &reg){
     return beginReg;
 }
 
+ENFA* RE::toENFA(string &reg , int &count){
+    vector<ENFA*> temp;
+    ENFA* newENFA;
+    char c;
+    char d;
+    for(int i = 0; i < reg.size(); i++){
+                // Get current character
+                c= reg[i];
+                // Get next character
+                if(i != reg.size() - 1){
+                    d = reg[i+1];
+                }
+                else{
+                    d = ' ';
+                }
+                // Check if star operation
+                if(c != eps && c != '*' && d == '*'){
+                    newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+                    count += 2;
+                    newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
+                }
+                else if(c != eps && c != '*'){
+                    newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+                }
+                else{
+                    newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
+                }
+                temp.push_back( newENFA );
+                count += 2;
+            }
+    // Concatenate the small vector
+    newENFA = createConcatenation(temp);
+    return newENFA;
+}
+
 ENFA RE::toENFA() {
     // "ab+bc+cdf+e"
-    // "ab+ab(c+d+f)g"
     // "abc*d"
+    // "ab+ab(c+d+f)g"
     // "ab(cd)*+e"
     // Vector of concatenation strings
-    vector<int> star_count;
     vector<string> reg = splitRegex(RE::regex);
-    vector<ENFA*> conc;
     vector<ENFA*> temp;
+    vector<ENFA*> conc;
     vector<ENFA*> final;
     ENFA* newENFA;
     int count = 1;
     char c;
     char d;
     for(string s : reg){
-        // Build ENFA for each concatenation
-        for(int i = 0; i < s.size(); i++){
-            // Get current character
-            c= s[i];
-            // Get next character
-            if(i != s.size() - 1){
-                d = s[i+1];
-            }
-            else{
-                d = ' ';
-            }
-            // Check if star operation
-            if(c != eps && c != '*' && d == '*'){
-                newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
-                count += 2;
-                newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
-            }
-            else if(c != eps && c != '*'){
-                newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
-            }
-            else{
-                newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
-            }
-            temp.push_back( newENFA );
-            count += 2;
-        }
-        // Concatenate the small vector
-        newENFA = createConcatenation(temp);
+        newENFA = toENFA(s , count);
         conc.push_back(newENFA);
         temp = {};
     }

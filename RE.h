@@ -141,6 +141,8 @@ public:
     
     vector<string> splitRegex(string &reg);
 
+    ENFA* toENFA(string &reg , int &count);
+
     /**
      * @brief Constructs an enfa from the regex
      * 

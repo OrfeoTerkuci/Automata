@@ -19,37 +19,37 @@ int main() {
     // cout << boolalpha << enfa1.accepts("abc") << endl;
     // cout << boolalpha << enfa1.accepts("cd") << endl;
 
-    //TODO Regex with brackets
-    RE re2( "ab+ab(c+d+f)g" , 'e' );
-    ENFA enfa2 = re2.toENFA();
-    enfa2.printStats();
-    //* Tests for second regex: brackets
-    // Given true
-    cout << boolalpha << enfa2.accepts("ab") << endl;
-    cout << boolalpha << enfa2.accepts("abcg") << endl;
-    cout << boolalpha << enfa2.accepts("abdg") << endl;
-    cout << boolalpha << enfa2.accepts("abfg") << endl;
-    //! Given false
-    cout << boolalpha << enfa2.accepts("a") << endl;
-    cout << boolalpha << enfa2.accepts("b") << endl;
-    cout << boolalpha << enfa2.accepts("abc") << endl;
-    cout << boolalpha << enfa2.accepts("e") << endl;
-
-    // //TODO Regex with star
-    // RE re3( "abc*d" , 'e' );
-    // ENFA enfa3 = re3.toENFA();
-    // enfa3.printStats();
-    // //* Tests for third regex: star , concatenation and plus
+    // //TODO Regex with brackets
+    // RE re2( "ab+ab(c+d+f)g" , 'e' );
+    // ENFA enfa2 = re2.toENFA();
+    // enfa2.printStats();
+    // //* Tests for second regex: brackets
     // // Given true
-    // cout << boolalpha << enfa3.accepts("abd") << endl;
-    // cout << boolalpha << enfa3.accepts("abcd") << endl;
-    // cout << boolalpha << enfa3.accepts("abccd") << endl;
-    // cout << boolalpha << enfa3.accepts("abccccccccd") << endl;
+    // cout << boolalpha << enfa2.accepts("ab") << endl;
+    // cout << boolalpha << enfa2.accepts("abcg") << endl;
+    // cout << boolalpha << enfa2.accepts("abdg") << endl;
+    // cout << boolalpha << enfa2.accepts("abfg") << endl;
     // //! Given false
-    // cout << boolalpha << enfa3.accepts("a") << endl;
-    // cout << boolalpha << enfa3.accepts("b") << endl;
-    // cout << boolalpha << enfa3.accepts("abc") << endl;
-    // cout << boolalpha << enfa3.accepts("e") << endl;
+    // cout << boolalpha << enfa2.accepts("a") << endl;
+    // cout << boolalpha << enfa2.accepts("b") << endl;
+    // cout << boolalpha << enfa2.accepts("abc") << endl;
+    // cout << boolalpha << enfa2.accepts("e") << endl;
+
+    //TODO Regex with star
+    RE re3( "abc*d" , 'e' );
+    ENFA enfa3 = re3.toENFA();
+    enfa3.printStats();
+    //* Tests for third regex: star , concatenation and plus
+    // Given true
+    cout << boolalpha << enfa3.accepts("abd") << endl;
+    cout << boolalpha << enfa3.accepts("abcd") << endl;
+    cout << boolalpha << enfa3.accepts("abccd") << endl;
+    cout << boolalpha << enfa3.accepts("abccccccccd") << endl;
+    //! Given false
+    cout << boolalpha << enfa3.accepts("a") << endl;
+    cout << boolalpha << enfa3.accepts("b") << endl;
+    cout << boolalpha << enfa3.accepts("abc") << endl;
+    cout << boolalpha << enfa3.accepts("e") << endl;
 
     //TODO Regex with brackets and star
     // RE re4( "ab(cd)*+e" , 'e' );
