@@ -5,11 +5,21 @@
 #include <string>
 #include <vector>
 
-RE::RE(const string &regex, char eps) : regex(regex), eps(eps) {}
+RE::RE(const string &regex, char eps) : regex(regex), eps(eps) {
+    // Get the alphabet
+    for(char c : regex){
+        if(c == '+' || c == '*' || c == '(' || c == ')'){
+            continue;
+        }
+        else{
+            alphabet.insert(c);
+        }
+    }
+}
 
-RE::RE(RE* refRE) : regex(refRE->getRegex()) , eps(refRE->getEps()) {}
+RE::RE(RE* refRE) : regex(refRE->getRegex()) , eps(refRE->getEps()) , alphabet(refRE->getAlphabet()) {}
 
-RE::RE() : regex(" ") , eps(' ') {}
+RE::RE() : regex(" ") , eps(' ') , alphabet({}) {}
 
 const string &RE::getRegex() const {
     return regex;
@@ -25,6 +35,14 @@ char RE::getEps() const {
 
 void RE::setEps(char eps) {
     RE::eps = eps;
+}
+
+set<char> RE::getAlphabet() const{
+    return alphabet;
+}
+
+void RE::setAlphabet(set<char> &newAlphabet){
+    alphabet = newAlphabet;
 }
 
 ENFA* RE::createEpsilon(string beginName , string endName) {
@@ -287,19 +305,38 @@ vector<string> RE::splitRegex(string &reg){
 
 ENFA RE::toENFA() {
     // "ab+bc+cdf+e"
-    // "ab+ab(c+d)g"
-    // "ab(cd)*"
+    // "ab+ab(c+d+f)g"
     // "abc*d"
+    // "ab(cd)*+e"
     // Vector of concatenation strings
+    vector<int> star_count;
     vector<string> reg = splitRegex(RE::regex);
     vector<ENFA*> conc;
     vector<ENFA*> temp;
+    vector<ENFA*> final;
     ENFA* newENFA;
     int count = 1;
+    char c;
+    char d;
     for(string s : reg){
         // Build ENFA for each concatenation
-        for(char c : s){
-            if(c != eps){
+        for(int i = 0; i < s.size(); i++){
+            // Get current character
+            c= s[i];
+            // Get next character
+            if(i != s.size() - 1){
+                d = s[i+1];
+            }
+            else{
+                d = ' ';
+            }
+            // Check if star operation
+            if(c != eps && c != '*' && d == '*'){
+                newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+                count += 2;
+                newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
+            }
+            else if(c != eps && c != '*'){
                 newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
             }
             else{

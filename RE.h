@@ -12,10 +12,11 @@ class RE {
 private:
     string regex;
     char eps;
+    // Containers
+    set<char> alphabet;
 public:
 
     // Constructor
-
 
     /**
      * @brief Construct a new RE object
@@ -67,6 +68,10 @@ public:
      * @param eps The new epsilon character
      */
     void setEps(char eps);
+
+    set<char> getAlphabet() const;
+
+    void setAlphabet(set<char> &newAlphabet);
 
     // Basic automatons
 
