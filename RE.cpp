@@ -2,6 +2,7 @@
 #include "Node.h"
 #include "transition.h"
 #include "transitionNFA.h"
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -350,20 +351,15 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count){
             temp = splitRegex(rest , count);
             // Insert the recursive ENFA into the vector
             current.push_back(createPlus(to_string(oldCount), to_string(count + 1), temp));
-            i += count - oldCount;
+            rest = rest.substr(i+1 , count - oldCount);
+            
+            i += (count - oldCount);
             temp = {};
             continue;
         }
         else if(c == ')'){
             beginReg.push_back(createConcatenation(current));
-            // count += 1;
             return beginReg;
-        }
-        else if(c == '+'){
-            beginReg.push_back(createConcatenation(current));
-            // count += 1;
-            current = {};
-            continue;
         }
         else if(d == '*'){
             temp_n = createSingleChar(to_string(count) , to_string(count + 1) , c);
@@ -371,6 +367,16 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count){
             temp_n = createStar(to_string(count), to_string(count+1), *temp_n);
             count += 2;
             current.push_back(temp_n);
+        }
+        else if(c == '*'){
+            current.back() = createStar(to_string(count), to_string(count+1), *current.back());
+            count += 2;
+        }
+        else if(c == '+'){
+            beginReg.push_back(createConcatenation(current));
+            // count += 1;
+            current = {};
+            continue;
         }
         else if(c != eps && c != '*'){
             current.push_back(createSingleChar(to_string(count), to_string(count + 1), c));
