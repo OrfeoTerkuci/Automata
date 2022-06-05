@@ -16,6 +16,7 @@ private:
     char eps;
 public:
     ENFA(string filename);
+    ENFA(ENFA* &ref);
     ENFA();
     // Getters
     set<char> getAlphabet() const;

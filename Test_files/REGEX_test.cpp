@@ -35,23 +35,23 @@ int main() {
     // cout << boolalpha << enfa2.accepts("abc") << endl;
     // cout << boolalpha << enfa2.accepts("e") << endl;
 
-    //TODO Regex with star
-    RE re3( "abc*d" , 'e' );
-    ENFA enfa3 = re3.toENFA();
-    enfa3.printStats();
-    //* Tests for third regex: star , concatenation and plus
-    // Given true
-    cout << boolalpha << enfa3.accepts("abd") << endl;
-    cout << boolalpha << enfa3.accepts("abcd") << endl;
-    cout << boolalpha << enfa3.accepts("abccd") << endl;
-    cout << boolalpha << enfa3.accepts("abccccccccd") << endl;
-    //! Given false
-    cout << boolalpha << enfa3.accepts("a") << endl;
-    cout << boolalpha << enfa3.accepts("b") << endl;
-    cout << boolalpha << enfa3.accepts("abc") << endl;
-    cout << boolalpha << enfa3.accepts("e") << endl;
+    // //TODO Regex with star
+    // RE re3( "abc*d" , 'e' );
+    // ENFA enfa3 = re3.toENFA();
+    // enfa3.printStats();
+    // //* Tests for third regex: star , concatenation and plus
+    // // Given true
+    // cout << boolalpha << enfa3.accepts("abd") << endl;
+    // cout << boolalpha << enfa3.accepts("abcd") << endl;
+    // cout << boolalpha << enfa3.accepts("abccd") << endl;
+    // cout << boolalpha << enfa3.accepts("abccccccccd") << endl;
+    // //! Given false
+    // cout << boolalpha << enfa3.accepts("a") << endl;
+    // cout << boolalpha << enfa3.accepts("b") << endl;
+    // cout << boolalpha << enfa3.accepts("abc") << endl;
+    // cout << boolalpha << enfa3.accepts("e") << endl;
 
-    //TODO Regex with brackets and star
+    // //TODO Regex with brackets and star
     // RE re4( "ab(cd)*+e" , 'e' );
     // ENFA enfa4 = re4.toENFA();
     // enfa4.printStats();
@@ -67,14 +67,15 @@ int main() {
     // cout << boolalpha << enfa4.accepts("abc") << endl;
     // cout << boolalpha << enfa4.accepts("cd") << endl;
 
-    // Real tests
-    //RE re("(m+y)*+(e+y+m+i)s",'e');
-    // Given true
+    // // Real tests
+    // RE re("(m+y)*+(e+y+m+i)s",'e');
+    // ENFA enfa = re.toENFA();
+    // // Given true
     // cout << boolalpha << enfa.accepts("ys") << endl;
     // cout << boolalpha << enfa.accepts("mmyyymmmym") << endl;
     // cout << boolalpha << enfa.accepts("s") << endl;
 
-    // Given false
+    // // Given false
     // cout << boolalpha << enfa.accepts("ss") << endl;
     // cout << boolalpha << enfa.accepts("ims") << endl;
     // cout << boolalpha << enfa.accepts("mimis") << endl;

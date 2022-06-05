@@ -282,60 +282,109 @@ ENFA* RE::createStar(string beginName , string endName , ENFA &R) {
     return newENFA;
 }
 
-vector<string> RE::splitRegex(string &reg){
-    // "ab+bc+cdf+e"
-    // "ab+ab(c+d)g"
-    // "ab(cd)*"
-    // "abc*d"
-    vector<string> beginReg;
-    string current = "";
-    for( char c : reg){
-        if(c == '+'){
-            beginReg.push_back(current);
-            current = "";
-            continue;
-        }
-        current += c;
-        if(c == *reg.rbegin()){
-            beginReg.push_back(current);
-        }
-    }
-    return beginReg;
-}
-
 ENFA* RE::toENFA(string &reg , int &count){
     vector<ENFA*> temp;
     ENFA* newENFA;
     char c;
     char d;
     for(int i = 0; i < reg.size(); i++){
-                // Get current character
-                c= reg[i];
-                // Get next character
-                if(i != reg.size() - 1){
-                    d = reg[i+1];
-                }
-                else{
-                    d = ' ';
-                }
-                // Check if star operation
-                if(c != eps && c != '*' && d == '*'){
-                    newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
-                    count += 2;
-                    newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
-                }
-                else if(c != eps && c != '*'){
-                    newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
-                }
-                else{
-                    newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
-                }
-                temp.push_back( newENFA );
-                count += 2;
-            }
+        // Get current character
+        c= reg[i];
+        // Get next character
+        if(i != reg.size() - 1){
+            d = reg[i+1];
+        }
+        else{
+            d = ' ';
+        }
+        // Check if star operation
+        if(c != eps && c != '*' && d == '*'){
+            newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            count += 2;
+            newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
+        }
+        else if(c != eps && c != '*'){
+            newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+        }
+        else{
+            newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
+        }
+        temp.push_back( newENFA );
+        count += 2;
+    }
     // Concatenate the small vector
     newENFA = createConcatenation(temp);
     return newENFA;
+}
+
+vector<ENFA*> RE::splitRegex(string &reg , int &count){
+    // "ab+bc+cdf+e"
+    // "ab+ab(c+d)g"
+    // "ab(cd)*"
+    // "abc*d"
+    vector<ENFA*> beginReg;
+    vector<ENFA*> temp;
+    ENFA* temp_n;
+    vector<ENFA*> current;
+    char c;
+    char d;
+    int rem;
+    string rest;
+    int oldCount = count;
+    for(int i = 0; i < reg.size(); i++){
+        // Get current and next character
+        c = reg[i];
+        if(i != reg.size() - 1){
+            d = reg[i+1];
+        }
+        else{
+            d = ' ';
+        }
+        if(c == '('){
+            // Get remainder of string
+            rem = reg.size() - i;
+            rest = reg.substr(i+1 , rem);
+            // Save count
+            int oldCount = count;
+            // Recursion
+            temp = splitRegex(rest , count);
+            // Insert the recursive ENFA into the vector
+            current.push_back(createPlus(to_string(oldCount), to_string(count + 1), temp));
+            i += count - oldCount;
+            temp = {};
+            continue;
+        }
+        else if(c == ')'){
+            beginReg.push_back(createConcatenation(current));
+            // count += 1;
+            return beginReg;
+        }
+        else if(c == '+'){
+            beginReg.push_back(createConcatenation(current));
+            // count += 1;
+            current = {};
+            continue;
+        }
+        else if(d == '*'){
+            temp_n = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            count += 2;
+            temp_n = createStar(to_string(count), to_string(count+1), *temp_n);
+            count += 2;
+            current.push_back(temp_n);
+        }
+        else if(c != eps && c != '*'){
+            current.push_back(createSingleChar(to_string(count), to_string(count + 1), c));
+            count += 2;
+        }
+        else{
+            current.push_back(createEpsilon(to_string(count), to_string(count + 1)));
+            count += 2;
+        }
+        if(c == *reg.rbegin()){
+            beginReg.push_back(createConcatenation(current));
+        }
+    }
+    return beginReg;
 }
 
 ENFA RE::toENFA() {
@@ -344,21 +393,12 @@ ENFA RE::toENFA() {
     // "ab+ab(c+d+f)g"
     // "ab(cd)*+e"
     // Vector of concatenation strings
-    vector<string> reg = splitRegex(RE::regex);
-    vector<ENFA*> temp;
-    vector<ENFA*> conc;
-    vector<ENFA*> final;
-    ENFA* newENFA;
     int count = 1;
-    char c;
-    char d;
-    for(string s : reg){
-        newENFA = toENFA(s , count);
-        conc.push_back(newENFA);
-        temp = {};
-    }
+    vector<ENFA*> reg = splitRegex(RE::regex , count);
+    vector<ENFA*> conc;
+    ENFA* newENFA;
     // Link all the enfa's
-    newENFA = createPlus("0" , to_string(count + 1) , conc);
+    newENFA = createPlus("0" , to_string(count + 1) , reg);
     return *newENFA;
 }
 

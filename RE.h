@@ -138,9 +138,21 @@ public:
 
     // Convert function
 
-    
-    vector<string> splitRegex(string &reg);
+    /**
+     * @brief Splits the regex string into substrings
+     * 
+     * @param reg The REGEX
+     * @return vector<string> A vector of substrings
+     */
+    vector<ENFA*> splitRegex(string &reg , int &count);
 
+    /**
+     * @brief Creates an ENFA from a regex
+     * 
+     * @param reg The RE string
+     * @param count The current name count
+     * @return ENFA* A pointer to the created ENFA
+     */
     ENFA* toENFA(string &reg , int &count);
 
     /**

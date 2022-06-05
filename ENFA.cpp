@@ -75,6 +75,10 @@ ENFA::ENFA(string filename)
 
 ENFA::ENFA() : alphabet({}) , eps('*') , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}) , epsTransitions({}){}
 
+ENFA::ENFA(ENFA* &ref) : alphabet(ref->getAlphabet()) , eps(ref->getEps()) ,
+                 nodes(ref->getNodes()) , beginNodes(ref->getBegin()) , finalNodes(ref->getFinal()) , 
+                 transitions(ref->getTransitions()) , epsTransitions(ref->getEpsTransitions()) {}
+
 set<char> ENFA::getAlphabet() const{
     return ENFA::alphabet;
 }
