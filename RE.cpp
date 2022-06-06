@@ -349,20 +349,21 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
         }
         // If start of bracket
         if(c == '('){
-            // // Get remainder of string
-            // rem = reg.size() - i;
-            // rest = reg.substr(i+1 , rem);
-            // Save count
             oldCount = count;
+            count++;
             index.push_back(i);
             // Recursion
             temp = splitRegex(reg , count , index);
             // Insert the recursive ENFA into the vector
-            current.push_back(createPlus(to_string(oldCount), to_string(count + 1), temp));
-            // rest = rest.substr(i+1 , count - oldCount);
-            
+            current.push_back(createPlus(to_string(oldCount), to_string(count), temp));
+            count++;
+            // Get the old index
             i = index.back();
             index.pop_back();
+            if(i == reg.size()-1){
+                beginReg.push_back(createConcatenation(current));
+            }
+            // Reset temp
             temp = {};
             continue;
         }
@@ -374,10 +375,9 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
         }
         // If next character is star
         else if(d == '*'){
-            temp_n = createSingleChar(to_string(count) , to_string(count + 1) , c);
-            count += 2;
-            temp_m = createStar(to_string(count), to_string(count+1), *temp_n);
-            count += 2;
+            temp_n = createSingleChar(to_string(count+1) , to_string(count + 2) , c);
+            temp_m = createStar(to_string(count), to_string(count+3), *temp_n);
+            count += 4;
             current.push_back(temp_m);
             i++;
         }
@@ -423,7 +423,7 @@ ENFA RE::toENFA() {
     vector<ENFA*> conc;
     ENFA* newENFA;
     // Link all the enfa's
-    newENFA = createPlus("0" , to_string(count + 1) , reg);
+    newENFA = createPlus("0" , to_string(count) , reg);
     return *newENFA;
 }
 
