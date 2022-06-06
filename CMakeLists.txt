@@ -65,6 +65,16 @@ set(TFA_sources
         transitionNFA.cpp
 )
 
+set(MACRO_sources
+        Test_files/MACRO_test.cpp
+        RE.cpp
+        ENFA.cpp
+        DFA.cpp
+        Node.cpp
+        transition.cpp
+        transitionNFA.cpp   
+)
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -78,6 +88,8 @@ add_executable(PA ${PA_sources})
 add_executable(RE ${RE_sources})
 
 add_executable(TFA ${TFA_sources})
+
+add_executable(MACRO ${MACRO_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 
