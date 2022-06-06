@@ -1,7 +1,8 @@
-#include <iostream>
-#include <vector>
-#include <set>
+#ifndef AUTOMATA_ENFA_H
+#define AUTOMATA_ENFA_H
+
 #include "DFA.h"
+
 using namespace std;
 
 class ENFA
@@ -46,3 +47,5 @@ public:
     // Destructor
     ~ENFA();
 };
+
+#endif //AUTOMATA_ENFA_H

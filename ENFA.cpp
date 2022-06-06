@@ -334,7 +334,7 @@ void ENFA::print(){
    // Make json object
    json j;
    // Set type to NFA
-   j["type"] = "NFA";
+   j["type"] = "ENFA";
    // Set epsilon
    j["eps"] = string(1,ENFA::eps);
    // Add alphabet
