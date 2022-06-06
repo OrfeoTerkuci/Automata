@@ -1,8 +1,13 @@
+#ifndef AUTOMATA_DFA_H
+#define AUTOMATA_DFA_H
+
 #include <iostream>
 #include <vector>
 #include <set>
 #include <map>
+
 using namespace std;
+
 class Node;
 class transition;
 class transitionNFA;
@@ -67,3 +72,5 @@ public:
 
     ~DFA();
 };
+
+#endif //AUTOMATA_DFA_H

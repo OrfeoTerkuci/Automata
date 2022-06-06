@@ -2,18 +2,13 @@
 #define AUTOMATA_RE_H
 
 #include "ENFA.h"
-#include <iostream>
 #include <vector>
-#include <set>
 
 using namespace std;
-
 class RE {
 private:
     string regex;
     char eps;
-    // Containers
-    set<char> alphabet;
 public:
 
     // Constructor
@@ -144,7 +139,7 @@ public:
      * @param reg The REGEX
      * @return vector<string> A vector of substrings
      */
-    vector<ENFA*> splitRegex(string &reg , int &count);
+    vector<ENFA*> splitRegex(string &reg , int &count , vector<int>&index);
 
     /**
      * @brief Creates an ENFA from a regex

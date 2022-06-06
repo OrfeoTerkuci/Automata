@@ -1,5 +1,5 @@
 #include "../RE.h"
-#include <ios>
+#include <iostream>
 using namespace std;
 
 int main() {
@@ -70,6 +70,7 @@ int main() {
     // Real tests
     RE re("(m+y)*+(e+y+m+i)s",'e');
     ENFA enfa = re.toENFA();
+    enfa.printStats();
     // Given true
     cout << boolalpha << enfa.accepts("ys") << endl;
     cout << boolalpha << enfa.accepts("mmyyymmmym") << endl;
@@ -79,6 +80,24 @@ int main() {
     cout << boolalpha << enfa.accepts("ss") << endl;
     cout << boolalpha << enfa.accepts("ims") << endl;
     cout << boolalpha << enfa.accepts("mimis") << endl;
+
+    enfa.print();
+
+    //* no_of_states=26
+    //* no_of_transitions[e]=26
+    //* no_of_transitions[i]=1
+    //* no_of_transitions[m]=2
+    //* no_of_transitions[s]=1
+    //* no_of_transitions[y]=2
+    //* degree[0]=1
+    //* degree[1]=18
+    //* degree[2]=7
+    //* true
+    //* true
+    //* true
+    //* false
+    //* false
+    //* false
 
     return 0;
 }
