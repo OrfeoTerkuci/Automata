@@ -110,11 +110,11 @@ ENFA* RE::createPlus(vector<ENFA*> &ref , int &count) {
     }
     // Link the new begin and end node to both ENFA's
     // Get current and next ENFA in the vector
-    e = ref[0];
-    f = ref[1];
-    temp = {e,f};
     // If more than 2 : recursive call until 2 left
     while(ref.size() > 2){
+        e = ref[0];
+        f = ref[1];
+        temp = {e,f};
         newENFA = createPlus(temp , count);
         ref.erase(ref.begin());
         *ref.begin() = newENFA;

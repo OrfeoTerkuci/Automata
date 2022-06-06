@@ -81,7 +81,7 @@ int main() {
     cout << boolalpha << enfa.accepts("ims") << endl;
     cout << boolalpha << enfa.accepts("mimis") << endl;
 
-    enfa.print();
+    cout << endl;
 
     //* no_of_states=26
     //* no_of_transitions[e]=26
@@ -92,6 +92,37 @@ int main() {
     //* degree[0]=1
     //* degree[1]=18
     //* degree[2]=7
+    //* true
+    //* true
+    //* true
+    //* false
+    //* false
+    //* false
+
+    //! Test 2
+
+    // RE re5("(kd+x+k)(i)*(k+i)",'x');
+    // ENFA enfa5 = re5.toENFA();
+    // enfa5.printStats();
+
+    // // geven true
+    // cout << boolalpha << enfa5.accepts("kdk") << endl;
+    // cout << boolalpha << enfa5.accepts("i") << endl;
+    // cout << boolalpha << enfa5.accepts("kiiiiii") << endl;
+
+    // // geven false
+    // cout << boolalpha << enfa5.accepts("kikk") << endl;
+    // cout << boolalpha << enfa5.accepts("") << endl;
+    // cout << boolalpha << enfa5.accepts("kdiiiiiiki") << endl;
+
+    //* no_of_states=22
+    //* no_of_transitions[x]=20
+    //* no_of_transitions[d]=1
+    //* no_of_transitions[i]=2
+    //* no_of_transitions[k]=3
+    //* degree[0]=1
+    //* degree[1]=16
+    //* degree[2]=5
     //* true
     //* true
     //* true
