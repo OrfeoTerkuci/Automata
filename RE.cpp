@@ -3,6 +3,7 @@
 #include "transition.h"
 #include "transitionNFA.h"
 #include <algorithm>
+#include <math.h>
 #include <string>
 #include <vector>
 
@@ -81,7 +82,15 @@ ENFA* RE::createSingleChar(string beginName , string endName , char a) {
     return newENFA;
 }
 
-ENFA* RE::createPlus(string beginName , string endName , vector<ENFA*> &ref) {
+ENFA* RE::createPlus(ENFA* &R , ENFA* &S , int &count){
+
+}
+
+ENFA* RE::createPlus(vector<ENFA*> &ref , int &count) {
+
+    string beginName = to_string(count);
+    string endName = to_string(count + 1);
+    count += 2;
     // Create begin and end states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -92,35 +101,77 @@ ENFA* RE::createPlus(string beginName , string endName , vector<ENFA*> &ref) {
     set<transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
-    // Link the new begin and end node to all ENFAs
-    for(auto &e : ref){
-        // Create new transition from begin node to begin node of the ENFA
-        auto* newTrans_begin = new transition(begin , *e->getBegin().begin(), eps);
-        newTrans_begin->getEndNode()->setStarting(false);
-        transitions.insert(newTrans_begin);
+    ENFA* e;
+    ENFA* f;
+    vector<ENFA*> temp;
 
-        // Create new transition from end node of the ENFA to the end node
-        auto* newTrans_end = new transition(*e->getFinal().begin() , end, eps);
-        newTrans_end->getBeginNode()->setAccepting(false);
-        transitions.insert(newTrans_end);
+    if(ref.size() == 1){
+        return ref[0];
+    }
+    // Link the new begin and end node to both ENFA's
+    // Get current and next ENFA in the vector
+    e = ref[0];
+    f = ref[1];
+    temp = {e,f};
+    // If more than 2 : recursive call until 2 left
+    while(ref.size() > 2){
+        newENFA = createPlus(temp , count);
+        ref.erase(ref.begin());
+        *ref.begin() = newENFA;
+    }
+    e = ref[0];
+    f = ref[1];
+    // Create new transition from begin node to begin node of the ENFA
+    auto* newTransE_begin = new transition(begin , *e->getBegin().begin(), eps);
+    newTransE_begin->getEndNode()->setStarting(false);
+    transitions.insert(newTransE_begin);
 
-        // Insert character into alphabet
-        for(auto c : e->getAlphabet()){
-            alphabet.insert(c);
-        }
-        // Insert all the nodes
-        for(auto n : e->getNodes()){
-            nodes.insert(n);
-        }
-        // Insert all the transitions
-        for(auto t : e->getTransitions()){
-            transitions.insert(t);
-        }
-        // Insert all the epsilon transitions
-        for(auto t : e->getEpsTransitions()){
-            eps_transitions.insert(t);
-        }
+    // Create new transition from end node of the ENFA to the end node
+    auto* newTransE_end = new transition(*e->getFinal().begin() , end, eps);
+    newTransE_end->getBeginNode()->setAccepting(false);
+    transitions.insert(newTransE_end);
 
+    // Create new transition from begin node to begin node of the ENFA
+    auto* newTransF_begin = new transition(begin , *f->getBegin().begin(), eps);
+    newTransF_begin->getEndNode()->setStarting(false);
+    transitions.insert(newTransF_begin);
+
+    // Create new transition from end node of the ENFA to the end node
+    auto* newTransF_end = new transition(*f->getFinal().begin() , end, eps);
+    newTransF_end->getBeginNode()->setAccepting(false);
+    transitions.insert(newTransF_end);
+
+    // Insert character into alphabet
+    for(auto c : e->getAlphabet()){
+        alphabet.insert(c);
+    }
+    // Insert all the nodes
+    for(auto n : e->getNodes()){
+        nodes.insert(n);
+    }
+    // Insert all the transitions
+    for(auto t : e->getTransitions()){
+        transitions.insert(t);
+    }
+    // Insert all the epsilon transitions
+    for(auto t : e->getEpsTransitions()){
+        eps_transitions.insert(t);
+    }
+    // Insert character into alphabet
+    for(auto c : f->getAlphabet()){
+        alphabet.insert(c);
+    }
+    // Insert all the nodes
+    for(auto n : f->getNodes()){
+        nodes.insert(n);
+    }
+    // Insert all the transitions
+    for(auto t : f->getTransitions()){
+        transitions.insert(t);
+    }
+    // Insert all the epsilon transitions
+    for(auto t : f->getEpsTransitions()){
+        eps_transitions.insert(t);
     }
     
     // Set all parameters
@@ -355,7 +406,7 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
             // Recursion
             temp = splitRegex(reg , count , index);
             // Insert the recursive ENFA into the vector
-            current.push_back(createPlus(to_string(oldCount), to_string(count), temp));
+            current.push_back(createPlus(temp , count));
             count++;
             // Get the old index
             i = index.back();
@@ -423,8 +474,12 @@ ENFA RE::toENFA() {
     vector<ENFA*> conc;
     ENFA* newENFA;
     // Link all the enfa's
-    newENFA = createPlus("0" , to_string(count) , reg);
-    return *newENFA;
+    if(reg.size() > 1){
+        return *createPlus(reg , count);
+    }
+    else{
+        return *reg.front();
+    }
 }
 
 RE::~RE() {

@@ -101,6 +101,17 @@ public:
     // Induction automatons
 
     /**
+     * @brief Create a Plus object
+     * 
+     * @param beginName 
+     * @param endName 
+     * @param R 
+     * @param S 
+     * @return ENFA* 
+     */
+    ENFA* createPlus(ENFA* &R , ENFA* &S , int &count);
+
+    /**
      * @brief Create an enfa for the plus operation (R + S)
      * 
      * @param beginName Name of the begin state
@@ -108,7 +119,7 @@ public:
      * @param ref The vector of the enfa's to plus
      * @return ENFA The enfa for the operation R + S
      */
-    ENFA* createPlus(string beginName , string endName , vector<ENFA*> &ref);
+    ENFA* createPlus(vector<ENFA*> &ref , int &count);
 
     /**
      * @brief Create an enfa for the concatenation operation (R.S)
@@ -119,6 +130,12 @@ public:
      */
     ENFA* createConcatenation(ENFA &R , ENFA &S);
 
+    /**
+     * @brief Create an enfa for the concatenation of a series of ENFA's
+     * 
+     * @param ref The vector of the enfa's
+     * @return ENFA* A pointer to the concatenated ENFA
+     */
     ENFA* createConcatenation(vector<ENFA*> ref);
     
     /**
