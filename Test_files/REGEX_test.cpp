@@ -101,19 +101,19 @@ int main() {
 
     //! Test 2
 
-    // RE re5("(kd+x+k)(i)*(k+i)",'x');
-    // ENFA enfa5 = re5.toENFA();
-    // enfa5.printStats();
+    RE re5("(kd+x+k)(i)*(k+i)",'x');
+    ENFA enfa5 = re5.toENFA();
+    enfa5.printStats();
 
-    // // geven true
-    // cout << boolalpha << enfa5.accepts("kdk") << endl;
-    // cout << boolalpha << enfa5.accepts("i") << endl;
-    // cout << boolalpha << enfa5.accepts("kiiiiii") << endl;
+    // geven true
+    cout << boolalpha << enfa5.accepts("kdk") << endl;
+    cout << boolalpha << enfa5.accepts("i") << endl;
+    cout << boolalpha << enfa5.accepts("kiiiiii") << endl;
 
-    // // geven false
-    // cout << boolalpha << enfa5.accepts("kikk") << endl;
-    // cout << boolalpha << enfa5.accepts("") << endl;
-    // cout << boolalpha << enfa5.accepts("kdiiiiiiki") << endl;
+    // geven false
+    cout << boolalpha << enfa5.accepts("kikk") << endl;
+    cout << boolalpha << enfa5.accepts("") << endl;
+    cout << boolalpha << enfa5.accepts("kdiiiiiiki") << endl;
 
     //* no_of_states=22
     //* no_of_transitions[x]=20

@@ -82,10 +82,6 @@ ENFA* RE::createSingleChar(string beginName , string endName , char a) {
     return newENFA;
 }
 
-ENFA* RE::createPlus(ENFA* &R , ENFA* &S , int &count){
-
-}
-
 ENFA* RE::createPlus(vector<ENFA*> &ref , int &count) {
 
     string beginName = to_string(count);

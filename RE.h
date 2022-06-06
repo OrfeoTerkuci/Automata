@@ -101,17 +101,6 @@ public:
     // Induction automatons
 
     /**
-     * @brief Create a Plus object
-     * 
-     * @param beginName 
-     * @param endName 
-     * @param R 
-     * @param S 
-     * @return ENFA* 
-     */
-    ENFA* createPlus(ENFA* &R , ENFA* &S , int &count);
-
-    /**
      * @brief Create an enfa for the plus operation (R + S)
      * 
      * @param beginName Name of the begin state
