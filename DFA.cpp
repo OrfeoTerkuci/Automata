@@ -5,13 +5,12 @@
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
-using namespace std;
 
 using json = nlohmann::json;
 
 DFA::DFA(string filename)
 {
-    // inlezen uit file
+    //* Read from file
     ifstream input(filename);
     json j;
     input >> j;
@@ -26,7 +25,7 @@ DFA::DFA(string filename)
         }
     }
 
-    // Create the nodes
+    //* Create the nodes
     auto states = j["states"];
     for(auto state : states){
         Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
@@ -41,8 +40,8 @@ DFA::DFA(string filename)
             beginNodes.insert(n);
         }
     }
-    // Add transitions
-        // Create transitions array
+    //* Add transitions
+    // Create transitions array
     auto ts = j["transitions"];
     Node* beginState;
     Node* endState;
@@ -62,48 +61,48 @@ DFA::DFA(string filename)
         transition* newTransition = new transition(beginState,endState,inputA);
         transitions.insert(newTransition);
     }
-    // Create beginning TFA table
+    //* Create beginning TFA table
     createTable();
 }
 
 DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
-    // Copy alphabet
+    //* Copy alphabet
     for( char c : dfa1.getAlphabet() ){
         alphabet.insert(c);
     }
     for( char c : dfa2.getAlphabet() ){
         alphabet.insert(c);
     }
-    // Set begin state as the pair of both begin states
+    //* Set begin state as the pair of both begin states
     beginNodes.insert( *dfa1.getBegin().begin() );
     beginNodes.insert( *dfa2.getBegin().begin() );
-    // Copy all the nodes
+    //* Copy all the nodes
     for( Node* n : dfa1.getNodes() ){
         nodes.insert(n);
     }
     for( Node* n : dfa2.getNodes() ){
         nodes.insert(n);
     }
-    // Copy all the transitions
+    //* Copy all the transitions
     for( transition* t : dfa1.getTransitions() ){
         transitions.insert(t);
     }
     for( transition* t : dfa2.getTransitions() ){
         transitions.insert(t);
     }
-    // Begin lazy evaluation
+    //* Begin lazy evaluation
     set<transitionNFA*> tempTransitions;
     set<set<Node*>> newNodes = {beginNodes};
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
-    // Reset nodes
+    //* Reset nodes
     beginNodes.clear();
     nodes.clear();
     transitions.clear();
-    // Create new states
+    //* Create new states
     for(set<Node*> currentSet : newNodes){
         int count = 0;
-        // Create new node
+        //* Create new node
         Node* newNode = new Node();
         string newName;
         // Both states must be starting
@@ -111,10 +110,9 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         // Intersection: initialize true
         bool accepting = intersect;
         
-        // Create combined name
+        //* Create combined name
         newName += ")";
-        // Add each nodes name
-        //vector<string> names;
+        //* Add each nodes name
         for(Node* currentNode : currentSet){
             // Get new node name
             newName += currentNode->getName();
@@ -124,11 +122,10 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
             else{
                 newName += "(";
                 }
-            // If union: one accepting = accepting
             if(!currentNode->isStarting()){
                 starting = false;
             }
-            // Check if accepting
+            //* Check if accepting
             // If union: one accepting = accepting
             if(!intersect && currentNode->isAccepting()){
                 accepting = true;
@@ -139,7 +136,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
             }
             count++;
             }
-        // Check all transitions
+        //* Check all transitions
         for (transitionNFA* t : tempTransitions){
             // Check if transition begins at this set
             if(t->getBeginNodes() == currentSet){
@@ -154,7 +151,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
-        // Insert the node into the DFA
+        //* Insert the node into the DFA
         nodes.insert(newNode);
         // Check if starting
         if(newNode->isStarting()){
@@ -165,14 +162,14 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
             }
         
     }
-    // Convert all transitions to dfa transitions
+    //* Convert all transitions to dfa transitions
     transition* nt;
     for(transitionNFA* t : tempTransitions){
         nt = new transition(*t->getBeginNodes().begin() , *t->getEndNodes().begin() , t->getInput());
         transitions.insert(nt);
         delete t;
     }
-    // Create beginning TFA table
+    //* Create beginning TFA table
     createTable();
 }
 

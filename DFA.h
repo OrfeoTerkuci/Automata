@@ -6,8 +6,6 @@
 #include <set>
 #include <map>
 
-using namespace std;
-
 class Node;
 class transition;
 class transitionNFA;
@@ -15,57 +13,159 @@ class DFA
 {
 private:
     // Common components
-    set<char> alphabet;
-    set<Node*> nodes;
-    set<Node*> finalNodes;
-    set<Node*> beginNodes;
-    set<transition*> transitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes;
+    std::set<Node*> finalNodes;
+    std::set<Node*> beginNodes;
+    std::set<transition*> transitions;
     // TFA components
-    map<set<string> , bool> table;
-    set<set<Node*>> markedPairs;
+    std::map<std::set<std::string> , bool> table;
+    std::set<std::set<Node*>> markedPairs;
+
+private:
+    // PA operations
+    void evaluate(std::set<std::set<Node*>>&begin , std::set<transitionNFA*> &tempTransitions );
+    void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    void eliminateExtra(std::set<transition*>&trans);
+    // Transition function
+    Node* transit(Node* begin , char a);
+    std::set<std::set<Node*>> findTransition(std::set<Node*> &beginNodes , char c);
+    // TFA operations
+    void createTable();
+    void fillTable();
 public:
-    DFA(string filename);
+
+    /**
+     * @brief Construct a new DFA object from a JSON file
+     * 
+     * @param filename The path of the JSON file
+     */
+    DFA(std::string filename);
+
+    /**
+     * @brief Construct a new DFA from the product of two other DFA's
+     * 
+     * @param dfa1 The first DFA
+     * @param dfa2 The second DFA
+     * @param intersect True if the product is the intersection of the DFA's. False if the union
+     */
     DFA(DFA &dfa1 , DFA &dfa2 , bool intersect);
+
+    /**
+     * @brief Construct an empty DFA
+     * 
+     */
     DFA();
 
     // Getters
 
-    set<char> getAlphabet() const;
-    set<Node*> getNodes() const;
-    set<Node*> getFinal() const;
-    set<Node*> getBegin() const;
-    set<transition*> getTransitions() const;
+    /**
+     * @brief Get the Alphabet
+     * 
+     * @return std::set<char> The Alphabet
+     */
+    std::set<char> getAlphabet() const;
+
+    /**
+     * @brief Getter for the Nodes(States)
+     * 
+     * @return std::set<Node*> All the states in the DFA
+     */
+    std::set<Node*> getNodes() const;
+
+    /**
+     * @brief Getter for the final states
+     * 
+     * @return std::set<Node*> All the final states in the DFA
+     */
+    std::set<Node*> getFinal() const;
+
+    /**
+     * @brief Getter for the begin states
+     * 
+     * @return std::set<Node*> All the final states in the DFA
+     */
+    std::set<Node*> getBegin() const;
+
+    /**
+     * @brief Get the transitions
+     * 
+     * @return std::set<transition*> All the transitions in the DFA 
+     */
+    std::set<transition*> getTransitions() const;
 
     // Setters
 
-    void setAlphabet(set<char>newAlphabet);
-    void setNodes(set<Node*>newNodes);
-    void setFinal(set<Node*>newFinalNodes);
-    void setBegin(set<Node*>newBeginNodes);
-    void setTransitions(set<transition*>newTransitions);
+    /**
+     * @brief Setter for the alphabet
+     * 
+     */
+    void setAlphabet(std::set<char>newAlphabet);
 
-    // PA operations
+    /**
+     * @brief Setter for the states set
+     * 
+     */
+    void setNodes(std::set<Node*>newNodes);
 
-    void evaluate(set<set<Node*>>&begin , set<transitionNFA*> &tempTransitions );
-    void eliminateExtra(set<transitionNFA*> &currentSet);
-    void eliminateExtra(set<transition*>&trans);
+    /**
+     * @brief Setter for the final states
+     * 
+     */
+    void setFinal(std::set<Node*>newFinalNodes);
+
+    /**
+     * @brief Setter for the begin states
+     * 
+     */
+    void setBegin(std::set<Node*>newBeginNodes);
+
+    /**
+     * @brief Setter for the transitions
+     * 
+     */
+    void setTransitions(std::set<transition*>newTransitions);
 
     // Standard DFA operations
+    /**
+     * @brief Checks whether a string is accepted by the DFA
+     * 
+     * @param A The string
+     * @return true if the string is accepted
+     * @return false if the string is not accepted
+     */
+    bool accepts(std::string A);
 
-    Node* transit(Node* begin , char a);
-    bool accepts(string A);
+    /**
+     * @brief Prints all the components of the DFA (alphabet, states, transitions) in the same format as the input JSON file
+     * 
+     */
     void print();
 
     // TFA implementation
 
-    void createTable();
+    /**
+     * @brief Prints the TFA table
+     * 
+     */
     void printTable();
-    void fillTable();
-    set<set<Node*>> findTransition(set<Node*> &beginNodes , char c);
+
+    /**
+     * @brief Minimizes the DFA
+     * 
+     * @return DFA The minimized DFA
+     */
     DFA minimize();
 
     // Operator overloads
 
+    /**
+     * @brief Checks whether two DFA's are equivalent
+     * 
+     * @param dfa2 The other DFA
+     * @return true if equivalent
+     * @return false if not equivalent
+     */
     bool operator==(DFA &dfa2);
 
     // Destructor
