@@ -1,9 +1,8 @@
 #include "transitionNFA.h"
 #include <iostream>
-using namespace std;
 
 
-transitionNFA::transitionNFA(set<Node*> beginNodes, set<Node*> endNodes, char inputA) :
+transitionNFA::transitionNFA(std::set<Node*> beginNodes, std::set<Node*> endNodes, char inputA) :
                 beginNodes(beginNodes) , endNodes(endNodes) , inputA(inputA) {}
 
 transitionNFA::transitionNFA(transitionNFA* refTran) : 
@@ -13,16 +12,16 @@ transitionNFA::transitionNFA(transitionNFA* refTran) :
 
 transitionNFA::transitionNFA() : beginNodes({}) , endNodes({}) , inputA(' ') {}
 
-set<Node*> transitionNFA::getBeginNodes(){
+std::set<Node*> transitionNFA::getBeginNodes(){
     return beginNodes;
 }
-void transitionNFA::setBeginNodes(set<Node*> n){
+void transitionNFA::setBeginNodes(std::set<Node*> n){
     beginNodes = n;
 }
-set<Node*> transitionNFA::getEndNodes(){
+std::set<Node*> transitionNFA::getEndNodes(){
     return endNodes;
 }
-void transitionNFA::setEndNodes(set<Node*> e){
+void transitionNFA::setEndNodes(std::set<Node*> e){
     endNodes = e;
 }
 char transitionNFA::getInput(){

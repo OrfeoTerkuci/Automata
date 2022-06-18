@@ -3,44 +3,42 @@
 
 #include "DFA.h"
 
-using namespace std;
-
 class ENFA
 {
 private:
-    set<char> alphabet;
-    set<Node*> nodes;
-    set<Node*> finalNodes;
-    set<Node*> beginNodes;
-    set<transition*> transitions;
-    set<transition*> epsTransitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes;
+    std::set<Node*> finalNodes;
+    std::set<Node*> beginNodes;
+    std::set<transition*> transitions;
+    std::set<transition*> epsTransitions;
     char eps;
 public:
-    ENFA(string filename);
+    ENFA(std::string filename);
     ENFA(ENFA* &ref);
     ENFA();
     // Getters
-    set<char> getAlphabet() const;
-    set<Node*> getNodes() const;
-    set<Node*> getFinal() const;
-    set<Node*> getBegin() const;
-    set<transition*> getTransitions() const;
-    set<transition*> getEpsTransitions() const;
+    std::set<char> getAlphabet() const;
+    std::set<Node*> getNodes() const;
+    std::set<Node*> getFinal() const;
+    std::set<Node*> getBegin() const;
+    std::set<transition*> getTransitions() const;
+    std::set<transition*> getEpsTransitions() const;
     char getEps() const;
     // Setters
-    void setAlphabet(set<char>newAlphabet);
-    void setNodes(set<Node*>newNodes);
-    void setFinal(set<Node*>newFinalNodes);
-    void setBegin(set<Node*>newBeginNodes);
-    void setTransitions(set<transition*>newTransitions);
-    void setEpsTransitions(set<transition*> newEpsTransitions);
+    void setAlphabet(std::set<char>newAlphabet);
+    void setNodes(std::set<Node*>newNodes);
+    void setFinal(std::set<Node*>newFinalNodes);
+    void setBegin(std::set<Node*>newBeginNodes);
+    void setTransitions(std::set<transition*>newTransitions);
+    void setEpsTransitions(std::set<transition*> newEpsTransitions);
     void setEps(char newEps);
     // Help functions
-    void eliminateExtra(set<transitionNFA*> &currentSet);
-    void evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions);
-    set<Node*> transit(set<Node*> begin , char a);
-    set<Node*> eclose(set<Node*>);
-    bool accepts(string A);
+    void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    void evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions);
+    std::set<Node*> transit(std::set<Node*> begin , char a);
+    std::set<Node*> eclose(std::set<Node*>);
+    bool accepts(std::string A);
     DFA toDFA();
     void print();
     void printStats();

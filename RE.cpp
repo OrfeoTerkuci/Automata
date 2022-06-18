@@ -7,17 +7,17 @@
 #include <string>
 #include <vector>
 
-RE::RE(const string &regex, char eps) : regex(regex), eps(eps) {}
+RE::RE(const std::string &regex, char eps) : regex(regex), eps(eps) {}
 
 RE::RE(RE* refRE) : regex(refRE->getRegex()) , eps(refRE->getEps()) {}
 
 RE::RE() : regex(" ") , eps(' ') {}
 
-const string &RE::getRegex() const {
+const std::string &RE::getRegex() const {
     return regex;
 }
 
-void RE::setRegex(const string &regex) {
+void RE::setRegex(const std::string &regex) {
     RE::regex = regex;
 }
 
@@ -29,7 +29,7 @@ void RE::setEps(char eps) {
     RE::eps = eps;
 }
 
-ENFA* RE::createEpsilon(string beginName , string endName) {
+ENFA* RE::createEpsilon(std::string beginName , std::string endName) {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -48,7 +48,7 @@ ENFA* RE::createEpsilon(string beginName , string endName) {
     return newENFA;
 }
 
-ENFA* RE::createEmpty(string beginName , string endName) {
+ENFA* RE::createEmpty(std::string beginName , std::string endName) {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -64,7 +64,7 @@ ENFA* RE::createEmpty(string beginName , string endName) {
     return newENFA;
 }
 
-ENFA* RE::createSingleChar(string beginName , string endName , char a) {
+ENFA* RE::createSingleChar(std::string beginName , std::string endName , char a) {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -82,24 +82,24 @@ ENFA* RE::createSingleChar(string beginName , string endName , char a) {
     return newENFA;
 }
 
-ENFA* RE::createPlus(vector<ENFA*> &ref , int &count) {
+ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
 
-    string beginName = to_string(count);
-    string endName = to_string(count + 1);
+    std::string beginName = std::to_string(count);
+    std::string endName = std::to_string(count + 1);
     count += 2;
     // Create begin and end states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
     // Create containers
-    set<char> alphabet;
-    set<Node*> nodes = {begin , end};
-    set<transition*> transitions;
-    set<transition*> eps_transitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes = {begin , end};
+    std::set<transition*> transitions;
+    std::set<transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     ENFA* e;
     ENFA* f;
-    vector<ENFA*> temp;
+    std::vector<ENFA*> temp;
 
     if(ref.size() == 1){
         return ref[0];
@@ -189,10 +189,10 @@ ENFA* RE::createPlus(vector<ENFA*> &ref , int &count) {
 
 ENFA* RE::createConcatenation(ENFA &R , ENFA &S) {
     // Create containers
-    set<char> alphabet;
-    set<Node*> nodes;
-    set<transition*> transitions;
-    set<transition*> eps_transitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes;
+    std::set<transition*> transitions;
+    std::set<transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     // Create new transition
@@ -237,13 +237,13 @@ ENFA* RE::createConcatenation(ENFA &R , ENFA &S) {
     return newENFA;
 }
 
-ENFA* RE::createConcatenation(vector<ENFA*> ref){
+ENFA* RE::createConcatenation(std::vector<ENFA*> ref){
     
     // Create containers
-    set<char> alphabet;
-    set<Node*> nodes;
-    set<transition*> transitions;
-    set<transition*> eps_transitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes;
+    std::set<transition*> transitions;
+    std::set<transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     for(int i = 0; i < ref.size(); i++){
@@ -290,13 +290,13 @@ ENFA* RE::createConcatenation(vector<ENFA*> ref){
     return newENFA;
 }
 
-ENFA* RE::createStar(string beginName , string endName , ENFA &R) {
+ENFA* RE::createStar(std::string beginName , std::string endName , ENFA &R) {
 
     // Create new containers and copy elements from ref ENFA
-    set<char> alphabet = R.getAlphabet();
-    set<Node*> nodes = R.getNodes();
-    set<transition*> transitions = R.getTransitions();
-    set<transition*> eps_transitions = R.getEpsTransitions();
+    std::set<char> alphabet = R.getAlphabet();
+    std::set<Node*> nodes = R.getNodes();
+    std::set<transition*> transitions = R.getTransitions();
+    std::set<transition*> eps_transitions = R.getEpsTransitions();
     // Create the new begin and end state
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -333,8 +333,8 @@ ENFA* RE::createStar(string beginName , string endName , ENFA &R) {
     return newENFA;
 }
 
-ENFA* RE::toENFA(string &reg , int &count){
-    vector<ENFA*> temp;
+ENFA* RE::toENFA(std::string &reg , int &count){
+    std::vector<ENFA*> temp;
     ENFA* newENFA;
     char c;
     char d;
@@ -350,15 +350,15 @@ ENFA* RE::toENFA(string &reg , int &count){
         }
         // Check if star operation
         if(c != eps && c != '*' && d == '*'){
-            newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            newENFA = createSingleChar(std::to_string(count) , std::to_string(count + 1) , c);
             count += 2;
-            newENFA = createStar(to_string(count), to_string(count+1), *newENFA);
+            newENFA = createStar(std::to_string(count), std::to_string(count+1), *newENFA);
         }
         else if(c != eps && c != '*'){
-            newENFA = createSingleChar(to_string(count) , to_string(count + 1) , c);
+            newENFA = createSingleChar(std::to_string(count) , std::to_string(count + 1) , c);
         }
         else{
-            newENFA = createEpsilon( to_string(count) , to_string(count + 1) );
+            newENFA = createEpsilon( std::to_string(count) , std::to_string(count + 1) );
         }
         temp.push_back( newENFA );
         count += 2;
@@ -368,18 +368,18 @@ ENFA* RE::toENFA(string &reg , int &count){
     return newENFA;
 }
 
-vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
+std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<int>&index){
 
     // Create containers
-    vector<ENFA*> beginReg;
-    vector<ENFA*> temp;
+    std::vector<ENFA*> beginReg;
+    std::vector<ENFA*> temp;
     ENFA* temp_n;
     ENFA* temp_m;
-    vector<ENFA*> current;
+    std::vector<ENFA*> current;
     char c;
     char d;
     int rem;
-    string rest;
+    std::string rest;
     int oldCount = count;
     int start = 0;
     if(!index.empty()){
@@ -422,15 +422,15 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
         }
         // If next character is star
         else if(d == '*'){
-            temp_n = createSingleChar(to_string(count+1) , to_string(count + 2) , c);
-            temp_m = createStar(to_string(count), to_string(count+3), *temp_n);
+            temp_n = createSingleChar(std::to_string(count+1) , std::to_string(count + 2) , c);
+            temp_m = createStar(std::to_string(count), std::to_string(count+3), *temp_n);
             count += 4;
             current.push_back(temp_m);
             i++;
         }
         // If current character is star
         else if(c == '*'){
-            temp_n = createStar(to_string(count), to_string(count+1), *current.back());
+            temp_n = createStar(std::to_string(count), std::to_string(count+1), *current.back());
             current.back() = temp_n;
             count += 2;
         }
@@ -443,12 +443,12 @@ vector<ENFA*> RE::splitRegex(string &reg , int &count , vector<int>&index){
         }
         // If current character is in the alphabet
         else if(c != eps && c != '*'){
-            current.push_back(createSingleChar(to_string(count), to_string(count + 1), c));
+            current.push_back(createSingleChar(std::to_string(count), std::to_string(count + 1), c));
             count += 2;
         }
         // Create epsilon ENFA
         else{
-            current.push_back(createEpsilon(to_string(count), to_string(count + 1)));
+            current.push_back(createEpsilon(std::to_string(count), std::to_string(count + 1)));
             count += 2;
         }
         if(c == *reg.rbegin()){
@@ -465,9 +465,9 @@ ENFA RE::toENFA() {
     // "ab(cd)*+e"
     // Vector of concatenation strings
     int count = 1;
-    vector<int>index;
-    vector<ENFA*> reg = splitRegex(RE::regex , count , index);
-    vector<ENFA*> conc;
+    std::vector<int>index;
+    std::vector<ENFA*> reg = splitRegex(RE::regex , count , index);
+    std::vector<ENFA*> conc;
     ENFA* newENFA;
     // Link all the enfa's
     if(reg.size() > 1){

@@ -1,8 +1,10 @@
+#ifndef AUTOMATA_NFA_H
+#define AUTOMATA_NFA_H
+
 #include <iostream>
 #include <vector>
 #include <set>
 #include "DFA.h"
-using namespace std;
 
 class Node;
 class transition;
@@ -10,33 +12,35 @@ class transitionNFA;
 class NFA
 {
 private:
-    set<char> alphabet;
-    set<Node*> nodes;
-    set<Node*> finalNodes;
-    set<Node*> beginNodes;
-    set<transition*> transitions;
+    std::set<char> alphabet;
+    std::set<Node*> nodes;
+    std::set<Node*> finalNodes;
+    std::set<Node*> beginNodes;
+    std::set<transition*> transitions;
 public:
-    NFA(string filename);
+    NFA(std::string filename);
     NFA();
     // Getters
-    set<char> getAlphabet() const;
-    set<Node*> getNodes() const;
-    set<Node*> getFinal() const;
-    set<Node*> getBegin() const;
-    set<transition*> getTransitions() const;
+    std::set<char> getAlphabet() const;
+    std::set<Node*> getNodes() const;
+    std::set<Node*> getFinal() const;
+    std::set<Node*> getBegin() const;
+    std::set<transition*> getTransitions() const;
     // Setters
-    void setAlphabet(set<char>newAlphabet);
-    void setNodes(set<Node*>newNodes);
-    void setFinal(set<Node*>newFinalNodes);
-    void setBegin(set<Node*>newBeginNodes);
-    void setTransitions(set<transition*>newTransitions);
+    void setAlphabet(std::set<char>newAlphabet);
+    void setNodes(std::set<Node*>newNodes);
+    void setFinal(std::set<Node*>newFinalNodes);
+    void setBegin(std::set<Node*>newBeginNodes);
+    void setTransitions(std::set<transition*>newTransitions);
     // Help functions
-    void evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions);
-    void eliminateExtra(set<transitionNFA*> &currentSet);
-    set<Node*> transit(set<Node*> begin , char a);
-    bool accepts(string A);
+    void evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions);
+    void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    std::set<Node*> transit(std::set<Node*> begin , char a);
+    bool accepts(std::string A);
     DFA toDFA();
     void print();
     // Destructor
     ~NFA();
 };
+
+#endif //AUTOMATA_NFA_H

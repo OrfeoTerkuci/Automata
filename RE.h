@@ -3,11 +3,9 @@
 
 #include "ENFA.h"
 #include <vector>
-
-using namespace std;
 class RE {
 private:
-    string regex;
+    std::string regex;
     char eps;
 public:
 
@@ -16,10 +14,10 @@ public:
     /**
      * @brief Construct a new RE object
      * 
-     * @param regex The regex string
+     * @param regex The regex std::string
      * @param eps The character for the epsilon
      */
-    RE(const string &regex, char eps);
+    RE(const std::string &regex, char eps);
 
     /**
      * @brief Construct a new RE object from a reference RE object
@@ -37,18 +35,18 @@ public:
     // Getters and setters
 
     /**
-     * @brief Get the Regex string
+     * @brief Get the Regex std::string
      * 
-     * @return const string& The regex string
+     * @return const std::string& The regex std::string
      */
-    const string &getRegex() const;
+    const std::string &getRegex() const;
 
     /**
-     * @brief Set the Regex string
+     * @brief Set the Regex std::string
      * 
-     * @param regex The new regex string
+     * @param regex The new regex std::string
      */
-    void setRegex(const string &regex);
+    void setRegex(const std::string &regex);
 
     /**
      * @brief Get the Eps character
@@ -64,9 +62,9 @@ public:
      */
     void setEps(char eps);
 
-    set<char> getAlphabet() const;
+    std::set<char> getAlphabet() const;
 
-    void setAlphabet(set<char> &newAlphabet);
+    void setAlphabet(std::set<char> &newAlphabet);
 
     // Basic automatons
 
@@ -77,7 +75,7 @@ public:
      * @param endName Name of the end state
      * @return ENFA The epsilon enfa
      */
-    ENFA* createEpsilon(string beginName , string endName);
+    ENFA* createEpsilon(std::string beginName , std::string endName);
 
     /**
      * @brief Create an enfa for the empty language {}
@@ -86,7 +84,7 @@ public:
      * @param endName Name of the end state
      * @return ENFA The empty enfa
      */
-    ENFA* createEmpty(string beginName , string endName);
+    ENFA* createEmpty(std::string beginName , std::string endName);
 
     /**
      * @brief Create an enfa for the language {a}
@@ -96,7 +94,7 @@ public:
      * @param a The character
      * @return ENFA The enfa for the language {a}
      */
-    ENFA* createSingleChar(string beginName , string endName , char a);
+    ENFA* createSingleChar(std::string beginName , std::string endName , char a);
 
     // Induction automatons
 
@@ -105,10 +103,10 @@ public:
      * 
      * @param beginName Name of the begin state
      * @param endName Name of the end state
-     * @param ref The vector of the enfa's to plus
+     * @param ref The std::vector of the enfa's to plus
      * @return ENFA The enfa for the operation R + S
      */
-    ENFA* createPlus(vector<ENFA*> &ref , int &count);
+    ENFA* createPlus(std::vector<ENFA*> &ref , int &count);
 
     /**
      * @brief Create an enfa for the concatenation operation (R.S)
@@ -122,10 +120,10 @@ public:
     /**
      * @brief Create an enfa for the concatenation of a series of ENFA's
      * 
-     * @param ref The vector of the enfa's
+     * @param ref The std::vector of the enfa's
      * @return ENFA* A pointer to the concatenated ENFA
      */
-    ENFA* createConcatenation(vector<ENFA*> ref);
+    ENFA* createConcatenation(std::vector<ENFA*> ref);
     
     /**
      * @brief Create an enfa for the star operation (R*)
@@ -135,26 +133,26 @@ public:
      * @param R The base enfa
      * @return ENFA The enfa for the operation R*
      */
-    ENFA* createStar(string beginName , string endName , ENFA &R);
+    ENFA* createStar(std::string beginName , std::string endName , ENFA &R);
 
     // Convert function
 
     /**
-     * @brief Splits the regex string into substrings
+     * @brief Splits the regex std::string into substrings
      * 
      * @param reg The REGEX
-     * @return vector<string> A vector of substrings
+     * @return std::vector<std::string> A std::vector of substrings
      */
-    vector<ENFA*> splitRegex(string &reg , int &count , vector<int>&index);
+    std::vector<ENFA*> splitRegex(std::string &reg , int &count , std::vector<int>&index);
 
     /**
      * @brief Creates an ENFA from a regex
      * 
-     * @param reg The RE string
+     * @param reg The RE std::string
      * @param count The current name count
      * @return ENFA* A pointer to the created ENFA
      */
-    ENFA* toENFA(string &reg , int &count);
+    ENFA* toENFA(std::string &reg , int &count);
 
     /**
      * @brief Constructs an enfa from the regex

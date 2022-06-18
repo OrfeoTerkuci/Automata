@@ -5,22 +5,21 @@
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
-using namespace std;
 
 using json = nlohmann::json;
 
-NFA::NFA(string filename)
+NFA::NFA(std::string filename)
 {
     // inlezen uit file
-    ifstream input(filename);
+    std::ifstream input(filename);
     json j;
     input >> j;
 
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
         // Designate alphabet
         if(it.key() == "alphabet"){
-          vector<string> a = it.value();
-          for(string s : a){
+          std::vector<std::string> a = it.value();
+          for(std::string s : a){
             alphabet.insert(s[0]);
             }
         }
@@ -47,9 +46,9 @@ NFA::NFA(string filename)
     Node* beginState;
     Node* endState;
     for(auto t : ts){
-        string beginNodeName = t["from"];
-        string endNodeName = t["to"];
-        string input = t["input"];
+        std::string beginNodeName = t["from"];
+        std::string endNodeName = t["to"];
+        std::string input = t["input"];
         char inputA = input[0];
         for(Node* n : nodes){
             if(n->getName()==beginNodeName){
@@ -66,40 +65,40 @@ NFA::NFA(string filename)
 
 NFA::NFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}){}
 
-set<char> NFA::getAlphabet() const{
+std::set<char> NFA::getAlphabet() const{
     return NFA::alphabet;
 }
-set<Node*> NFA::getNodes() const{
+std::set<Node*> NFA::getNodes() const{
     return NFA::nodes;
 }
-set<Node*> NFA::getFinal() const{
+std::set<Node*> NFA::getFinal() const{
     return NFA::finalNodes;
 }
-set<Node*> NFA::getBegin() const{
+std::set<Node*> NFA::getBegin() const{
     return NFA::beginNodes;
 }
-set<transition*> NFA::getTransitions() const{
+std::set<transition*> NFA::getTransitions() const{
     return NFA::transitions;
 }
 
-void NFA::setAlphabet(set<char>newAlphabet){
+void NFA::setAlphabet(std::set<char>newAlphabet){
     NFA::alphabet = newAlphabet;
 }
-void NFA::setNodes(set<Node*>newNodes){
+void NFA::setNodes(std::set<Node*>newNodes){
     NFA::nodes = newNodes;
 }
-void NFA::setFinal(set<Node*>newFinalNodes){
+void NFA::setFinal(std::set<Node*>newFinalNodes){
     NFA::finalNodes = newFinalNodes;
 }
-void NFA::setBegin(set<Node*>newBeginNodes){
+void NFA::setBegin(std::set<Node*>newBeginNodes){
     NFA::beginNodes = newBeginNodes;
 }
-void NFA::setTransitions(set<transition*>newTransitions){
+void NFA::setTransitions(std::set<transition*>newTransitions){
     NFA::transitions = newTransitions;
 }
 
-set<Node*> NFA::transit(set<Node*> begin , char a){
-    set<Node*> c;
+std::set<Node*> NFA::transit(std::set<Node*> begin , char a){
+    std::set<Node*> c;
     if(alphabet.find(a) == alphabet.end()){
         return {nullptr};
     }
@@ -113,15 +112,15 @@ set<Node*> NFA::transit(set<Node*> begin , char a){
     return c;
 }
 
-void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
+void NFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions){
     bool evaluate = true;
     transitionNFA* newTransition;
 
     while(evaluate){
         // Remember old size
         int oldSize = newNodes.size();
-        for(set<Node*>tempNodes : newNodes){
-            set<Node*> oldTemp = tempNodes;
+        for(std::set<Node*>tempNodes : newNodes){
+            std::set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
 
                 // Transit for character c
@@ -146,7 +145,7 @@ void NFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
     }
 }
 
-void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
+void NFA::eliminateExtra(std::set<transitionNFA*> &currentSet){
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
             if(it1 == it2){
@@ -155,10 +154,10 @@ void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
             // Check for duplicate
             auto t1 = *it1;
             auto t2 = *it2;
-            set<Node*> b1 = t1->getBeginNodes();
-            set<Node*> e1 = t1->getEndNodes();
-            set<Node*> b2 = t2->getBeginNodes();
-            set<Node*> e2 = t2->getEndNodes();
+            std::set<Node*> b1 = t1->getBeginNodes();
+            std::set<Node*> e1 = t1->getEndNodes();
+            std::set<Node*> b2 = t2->getBeginNodes();
+            std::set<Node*> e2 = t2->getEndNodes();
             char c1 = t1->getInput();
             char c2 = t2->getInput();
             if( b1 == b2 && e1 == e2 && c1 == c2 ){
@@ -169,10 +168,10 @@ void NFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
-bool NFA::accepts(string A){
+bool NFA::accepts(std::string A){
     // Split string into chars
-    vector<char> v(A.begin(),A.end());
-    set<Node*> currentNodes = beginNodes;
+    std::vector<char> v(A.begin(),A.end());
+    std::set<Node*> currentNodes = beginNodes;
     for(char inputA : v){
         currentNodes = transit(currentNodes,inputA);
         if( currentNodes.size() == 1 && *currentNodes.begin() == nullptr ){
@@ -193,23 +192,23 @@ DFA NFA::toDFA(){
     // Copy over the alphabet
     dfa.setAlphabet(getAlphabet());
     // Create new containers
-    set<Node*> dfaNodes;
-    set<Node*> dfaBegin;
-    set<Node*> dfaFinalNodes;
-    set<transition*> dfaTransitions;
+    std::set<Node*> dfaNodes;
+    std::set<Node*> dfaBegin;
+    std::set<Node*> dfaFinalNodes;
+    std::set<transition*> dfaTransitions;
     // Lazy evaluation begin
     // Create powerset to push to DFA
-    set<set<Node*>>newNodes = {beginNodes};
+    std::set<std::set<Node*>>newNodes = {beginNodes};
     // Create temporary transitions container
-    set<transitionNFA*> tempTransitions;
+    std::set<transitionNFA*> tempTransitions;
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     // Create new states
-    for(set<Node*> currentSet : newNodes){
+    for(std::set<Node*> currentSet : newNodes){
         int count = 0;
         // Create new node
         Node* newNode = new Node();
-        string newName;
+        std::string newName;
         bool starting = false;
         bool accepting = false;
         // Create combined name
@@ -279,10 +278,10 @@ void NFA::print(){
    j["type"] = "NFA";
    // Add alphabet
    // Make temp vector
-   set<string> v_Alphabet;
+   std::set<std::string> v_Alphabet;
    for (char c : NFA::alphabet){
        // Convert char to string and insert into vector
-       v_Alphabet.insert(string(1,c));
+       v_Alphabet.insert(std::string(1,c));
    }
    j["alphabet"] = v_Alphabet;
    // Add states
@@ -303,12 +302,12 @@ void NFA::print(){
        json newObject = json::object();
        newObject["from"] = t->getBeginNode()->getName();
        newObject["to"] = t->getEndNode()->getName();
-       newObject["input"] = string(1,t->getInput());
+       newObject["input"] = std::string(1,t->getInput());
        transitions_array.push_back(newObject);
    }
    j["transitions"] = transitions_array;
    // Print to screen
-   cout<< setw(4) << j << endl;
+   std::cout<< std::setw(4) << j << std::endl;
 }
 
 NFA::~NFA()

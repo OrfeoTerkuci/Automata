@@ -8,18 +8,18 @@
 
 using json = nlohmann::json;
 
-DFA::DFA(string filename)
+DFA::DFA(std::string filename)
 {
     //* Read from file
-    ifstream input(filename);
+    std::ifstream input(filename);
     json j;
     input >> j;
 
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
         // Designate alphabet
         if(it.key() == "alphabet"){
-          vector<string> a = it.value();
-          for(string s : a){
+          std::vector<std::string> a = it.value();
+          for(std::string s : a){
             alphabet.insert(s[0]);
             }
         }
@@ -46,9 +46,9 @@ DFA::DFA(string filename)
     Node* beginState;
     Node* endState;
     for(auto t : ts){
-        string beginNodeName = t["from"];
-        string endNodeName = t["to"];
-        string input = t["input"];
+        std::string beginNodeName = t["from"];
+        std::string endNodeName = t["to"];
+        std::string input = t["input"];
         char inputA = input[0];
         for(Node* n : nodes){
             if(n->getName()==beginNodeName){
@@ -91,8 +91,8 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         transitions.insert(t);
     }
     //* Begin lazy evaluation
-    set<transitionNFA*> tempTransitions;
-    set<set<Node*>> newNodes = {beginNodes};
+    std::set<transitionNFA*> tempTransitions;
+    std::set<std::set<Node*>> newNodes = {beginNodes};
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     //* Reset nodes
@@ -100,11 +100,11 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
     nodes.clear();
     transitions.clear();
     //* Create new states
-    for(set<Node*> currentSet : newNodes){
+    for(std::set<Node*> currentSet : newNodes){
         int count = 0;
         //* Create new node
         Node* newNode = new Node();
-        string newName;
+        std::string newName;
         // Both states must be starting
         bool starting = true;
         // Intersection: initialize true
@@ -147,7 +147,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
                 t->setEndNodes({newNode});
                 }
             }
-        reverse(newName.begin() , newName.end());
+        std::reverse(newName.begin() , newName.end());
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
@@ -175,40 +175,40 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
 
 DFA::DFA() : alphabet({}) , nodes({}) , beginNodes({}) , finalNodes({}) , transitions({}) , table({}){}
 
-set<char> DFA::getAlphabet() const{
+std::set<char> DFA::getAlphabet() const{
     return DFA::alphabet;
 }
-set<Node*> DFA::getNodes() const{
+std::set<Node*> DFA::getNodes() const{
     return DFA::nodes;
 }
-set<Node*> DFA::getFinal() const{
+std::set<Node*> DFA::getFinal() const{
     return DFA::finalNodes;
 }
-set<Node*> DFA::getBegin() const{
+std::set<Node*> DFA::getBegin() const{
     return DFA::beginNodes;
 }
 
-set<transition*> DFA::getTransitions() const{
+std::set<transition*> DFA::getTransitions() const{
     return DFA::transitions;
 }
-void DFA::setAlphabet(set<char>newAlphabet){
+void DFA::setAlphabet(std::set<char>newAlphabet){
     DFA::alphabet = newAlphabet;
 }
-void DFA::setNodes(set<Node*>newNodes){
+void DFA::setNodes(std::set<Node*>newNodes){
     DFA::nodes = newNodes;
 }
-void DFA::setFinal(set<Node*>newFinalNodes){
+void DFA::setFinal(std::set<Node*>newFinalNodes){
     DFA::finalNodes = newFinalNodes;
 }
-void DFA::setBegin(set<Node*>newBeginNodes){
+void DFA::setBegin(std::set<Node*>newBeginNodes){
     DFA::beginNodes = newBeginNodes;
 }
 
-void DFA::setTransitions(set<transition*>newTransitions){
+void DFA::setTransitions(std::set<transition*>newTransitions){
     DFA::transitions = newTransitions;
 }
 
-void DFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions) {
+void DFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions) {
     bool evaluate = true;
     // Create containers
     transitionNFA* newTransition;
@@ -216,9 +216,9 @@ void DFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
         // Remember old size
         int oldSize = static_cast<int>(newNodes.size());
         // Loop through all node pairs
-        for(set<Node*> currentNodes : newNodes){
+        for(std::set<Node*> currentNodes : newNodes){
             // Remember beginning
-            set<Node*> oldTemp;
+            std::set<Node*> oldTemp;
             // Loop through the alphabet
             for( char c: alphabet){
                 // Loop through both nodes
@@ -247,7 +247,7 @@ void DFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransiti
     }
 }
 
-void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
+void DFA::eliminateExtra(std::set<transitionNFA*> &currentSet){
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
             if(it1 == it2){
@@ -256,10 +256,10 @@ void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
             // Check for duplicate
             auto t1 = *it1;
             auto t2 = *it2;
-            set<Node*> b1 = t1->getBeginNodes();
-            set<Node*> e1 = t1->getEndNodes();
-            set<Node*> b2 = t2->getBeginNodes();
-            set<Node*> e2 = t2->getEndNodes();
+            std::set<Node*> b1 = t1->getBeginNodes();
+            std::set<Node*> e1 = t1->getEndNodes();
+            std::set<Node*> b2 = t2->getBeginNodes();
+            std::set<Node*> e2 = t2->getEndNodes();
             char c1 = t1->getInput();
             char c2 = t2->getInput();
             if( b1 == b2 && e1 == e2 && c1 == c2 ){
@@ -270,7 +270,7 @@ void DFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
-void DFA::eliminateExtra(set<transition*>&trans){
+void DFA::eliminateExtra(std::set<transition*>&trans){
     for (auto it1 = trans.begin(); it1 != trans.end(); it1++){
         for (auto it2 = trans.begin(); it2 != trans.end(); it2++){
             if(it1 == it2){
@@ -305,7 +305,7 @@ Node* DFA::transit(Node* begin , char a){
     return begin;
 }
 
-bool DFA::accepts(string A){
+bool DFA::accepts(std::string A){
     Node* currentNode = *beginNodes.begin();
     for(char inputA : A){
         currentNode = transit(currentNode,inputA);
@@ -322,10 +322,10 @@ void DFA::print(){
    // Set type to DFA
    j["type"] = "DFA";
    // Add alphabet
-   set<string> v_Alphabet;
+   std::set<std::string> v_Alphabet;
    for (char c : DFA::alphabet){
        // Convert char to string and insert into vector
-       v_Alphabet.insert(string(1,c));
+       v_Alphabet.insert(std::string(1,c));
    }
    j["alphabet"] = v_Alphabet;
    // Add states
@@ -346,18 +346,18 @@ void DFA::print(){
        json newObject = json::object();
        newObject["from"] = t->getBeginNode()->getName();
        newObject["to"] = t->getEndNode()->getName();
-       newObject["input"] = string(1,t->getInput());
+       newObject["input"] = std::string(1,t->getInput());
        transitions_array.push_back(newObject);
    }
    j["transitions"] = transitions_array;
    // Print to screen
-   cout<< setw(4) << j << endl;
+   std::cout<< std::setw(4) << j << std::endl;
 }
 
 void DFA::createTable(){
     // Create empty sets
-    set<string> newSet;
-    set<Node*> newMarked;
+    std::set<std::string> newSet;
+    std::set<Node*> newMarked;
     // Crossed?
     bool diff;
     // Create all the pairs
@@ -386,10 +386,10 @@ void DFA::createTable(){
 DFA DFA::minimize(){
     // Create new empty DFA and containers for it
     DFA newDFA = DFA();
-    set<Node*> newDFA_nodes;
-    set<transition*> newDFA_transitions;
-    set<Node*> newDFA_final;
-    set<Node*> newDFA_begin;
+    std::set<Node*> newDFA_nodes;
+    std::set<transition*> newDFA_transitions;
+    std::set<Node*> newDFA_final;
+    std::set<Node*> newDFA_begin;
     // Set alphabet
     newDFA.setAlphabet(alphabet);
     // Copy the transitions
@@ -399,15 +399,15 @@ DFA DFA::minimize(){
     // Execute TFA
     fillTable();
     // Get all equivalent sets of states
-    set<set<Node*>> newStates;
-    set<Node*> newSet;
+    std::set<std::set<Node*>> newStates;
+    std::set<Node*> newSet;
     // Create new node and components for it
     Node* newNode;
-    string newName;
+    std::string newName;
     bool accepting = false;
     bool starting = false;
     // Get all the unmarked pairs
-    set<set<Node*>> unmarked;
+    std::set<std::set<Node*>> unmarked;
     for(auto p : table){
         if(!p.second){
             for(auto n : nodes){
@@ -436,8 +436,8 @@ DFA DFA::minimize(){
     // Reset container
     unmarked = {};
     // Get all the marked pairs
-    set<Node*> marked = nodes;
-    vector<string> names;
+    std::set<Node*> marked = nodes;
+    std::vector<std::string> names;
     for(auto s : newStates){
         newNode = new Node();
         for(Node* n : s){
@@ -460,10 +460,10 @@ DFA DFA::minimize(){
                 }
             }
         }
-        sort(names.begin() , names.end());
+        std::sort(names.begin() , names.end());
         // Merge the name : {state1,state2}
         newName = "{";
-        for(const string &name : names){
+        for(const std::string &name : names){
             newName += name;
             if(name!= *names.rbegin()){
                 newName += ", ";
@@ -516,11 +516,11 @@ DFA DFA::minimize(){
     return newDFA;
 }
 
-set<set<Node*>> DFA::findTransition(set<Node*> &beginNodes , char c){
+std::set<std::set<Node*>> DFA::findTransition(std::set<Node*> &beginNodes , char c){
     // Find a pair of nodes that transits to the given set with char c
-    set<Node*> tempNode = {};
-    set<Node*> newSet;
-    set< set<Node*> > newNode;
+    std::set<Node*> tempNode = {};
+    std::set<Node*> newSet;
+    std::set< std::set<Node*> > newNode;
     for(auto n : nodes){
         for(auto m : nodes){
             tempNode.insert(transit(n , c));
@@ -540,10 +540,10 @@ set<set<Node*>> DFA::findTransition(set<Node*> &beginNodes , char c){
 
 void DFA::fillTable(){
     bool evaluate = true;
-    set< set<Node*> > newPair;
-    set<string> newNames;
-    vector<string> newMarked;
-    set<Node*> tempPair;
+    std::set< std::set<Node*> > newPair;
+    std::set<std::string> newNames;
+    std::vector<std::string> newMarked;
+    std::set<Node*> tempPair;
     Node* newB;
     Node* newE;
     int oldSize;
@@ -564,7 +564,7 @@ void DFA::fillTable(){
                     // Get node names
                     newMarked.push_back(newB->getName());
                     newMarked.push_back(newE->getName());
-                    sort(newMarked.begin() , newMarked.end());
+                    std::sort(newMarked.begin() , newMarked.end());
                     newNames.insert(newMarked.begin() , newMarked.end());
                     // Insert new pair into markedPairs set
                     markedPairs.insert(newP);
@@ -585,42 +585,42 @@ void DFA::fillTable(){
 }
 
 void DFA::printTable(){
-   vector<string> tempNodes;
+   std::vector<std::string> tempNodes;
    for(auto n : nodes){
        tempNodes.push_back( n->getName() );
    }
-   sort( tempNodes.begin() , tempNodes.end() );
+   std::sort( tempNodes.begin() , tempNodes.end() );
    int count = 1;
    // Loop from 2nd element to last element
    for(int i = 1; i < tempNodes.size(); i++){
        // Print row name
-       cout << tempNodes[i] << '\t';
+       std::cout << tempNodes[i] << '\t';
        // Loop until count
        for(int j = 0; j < count; j++){
            if( table[ { tempNodes[i] , tempNodes[j] }] ){
-               cout << 'X' << '\t';
+               std::cout << 'X' << '\t';
            }
            else{
-               cout << '-' << '\t';
+               std::cout << '-' << '\t';
            }
        }
-       cout << endl;
+       std::cout << std::endl;
        count++;
    }
-   cout << '\t';
+   std::cout << '\t';
    for(int i = 0; i < tempNodes.size() - 1; i++){
-       cout << tempNodes[i];
+       std::cout << tempNodes[i];
        if(i != tempNodes.size() - 1){
-           cout << '\t';
+           std::cout << '\t';
        }
    }
-   cout << endl;
+   std::cout << std::endl;
 }
 
 bool DFA::operator==(DFA &dfa2){
     // Save original nodes and transitions
-    set<Node*> originalNodes = nodes;
-    set<transition*> originalTransitions = transitions;
+    std::set<Node*> originalNodes = nodes;
+    std::set<transition*> originalTransitions = transitions;
     // Get all the nodes from both DFAs
     for(auto n : dfa2.getNodes()){
         nodes.insert(n);

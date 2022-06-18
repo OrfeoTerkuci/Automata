@@ -5,29 +5,28 @@
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
-using namespace std;
 
 using json = nlohmann::json;
 
-ENFA::ENFA(string filename)
+ENFA::ENFA(std::string filename)
 {
     // Read from file
-    ifstream input(filename);
+    std::ifstream input(filename);
     json j;
     input >> j;
 
     for (json::iterator it = j.begin(); it != j.end(); ++it) {
         // Designate alphabet
         if(it.key() == "alphabet"){
-          vector<string> a = it.value();
-          for(string s : a){
+          std::vector<std::string> a = it.value();
+          for(std::string s : a){
             alphabet.insert(s[0]);
             }
         }
         // Get the character for epsilon
         else if(it.key() == "eps"){
             auto a = it.value().begin();
-            string eps = a[0];
+            std::string eps = a[0];
             ENFA::eps = eps[0];
         }
     }
@@ -53,9 +52,9 @@ ENFA::ENFA(string filename)
     Node* beginState;
     Node* endState;
     for(auto t : ts){
-        string beginNodeName = t["from"];
-        string endNodeName = t["to"];
-        string input = t["input"];
+        std::string beginNodeName = t["from"];
+        std::string endNodeName = t["to"];
+        std::string input = t["input"];
         char inputA = input[0];
         for(Node* n : nodes){
             if(n->getName()==beginNodeName){
@@ -79,23 +78,23 @@ ENFA::ENFA(ENFA* &ref) : alphabet(ref->getAlphabet()) , eps(ref->getEps()) ,
                  nodes(ref->getNodes()) , beginNodes(ref->getBegin()) , finalNodes(ref->getFinal()) , 
                  transitions(ref->getTransitions()) , epsTransitions(ref->getEpsTransitions()) {}
 
-set<char> ENFA::getAlphabet() const{
+std::set<char> ENFA::getAlphabet() const{
     return ENFA::alphabet;
 }
-set<Node*> ENFA::getNodes() const{
+std::set<Node*> ENFA::getNodes() const{
     return ENFA::nodes;
 }
-set<Node*> ENFA::getFinal() const{
+std::set<Node*> ENFA::getFinal() const{
     return ENFA::finalNodes;
 }
-set<Node*> ENFA::getBegin() const{
+std::set<Node*> ENFA::getBegin() const{
     return ENFA::beginNodes;
 }
-set<transition*> ENFA::getTransitions() const{
+std::set<transition*> ENFA::getTransitions() const{
     return ENFA::transitions;
 }
 
-set<transition*> ENFA::getEpsTransitions() const{
+std::set<transition*> ENFA::getEpsTransitions() const{
     return ENFA::epsTransitions;
 }
 
@@ -103,23 +102,23 @@ char ENFA::getEps() const{
     return ENFA::eps;
 }
 
-void ENFA::setAlphabet(set<char>newAlphabet){
+void ENFA::setAlphabet(std::set<char>newAlphabet){
     ENFA::alphabet = newAlphabet;
 }
-void ENFA::setNodes(set<Node*>newNodes){
+void ENFA::setNodes(std::set<Node*>newNodes){
     ENFA::nodes = newNodes;
 }
-void ENFA::setFinal(set<Node*>newFinalNodes){
+void ENFA::setFinal(std::set<Node*>newFinalNodes){
     ENFA::finalNodes = newFinalNodes;
 }
-void ENFA::setBegin(set<Node*>newBeginNodes){
+void ENFA::setBegin(std::set<Node*>newBeginNodes){
     ENFA::beginNodes = newBeginNodes;
 }
-void ENFA::setTransitions(set<transition*>newTransitions){
+void ENFA::setTransitions(std::set<transition*>newTransitions){
     ENFA::transitions = newTransitions;
 }
 
-void ENFA::setEpsTransitions(set<transition*> newEpsTransitions){
+void ENFA::setEpsTransitions(std::set<transition*> newEpsTransitions){
     ENFA::epsTransitions = newEpsTransitions;
 }
 
@@ -127,8 +126,8 @@ void ENFA::setEps(char newEps){
     ENFA::eps = newEps;
 }
 
-set<Node*> ENFA::transit(set<Node*> begin , char a){
-    set<Node*> c;
+std::set<Node*> ENFA::transit(std::set<Node*> begin , char a){
+    std::set<Node*> c;
     for(transition* t : transitions){
         for(Node* n : begin){
             if(t->getBeginNode() == n && t->getInput() == a){
@@ -139,8 +138,8 @@ set<Node*> ENFA::transit(set<Node*> begin , char a){
     return c;
 }
 
-set<Node*> ENFA::eclose(set<Node*> begin){
-    set<Node*> end = begin;
+std::set<Node*> ENFA::eclose(std::set<Node*> begin){
+    std::set<Node*> end = begin;
     bool eval = true;
     while(eval){
         int oldSize = end.size();
@@ -156,7 +155,7 @@ set<Node*> ENFA::eclose(set<Node*> begin){
     return end;
 }
 
-void ENFA::eliminateExtra(set<transitionNFA*> &currentSet){
+void ENFA::eliminateExtra(std::set<transitionNFA*> &currentSet){
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++){
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++){
             if(it1 == it2){
@@ -165,10 +164,10 @@ void ENFA::eliminateExtra(set<transitionNFA*> &currentSet){
             // Check for duplicate
             auto t1 = *it1;
             auto t2 = *it2;
-            set<Node*> b1 = t1->getBeginNodes();
-            set<Node*> e1 = t1->getEndNodes();
-            set<Node*> b2 = t2->getBeginNodes();
-            set<Node*> e2 = t2->getEndNodes();
+            std::set<Node*> b1 = t1->getBeginNodes();
+            std::set<Node*> e1 = t1->getEndNodes();
+            std::set<Node*> b2 = t2->getBeginNodes();
+            std::set<Node*> e2 = t2->getEndNodes();
             char c1 = t1->getInput();
             char c2 = t2->getInput();
             if( b1 == b2 && e1 == e2 && c1 == c2 ){
@@ -179,15 +178,15 @@ void ENFA::eliminateExtra(set<transitionNFA*> &currentSet){
     }
 }
 
-void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransitions){
+void ENFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions){
     bool evaluate = true;
     transitionNFA* newTransition;
     while(evaluate){
         // Remember old size
         int oldSize = newNodes.size();
-        for(set<Node*>tempNodes : newNodes){
+        for(std::set<Node*>tempNodes : newNodes){
             //printNode(tempNodes);
-            set<Node*> oldTemp = tempNodes;
+            std::set<Node*> oldTemp = tempNodes;
             for(char c : alphabet){
                 // Transit for character c and eclose
                 tempNodes = transit(tempNodes,c);
@@ -212,11 +211,11 @@ void ENFA::evaluate(set<set<Node*>> &newNodes , set<transitionNFA*> &tempTransit
     }
 }
 
-bool ENFA::accepts(string A){
-    // Split string into chars
-    vector<char> v(A.begin(),A.end());
-    set<Node*> currentNodes = beginNodes;
-    set<Node*> temp;
+bool ENFA::accepts(std::string A){
+    // Split std::string into chars
+    std::vector<char> v(A.begin(),A.end());
+    std::set<Node*> currentNodes = beginNodes;
+    std::set<Node*> temp;
     for(char inputA : v){
         // Transit with character
         temp = currentNodes;
@@ -243,31 +242,31 @@ DFA ENFA::toDFA(){
     // Copy over the alphabet
     dfa.setAlphabet(getAlphabet());
     // Create new containers
-    set<Node*> dfaNodes;
-    set<Node*> dfaBegin = eclose(beginNodes);
-    set<Node*> dfaFinalNodes;
-    set<transition*> dfaTransitions;
+    std::set<Node*> dfaNodes;
+    std::set<Node*> dfaBegin = eclose(beginNodes);
+    std::set<Node*> dfaFinalNodes;
+    std::set<transition*> dfaTransitions;
     // Lazy evaluation begin
     // Create powerset to push to DFA
-    set<set<Node*>>newNodes = {eclose(beginNodes)};
+    std::set<std::set<Node*>>newNodes = {eclose(beginNodes)};
     // Create temporary transitions container
-    set<transitionNFA*> tempTransitions;
+    std::set<transitionNFA*> tempTransitions;
     // Evaluate
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     // Sort state
     // Create new states
-    for(set<Node*> currentSet : newNodes){
+    for(std::set<Node*> currentSet : newNodes){
         int count = 0;
         // Create new node
         Node* newNode = new Node();
-        string newName;
+        std::string newName;
         bool starting = false;
         bool accepting = false;
         // Create combined name
         newName += "{";
         // Get names of all nodes
-        vector<string> names;
+        std::vector<std::string> names;
         for(Node* currentNode : currentSet){
             // Get new node name
             names.push_back(currentNode->getName());
@@ -284,7 +283,7 @@ DFA ENFA::toDFA(){
         // Combine all names
         count = 0;
         sort(names.begin() , names.end());
-        for(string n : names){
+        for(std::string n : names){
             newName += n;
             if(count != currentSet.size() - 1){
                 newName += ",";
@@ -336,13 +335,13 @@ void ENFA::print(){
    // Set type to NFA
    j["type"] = "ENFA";
    // Set epsilon
-   j["eps"] = string(1,ENFA::eps);
+   j["eps"] = std::string(1,ENFA::eps);
    // Add alphabet
-   // Make temp vector
-   set<string> v_Alphabet;
+   // Make temp std::vector
+   std::set<std::string> v_Alphabet;
    for (char c : ENFA::alphabet){
-       // Convert char to string and insert into vector
-       v_Alphabet.insert(string(1,c));
+       // Convert char to std::string and insert into std::vector
+       v_Alphabet.insert(std::string(1,c));
    }
    j["alphabet"] = v_Alphabet;
    // Add states
@@ -363,19 +362,19 @@ void ENFA::print(){
        json newObject = json::object();
        newObject["from"] = t->getBeginNode()->getName();
        newObject["to"] = t->getEndNode()->getName();
-       newObject["input"] = string(1,t->getInput());
+       newObject["input"] = std::string(1,t->getInput());
        transitions_array.push_back(newObject);
    }
    j["transitions"] = transitions_array;
    // Print to screen
-   cout<< setw(4) << j << endl;
+   std::cout<< std::setw(4) << j << std::endl;
 }
 
 void ENFA::printStats() {
     // Print number of states
-    cout << "no_of_states="<<nodes.size()<<endl;
+    std::cout << "no_of_states="<<nodes.size()<<std::endl;
     // Print all epsilon transitions
-    cout << "no_of_transitions[" << eps << "]=" << epsTransitions.size() << endl;
+    std::cout << "no_of_transitions[" << eps << "]=" << epsTransitions.size() << std::endl;
     // Print all the transitions
     for( char c : alphabet){
         int no_transitions = 0;
@@ -384,12 +383,12 @@ void ENFA::printStats() {
                 no_transitions++;
             }
         }
-        cout << "no_of_transitions[" << c << "]=" << no_transitions << endl;
+        std::cout << "no_of_transitions[" << c << "]=" << no_transitions << std::endl;
     }
     // Get degree : number of transitions from this state. degree[i] = number of states with grade i
     //int degree = 0;
     bool getDegree = true;
-    map<int , int> degrees;
+    std::map<int , int> degrees;
     // Loop through states
     for(Node* n : nodes){
         // Get number of transitions
@@ -405,7 +404,7 @@ void ENFA::printStats() {
     }
     // Print all degrees
     for(const auto degree : degrees){
-        cout << "degree[" << degree.first << "]=" << degree.second << endl;
+        std::cout << "degree[" << degree.first << "]=" << degree.second << std::endl;
     }
 }
 

@@ -3,9 +3,7 @@
 #include <iostream>
 #include <vector>
 
-using namespace std;
-
-Node::Node(string name, bool starting, bool accepting) : name(name) , starting(starting) , accepting(accepting){}
+Node::Node(std::string name, bool starting, bool accepting) : name(name) , starting(starting) , accepting(accepting){}
 
 Node::Node(Node* refNode) : name(refNode->getName()) , starting(refNode->isStarting()) , accepting(refNode->isAccepting()){}
 
@@ -23,10 +21,10 @@ void Node::setAccepting(bool accepting){
 bool Node::isAccepting()const{
     return Node::accepting;
 }
-void Node::setName(string name){
+void Node::setName(std::string name){
     Node::name = name;
 }
-string Node::getName()const{
+std::string Node::getName()const{
     return Node::name;
 }
 

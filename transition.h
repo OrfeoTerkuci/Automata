@@ -1,5 +1,8 @@
+#ifndef AUTOMATA_TRANSITION_H
+#define AUTOMATA_TRANSITION_H
+
 #include <iostream>
-using namespace std;
+
 
 class Node;
 class transition
@@ -20,3 +23,5 @@ public:
     void setInput(char a);
     ~transition();
 };
+
+#endif //AUTOMATA_TRANSITION_H

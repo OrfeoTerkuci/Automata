@@ -1,14 +1,13 @@
 #include "transition.h"
 #include "Node.h"
 #include <iostream>
-using namespace std;
-
 
 transition::transition(Node* beginNode, Node* endNode, char inputA) : beginNode(beginNode) , endNode(endNode) , inputA(inputA){}
 
 transition::transition(transition* refTran) :   beginNode( refTran->getBeginNode() ) ,
                                                 endNode( refTran->getEndNode() ) ,
                                                 inputA( refTran->getInput() ){}
+                                                
 transition::transition() : beginNode(nullptr) , endNode(nullptr) , inputA(' ') {}
 
 Node* transition::getBeginNode(){
