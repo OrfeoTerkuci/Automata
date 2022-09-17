@@ -9,6 +9,7 @@
 class Node;
 class transition;
 class transitionNFA;
+
 class DFA
 {
 private:
@@ -37,23 +38,20 @@ public:
 
     /**
      * @brief Construct a new DFA object from a JSON file
-     * 
      * @param filename The path of the JSON file
      */
-    DFA(std::string filename);
+    explicit DFA(std::string filename);
 
     /**
-     * @brief Construct a new DFA from the product of two other DFA's
-     * 
+     * @brief Construct a new DFA from the product of two other DFAs
      * @param dfa1 The first DFA
      * @param dfa2 The second DFA
-     * @param intersect True if the product is the intersection of the DFA's. False if the union
+     * @param intersect True for the intersection, False for the union
      */
     DFA(DFA &dfa1 , DFA &dfa2 , bool intersect);
 
     /**
      * @brief Construct an empty DFA
-     * 
      */
     DFA();
 
@@ -61,36 +59,31 @@ public:
 
     /**
      * @brief Get the Alphabet
-     * 
      * @return std::set<char> The Alphabet
      */
     std::set<char> getAlphabet() const;
 
     /**
      * @brief Getter for the Nodes(States)
-     * 
      * @return std::set<Node*> All the states in the DFA
      */
     std::set<Node*> getNodes() const;
 
     /**
      * @brief Getter for the final states
-     * 
      * @return std::set<Node*> All the final states in the DFA
      */
     std::set<Node*> getFinal() const;
 
     /**
      * @brief Getter for the begin states
-     * 
      * @return std::set<Node*> All the final states in the DFA
      */
     std::set<Node*> getBegin() const;
 
     /**
      * @brief Get the transitions
-     * 
-     * @return std::set<transition*> All the transitions in the DFA 
+     * @return std::set<transition*> All the transitions in the DFA
      */
     std::set<transition*> getTransitions() const;
 
@@ -98,38 +91,37 @@ public:
 
     /**
      * @brief Setter for the alphabet
-     * 
+     * @param newAlphabet A set of characters for the new alphabet of the DFA
      */
     void setAlphabet(std::set<char>newAlphabet);
 
     /**
      * @brief Setter for the states set
-     * 
+     * @param newNodes A set of Node pointers for the new states of the DFA
      */
     void setNodes(std::set<Node*>newNodes);
 
     /**
      * @brief Setter for the final states
-     * 
+     * @param newFinalNodes A set of Node pointers for the new final states of the DFA
      */
     void setFinal(std::set<Node*>newFinalNodes);
 
     /**
      * @brief Setter for the begin states
-     * 
+     * @param newBeginNodes A set of Node pointers for the new begin state(s) of the DFA
      */
     void setBegin(std::set<Node*>newBeginNodes);
 
     /**
      * @brief Setter for the transitions
-     * 
+     * @param newTransitions A set of transition pointers for the new transitions in the DFA
      */
     void setTransitions(std::set<transition*>newTransitions);
 
     // Standard DFA operations
     /**
      * @brief Checks whether a string is accepted by the DFA
-     * 
      * @param A The string
      * @return true if the string is accepted
      * @return false if the string is not accepted
@@ -138,7 +130,6 @@ public:
 
     /**
      * @brief Prints all the components of the DFA (alphabet, states, transitions) in the same format as the input JSON file
-     * 
      */
     void print();
 
@@ -146,13 +137,11 @@ public:
 
     /**
      * @brief Prints the TFA table
-     * 
      */
     void printTable();
 
     /**
      * @brief Minimizes the DFA
-     * 
      * @return DFA The minimized DFA
      */
     DFA minimize();
@@ -160,8 +149,7 @@ public:
     // Operator overloads
 
     /**
-     * @brief Checks whether two DFA's are equivalent
-     * 
+     * @brief Operator overload for equivalence of two DFAs
      * @param dfa2 The other DFA
      * @return true if equivalent
      * @return false if not equivalent
