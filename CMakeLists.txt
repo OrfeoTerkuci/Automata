@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(Automata VERSION 0.4.0)
+project(Automata VERSION 1.1.0)
 
 #include(CTest)
 #enable_testing()
 
+# Ba1INF
 set(DFA_sources
         Test_files/DFA_test.cpp
         DFA.cpp
@@ -65,6 +66,14 @@ set(TFA_sources
         transitionNFA.cpp
 )
 
+# Ba2INF
+
+set(CFG_sources
+        Test_files/CFG_General_test.cpp
+        CFG.cpp
+        Variable.cpp
+)
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -78,6 +87,8 @@ add_executable(PA ${PA_sources})
 add_executable(RE ${RE_sources})
 
 add_executable(TFA ${TFA_sources})
+
+add_executable(CFG ${CFG_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 
