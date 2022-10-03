@@ -68,3 +68,36 @@ bool Variable::isTerminal() const {
 void Variable::setTerminal(bool newTerminal) {
     Variable::terminal = newTerminal;
 }
+
+bool Variable::operator==(const Variable &rhs) const {
+    return name == rhs.name &&
+           production == rhs.production &&
+           starting == rhs.starting &&
+           terminal == rhs.terminal;
+}
+
+bool Variable::operator!=(const Variable &rhs) const {
+    return !(rhs == *this);
+}
+
+bool Variable::operator<(const Variable &rhs) const {
+    if(isdigit(name[0]) && isalpha(rhs.name[0])){
+        return true;
+    }
+    else if(isdigit(rhs.name[0]) && isalpha(name[0])){
+        return false;
+    }
+    return name < rhs.name;
+}
+
+bool Variable::operator>(const Variable &rhs) const {
+    return rhs < *this;
+}
+
+bool Variable::operator<=(const Variable &rhs) const {
+    return !(rhs < *this);
+}
+
+bool Variable::operator>=(const Variable &rhs) const {
+    return !(*this < rhs);
+}

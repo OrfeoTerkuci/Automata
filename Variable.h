@@ -38,6 +38,20 @@ public:
 
     static std::string getProduction(std::vector<std::string> &prod);
 
+    // Operator overloads
+
+    bool operator==(const Variable &rhs) const;
+
+    bool operator!=(const Variable &rhs) const;
+
+    bool operator<(const Variable &rhs) const;
+
+    bool operator>(const Variable &rhs) const;
+
+    bool operator<=(const Variable &rhs) const;
+
+    bool operator>=(const Variable &rhs) const;
+
 };
 
 

@@ -2,11 +2,15 @@
 #include "Variable.h"
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
+#include <functional>
 #include "json.hpp"
 
 using json = nlohmann::json;
 
-CFG::CFG(std::string filename) {
+bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
+
+CFG::CFG(const std::string& filename) {
     //* Read from file
     std::ifstream input(filename);
     json j;
@@ -17,8 +21,8 @@ CFG::CFG(std::string filename) {
         // Designate alphabet
         if(it.key() == "Terminals"){
             std::vector<std::string> a = it.value();
-            for(std::string s : a){
-                terminals.insert(s[0]);
+            for(const std::string& s : a){
+                terminals.push_back(new Variable(s , {} , false , true));
             }
         }
         else if(it.key() == "Variables"){
@@ -31,13 +35,19 @@ CFG::CFG(std::string filename) {
 
     // Read the productions
     auto prods = j["Productions"];
-    for(auto v : prods){
-        // Search for the variable
-        if(v["body"].empty()){
-            productions[v["head"]].insert(productions[v["head"]].begin() , {""});
+    for(auto p : prods){
+        // Add production to variable
+        for(auto v : variables){
+            if(p["head"] == v->getName()){
+                v->addProduction(p["body"]);
+            }
+        }
+        // Add production to map
+        if(p["body"].empty()){
+            productions[p["head"]].insert(productions[p["head"]].begin() , {""});
             continue;
         }
-        productions[v["head"]].push_back(v["body"]);
+        productions[p["head"]].push_back(p["body"]);
     }
 
     // Set starting variable
@@ -49,12 +59,17 @@ CFG::CFG(std::string filename) {
         }
     }
 
-    std::sort(variables.begin() , variables.end());
+    std::sort(variables.begin() , variables.end() , compareVariables);
+    std::sort(terminals.begin() , terminals.end() , compareVariables);
 
 }
 
-CFG::CFG() : terminals({ '0' , '1' , 'a' , 'b' }) {
+CFG::CFG() {
     // Create the terminals
+    terminals = { new Variable("0",{},false,true) ,
+                  new Variable("1",{},false,true) ,
+                  new Variable("a",{},false,true) ,
+                  new Variable("b",{},false,true) };
     Variable* newVar;
     newVar = new Variable("BINDIGIT" , { {new Variable("0")} , {new Variable("1")} });
     variables.push_back(newVar);
@@ -80,9 +95,9 @@ void CFG::print() {
     }
     std::cout << current << std::endl;
     // Print terminals
-    current = "V = {";
+    current = "T = {";
     for(const auto& t : terminals){
-        current += t;
+        current += t->getName();
         if(t != *terminals.rbegin()){
             current += ", ";
         }

@@ -12,7 +12,7 @@ class CFG {
 
 private:
     std::vector<Variable*> variables;
-    std::set<char> terminals;
+    std::vector<Variable*> terminals;
     std::map<std::string , std::vector<std::vector< std::string> > > productions;
     Variable* startingVar;
 
@@ -22,7 +22,7 @@ public:
      * @brief Constructor for Context Free Grammar object
      * @param filename The path to the input file
      */
-    explicit CFG (std::string filename);
+    explicit CFG (const std::string& filename);
 
     /**
      * @brief Creates a Context Free Grammar object with default parameters
