@@ -111,10 +111,10 @@ void CFG::print() {
     current += '\n';
     for(const auto& v : productions){
         for(auto p : v.second){
-            current += '\t';
+            current += "    ";
             current += v.first;
             current += " -> ";
-            current += '\'';
+            current += "`";
             if(!p.empty()){
                 for(const auto& r : p){
                     current += r;
@@ -123,7 +123,7 @@ void CFG::print() {
                     }
                 }
             }
-            current += '\'';
+            current += '`';
             current += '\n';
         }
     }
