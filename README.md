@@ -17,6 +17,7 @@ Blank = TODO
 | REGEX to ENFA           |   V    |
 | State Elimination       |        |
 | Table Filling Algorithm |   V    |
+| CFG                     |        |
 
 ### Features
 
