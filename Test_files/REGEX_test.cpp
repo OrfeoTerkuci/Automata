@@ -1,4 +1,4 @@
-#include "../RE.h"
+#include "../src/Finite Automata/RE.h"
 #include <iostream>
 
 using namespace std;

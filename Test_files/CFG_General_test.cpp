@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../CFG.h"
+#include "../src/Context Free/CFG.h"
 
 using namespace std;
 

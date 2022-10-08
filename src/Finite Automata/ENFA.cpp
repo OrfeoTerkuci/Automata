@@ -4,7 +4,7 @@
 #include "transitionNFA.h"
 #include <fstream>
 #include <iomanip>
-#include "json.hpp"
+#include "../json.hpp"
 
 using json = nlohmann::json;
 

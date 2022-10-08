@@ -1,4 +1,4 @@
-#include "../ENFA.h"
+#include "../src/Finite Automata/ENFA.h"
 
 using namespace std;
 

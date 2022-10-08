@@ -1,16 +1,15 @@
 #include "CFG.h"
-#include "Variable.h"
+#include "../Finite Automata/Variable.h"
 #include <fstream>
 #include <iomanip>
-#include <algorithm>
 #include <functional>
-#include "json.hpp"
+#include "../json.hpp"
 
 using json = nlohmann::json;
 
 bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
 
-CFG::CFG(const std::string& filename) {
+CFG::CFG(std::string filename) {
     //* Read from file
     std::ifstream input(filename);
     json j;

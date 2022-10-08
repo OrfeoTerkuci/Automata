@@ -22,7 +22,7 @@ public:
      * @brief Constructor for Context Free Grammar object
      * @param filename The path to the input file
      */
-    explicit CFG (const std::string& filename);
+    [[maybe_unused]] explicit CFG (std::string filename);
 
     /**
      * @brief Creates a Context Free Grammar object with default parameters

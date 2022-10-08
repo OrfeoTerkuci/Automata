@@ -1,4 +1,4 @@
-#include "../NFA.h"
+#include "../src/Finite Automata/NFA.h"
 using namespace std;
 
 int main() {
