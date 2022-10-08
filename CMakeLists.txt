@@ -4,6 +4,9 @@ project(Automata VERSION 1.1.0)
 #include(CTest)
 #enable_testing()
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+
 # Ba1INF
 set(DFA_sources
         Test_files/DFA_test.cpp
