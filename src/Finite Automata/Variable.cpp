@@ -101,3 +101,13 @@ bool Variable::operator<=(const Variable &rhs) const {
 bool Variable::operator>=(const Variable &rhs) const {
     return !(*this < rhs);
 }
+
+Variable::~Variable() {
+    for(auto p : production){
+        for(auto v : p){
+            delete v;
+        }
+        p.clear();
+    }
+    production.clear();
+}

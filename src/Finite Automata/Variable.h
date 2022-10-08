@@ -52,6 +52,8 @@ public:
 
     bool operator>=(const Variable &rhs) const;
 
+    virtual ~Variable();
+
 };
 
 

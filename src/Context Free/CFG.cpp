@@ -134,4 +134,13 @@ void CFG::print() {
 
 }
 
-CFG::~CFG() = default;
+CFG::~CFG() {
+    for(auto v : variables){
+        delete v;
+    }
+    variables.clear();
+    for(auto t : terminals){
+        delete t;
+    }
+    terminals.clear();
+}
