@@ -1,6 +1,5 @@
 #include "transition.h"
 #include "Node.h"
-#include <iostream>
 
 transition::transition(Node* beginNode, Node* endNode, char inputA) : beginNode(beginNode) , endNode(endNode) , inputA(inputA){}
 
@@ -22,13 +21,11 @@ Node* transition::getEndNode(){
 void transition::setEndNode(Node* e){
     endNode = e;
 }
-char transition::getInput(){
+char transition::getInput() const{
     return inputA;
 }
 void transition::setInput(char a){
     inputA = a;
 }
 
-transition::~transition()
-{
-}
+transition::~transition()= default;

@@ -13,13 +13,13 @@ private:
     char inputA;
 public:
     transition(Node* beginNode, Node* endNode, char inputA);
-    transition(transition* refTran);
+    explicit transition(transition* refTran);
     transition();
     Node* getBeginNode();
     void setBeginNode(Node* n);
     Node* getEndNode();
     void setEndNode(Node* e);
-    char getInput();
+    char getInput() const;
     void setInput(char a);
     ~transition();
 };

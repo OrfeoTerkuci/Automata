@@ -13,13 +13,13 @@ private:
     char inputA;
 public:
     transitionNFA(std::set<Node*> beginNodes, std::set<Node*> endNodes, char inputA);
-    transitionNFA(transitionNFA* refTran);
+    explicit transitionNFA(transitionNFA* refTran);
     transitionNFA();
     std::set<Node*> getBeginNodes();
     void setBeginNodes(std::set<Node*> n);
     std::set<Node*> getEndNodes();
     void setEndNodes(std::set<Node*> e);
-    char getInput();
+    char getInput() const;
     void setInput(char a);
     ~transitionNFA();
 };

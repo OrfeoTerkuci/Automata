@@ -24,13 +24,11 @@ std::set<Node*> transitionNFA::getEndNodes(){
 void transitionNFA::setEndNodes(std::set<Node*> e){
     endNodes = e;
 }
-char transitionNFA::getInput(){
+char transitionNFA::getInput() const{
     return inputA;
 }
 void transitionNFA::setInput(char a){
     inputA = a;
     }
 
-transitionNFA::~transitionNFA()
-{
-}
+transitionNFA::~transitionNFA() = default;

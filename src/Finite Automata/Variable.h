@@ -12,7 +12,7 @@ private:
     bool starting;
     bool terminal;
 public:
-    Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production = {}, bool starting = false , bool terminal = false);
+    explicit Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production = {}, bool starting = false , bool terminal = false);
 
     Variable();
 
