@@ -41,12 +41,6 @@ CFG::CFG(std::string filename) {
                 v->addProduction(p["body"]);
             }
         }
-        // Add production to map
-        if(p["body"].empty()){
-            productions[p["head"]].insert(productions[p["head"]].begin() , {""});
-            continue;
-        }
-        productions[p["head"]].push_back(p["body"]);
     }
 
     // Set starting variable
@@ -72,10 +66,8 @@ CFG::CFG() {
     Variable* newVar;
     newVar = new Variable("BINDIGIT" , { {new Variable("0")} , {new Variable("1")} });
     variables.push_back(newVar);
-    productions[newVar->getName()] = { {"0"} , {"1"}};
     newVar = new Variable("S" , { "" , "a S b BINDIGIT"} , true );
     variables.push_back(newVar);
-    productions[newVar->getName()] = { {""} , {"a S b BINDIGIT"} };
     startingVar = newVar;
 }
 

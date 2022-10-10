@@ -13,7 +13,6 @@ class CFG {
 private:
     std::vector<Variable*> variables;
     std::vector<Variable*> terminals;
-    std::map<std::string , std::vector<std::vector< std::string> > > productions;
     Variable* startingVar;
 
 public:
