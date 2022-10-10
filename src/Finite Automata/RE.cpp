@@ -3,7 +3,6 @@
 #include "transition.h"
 #include "transitionNFA.h"
 #include <algorithm>
-#include <math.h>
 #include <string>
 #include <vector>
 
@@ -17,19 +16,19 @@ const std::string &RE::getRegex() const {
     return regex;
 }
 
-void RE::setRegex(const std::string &regex) {
-    RE::regex = regex;
+void RE::setRegex(const std::string &newRegex) {
+    RE::regex = newRegex;
 }
 
 char RE::getEps() const {
     return eps;
 }
 
-void RE::setEps(char eps) {
-    RE::eps = eps;
+void RE::setEps(char newEps) {
+    RE::eps = newEps;
 }
 
-ENFA* RE::createEpsilon(std::string beginName , std::string endName) {
+ENFA* RE::createEpsilon(std::string beginName , std::string endName) const {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -48,7 +47,7 @@ ENFA* RE::createEpsilon(std::string beginName , std::string endName) {
     return newENFA;
 }
 
-ENFA* RE::createEmpty(std::string beginName , std::string endName) {
+ENFA* RE::createEmpty(std::string beginName , std::string endName) const {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -64,7 +63,7 @@ ENFA* RE::createEmpty(std::string beginName , std::string endName) {
     return newENFA;
 }
 
-ENFA* RE::createSingleChar(std::string beginName , std::string endName , char a) {
+ENFA* RE::createSingleChar(std::string beginName , std::string endName , char a) const {
     // Create states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
@@ -104,7 +103,7 @@ ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
     if(ref.size() == 1){
         return ref[0];
     }
-    // Link the new begin and end node to both ENFA's
+    // Link the new start and end node to both ENFA's
     // Get current and next ENFA in the vector
     // If more than 2 : recursive call until 2 left
     while(ref.size() > 2){
@@ -187,7 +186,7 @@ ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
     return newENFA;
 }
 
-ENFA* RE::createConcatenation(ENFA &R , ENFA &S) {
+ENFA* RE::createConcatenation(ENFA &R , ENFA &S) const {
     // Create containers
     std::set<char> alphabet;
     std::set<Node*> nodes;
@@ -196,7 +195,7 @@ ENFA* RE::createConcatenation(ENFA &R , ENFA &S) {
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     // Create new transition
-    transition* newTrans = new transition(*R.getFinal().begin() , *S.getBegin().begin() , eps);
+    auto* newTrans = new transition(*R.getFinal().begin() , *S.getBegin().begin() , eps);
     transitions.insert(newTrans);
     // Set all parameters
     newENFA->setEps(eps);
@@ -237,7 +236,7 @@ ENFA* RE::createConcatenation(ENFA &R , ENFA &S) {
     return newENFA;
 }
 
-ENFA* RE::createConcatenation(std::vector<ENFA*> ref){
+ENFA* RE::createConcatenation(std::vector<ENFA*> ref) const{
     
     // Create containers
     std::set<char> alphabet;
@@ -290,27 +289,27 @@ ENFA* RE::createConcatenation(std::vector<ENFA*> ref){
     return newENFA;
 }
 
-ENFA* RE::createStar(std::string beginName , std::string endName , ENFA &R) {
+ENFA* RE::createStar(std::string beginName , std::string endName , ENFA &R) const {
 
     // Create new containers and copy elements from ref ENFA
     std::set<char> alphabet = R.getAlphabet();
     std::set<Node*> nodes = R.getNodes();
     std::set<transition*> transitions = R.getTransitions();
     std::set<transition*> eps_transitions = R.getEpsTransitions();
-    // Create the new begin and end state
+    // Create the new start and end state
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
     nodes.insert(begin);
     nodes.insert(end);
     // Create new transitions
     // New begin node -> R begin node
-    transition* newBeginTrans = new transition(begin , *R.getBegin().begin() , eps);
-    transition* newEndTrans = new transition(*R.getFinal().begin() , end , eps);
+    auto* newBeginTrans = new transition(begin , *R.getBegin().begin() , eps);
+    auto* newEndTrans = new transition(*R.getFinal().begin() , end , eps);
     newBeginTrans->getEndNode()->setStarting(false);
     newEndTrans->getBeginNode()->setAccepting(false);
     // Loop transitions
-    transition* newR_Loop = new transition(*R.getFinal().begin() , *R.getBegin().begin() , eps);
-    transition* out_Loop = new transition(begin , end , eps);
+    auto* newR_Loop = new transition(*R.getFinal().begin() , *R.getBegin().begin() , eps);
+    auto* out_Loop = new transition(begin , end , eps);
     // Insert all the transitions
     transitions.insert(newBeginTrans);
     transitions.insert(newEndTrans);
@@ -333,7 +332,7 @@ ENFA* RE::createStar(std::string beginName , std::string endName , ENFA &R) {
     return newENFA;
 }
 
-ENFA* RE::toENFA(std::string &reg , int &count){
+ENFA* RE::toENFA(std::string &reg , int &count) const{
     std::vector<ENFA*> temp;
     ENFA* newENFA;
     char c;
@@ -378,9 +377,7 @@ std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<in
     std::vector<ENFA*> current;
     char c;
     char d;
-    int rem;
     std::string rest;
-    int oldCount = count;
     int start = 0;
     if(!index.empty()){
         start = index.back() + 1;
@@ -396,7 +393,6 @@ std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<in
         }
         // If start of bracket
         if(c == '('){
-            oldCount = count;
             count++;
             index.push_back(i);
             // Recursion
@@ -442,7 +438,7 @@ std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<in
             continue;
         }
         // If current character is in the alphabet
-        else if(c != eps && c != '*'){
+        else if(c != eps){
             current.push_back(createSingleChar(std::to_string(count), std::to_string(count + 1), c));
             count += 2;
         }
@@ -459,16 +455,10 @@ std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<in
 }
 
 ENFA RE::toENFA() {
-    // "ab+bc+cdf+e"
-    // "abc*d"
-    // "ab+ab(c+d+f)g"
-    // "ab(cd)*+e"
-    // Vector of concatenation strings
     int count = 1;
     std::vector<int>index;
     std::vector<ENFA*> reg = splitRegex(RE::regex , count , index);
-    std::vector<ENFA*> conc;
-    ENFA* newENFA;
+    std::vector<ENFA*> concatenatie;
     // Link all the enfa's
     if(reg.size() > 1){
         return *createPlus(reg , count);
@@ -478,6 +468,4 @@ ENFA RE::toENFA() {
     }
 }
 
-RE::~RE() {
-
-}
+RE::~RE() = default;

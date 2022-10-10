@@ -4,7 +4,6 @@
 #include <iostream>
 #include <vector>
 
-class transition;
 class Node
 {
 private:
@@ -13,13 +12,13 @@ private:
     bool accepting;
 public:
     Node(std::string name, bool starting, bool accepting);
-    Node(Node* refNode);
+    explicit Node(Node* refNode);
     Node();
-    void setStarting(bool starting);
+    void setStarting(bool newStarting);
     bool isStarting()const;
-    void setAccepting(bool accepting);
+    void setAccepting(bool newAccepting);
     bool isAccepting()const;
-    void setName(std::string name);
+    void setName(std::string newName);
     std::string getName()const;
     ~Node();
 };

@@ -1,33 +1,29 @@
 #include "Node.h"
-#include "transition.h"
 #include <iostream>
-#include <vector>
 
 Node::Node(std::string name, bool starting, bool accepting) : name(name) , starting(starting) , accepting(accepting){}
 
 Node::Node(Node* refNode) : name(refNode->getName()) , starting(refNode->isStarting()) , accepting(refNode->isAccepting()){}
 
-Node::Node() : name("") , starting(false) , accepting(false) {}
+Node::Node() : starting(false) , accepting(false) {}
 
-void Node::setStarting(bool starting){
-    Node::starting = starting;
+void Node::setStarting(bool newStarting){
+    Node::starting = newStarting;
 }
 bool Node::isStarting()const{
     return Node::starting;
 }
-void Node::setAccepting(bool accepting){
-    Node::accepting = accepting;
+void Node::setAccepting(bool newAccepting){
+    Node::accepting = newAccepting;
 }
 bool Node::isAccepting()const{
     return Node::accepting;
 }
-void Node::setName(std::string name){
-    Node::name = name;
+void Node::setName(std::string newName){
+    Node::name = newName;
 }
 std::string Node::getName()const{
     return Node::name;
 }
 
-Node::~Node()
-{
-}
+Node::~Node() = default;

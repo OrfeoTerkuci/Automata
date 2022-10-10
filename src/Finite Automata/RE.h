@@ -24,7 +24,7 @@ public:
      * 
      * @param refRE The reference object
      */
-    RE(RE* refRE);
+    explicit RE(RE* refRE);
 
     /**
      * @brief Construct a new RE object
@@ -44,9 +44,9 @@ public:
     /**
      * @brief Set the Regex std::string
      * 
-     * @param regex The new regex std::string
+     * @param newRegex The new newRegex std::string
      */
-    void setRegex(const std::string &regex);
+    void setRegex(const std::string &newRegex);
 
     /**
      * @brief Get the Eps character
@@ -58,13 +58,9 @@ public:
     /**
      * @brief Set the Eps character
      * 
-     * @param eps The new epsilon character
+     * @param newEps The new epsilon character
      */
-    void setEps(char eps);
-
-    std::set<char> getAlphabet() const;
-
-    void setAlphabet(std::set<char> &newAlphabet);
+    void setEps(char newEps);
 
     // Basic automatons
 
@@ -75,7 +71,7 @@ public:
      * @param endName Name of the end state
      * @return ENFA The epsilon enfa
      */
-    ENFA* createEpsilon(std::string beginName , std::string endName);
+    ENFA* createEpsilon(std::string beginName , std::string endName) const;
 
     /**
      * @brief Create an enfa for the empty language {}
@@ -84,7 +80,7 @@ public:
      * @param endName Name of the end state
      * @return ENFA The empty enfa
      */
-    ENFA* createEmpty(std::string beginName , std::string endName);
+    ENFA* createEmpty(std::string beginName , std::string endName) const;
 
     /**
      * @brief Create an enfa for the language {a}
@@ -94,7 +90,7 @@ public:
      * @param a The character
      * @return ENFA The enfa for the language {a}
      */
-    ENFA* createSingleChar(std::string beginName , std::string endName , char a);
+    ENFA* createSingleChar(std::string beginName , std::string endName , char a) const;
 
     // Induction automatons
 
@@ -115,7 +111,7 @@ public:
      * @param S The second enfa
      * @return ENFA The enfa for the operation R.S
      */
-    ENFA* createConcatenation(ENFA &R , ENFA &S);
+    ENFA* createConcatenation(ENFA &R , ENFA &S) const;
 
     /**
      * @brief Create an enfa for the concatenation of a series of ENFA's
@@ -123,7 +119,7 @@ public:
      * @param ref The std::vector of the enfa's
      * @return ENFA* A pointer to the concatenated ENFA
      */
-    ENFA* createConcatenation(std::vector<ENFA*> ref);
+    ENFA* createConcatenation(std::vector<ENFA*> ref) const;
     
     /**
      * @brief Create an enfa for the star operation (R*)
@@ -133,7 +129,7 @@ public:
      * @param R The base enfa
      * @return ENFA The enfa for the operation R*
      */
-    ENFA* createStar(std::string beginName , std::string endName , ENFA &R);
+    ENFA* createStar(std::string beginName , std::string endName , ENFA &R) const;
 
     // Convert function
 
@@ -152,7 +148,7 @@ public:
      * @param count The current name count
      * @return ENFA* A pointer to the created ENFA
      */
-    ENFA* toENFA(std::string &reg , int &count);
+    ENFA* toENFA(std::string &reg , int &count) const;
 
     /**
      * @brief Constructs an enfa from the regex
