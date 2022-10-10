@@ -14,8 +14,8 @@ private:
     std::set<transition*> epsTransitions;
     char eps;
 public:
-    ENFA(std::string filename);
-    ENFA(ENFA* &ref);
+    explicit ENFA(std::string filename);
+    explicit ENFA(ENFA* &ref);
     ENFA();
     // Getters
     std::set<char> getAlphabet() const;
@@ -34,9 +34,9 @@ public:
     void setEpsTransitions(std::set<transition*> newEpsTransitions);
     void setEps(char newEps);
     // Help functions
-    void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    static void eliminateExtra(std::set<transitionNFA*> &currentSet);
     void evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions);
-    std::set<Node*> transit(std::set<Node*> begin , char a);
+    std::set<Node*> transit(const std::set<Node*>& begin , char a);
     std::set<Node*> eclose(std::set<Node*>);
     bool accepts(std::string A);
     DFA toDFA();

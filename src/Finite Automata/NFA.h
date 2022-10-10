@@ -18,7 +18,7 @@ private:
     std::set<Node*> beginNodes;
     std::set<transition*> transitions;
 public:
-    NFA(std::string filename);
+    explicit NFA(std::string filename);
     NFA();
     // Getters
     std::set<char> getAlphabet() const;
@@ -34,8 +34,8 @@ public:
     void setTransitions(std::set<transition*>newTransitions);
     // Help functions
     void evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*> &tempTransitions);
-    void eliminateExtra(std::set<transitionNFA*> &currentSet);
-    std::set<Node*> transit(std::set<Node*> begin , char a);
+    static void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    std::set<Node*> transit(const std::set<Node*>& begin , char a);
     bool accepts(std::string A);
     DFA toDFA();
     void print();

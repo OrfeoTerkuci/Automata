@@ -26,11 +26,11 @@ private:
 private:
     // PA operations
     void evaluate(std::set<std::set<Node*>>&begin , std::set<transitionNFA*> &tempTransitions );
-    void eliminateExtra(std::set<transitionNFA*> &currentSet);
-    void eliminateExtra(std::set<transition*>&trans);
+    static void eliminateExtra(std::set<transitionNFA*> &currentSet);
+    static void eliminateExtra(std::set<transition*>&trans);
     // Transition function
     Node* transit(Node* begin , char a);
-    std::set<std::set<Node*>> findTransition(std::set<Node*> &beginNodes , char c);
+    std::set<std::set<Node*>> findTransition(std::set<Node*> &beginNodesVector , char c);
     // TFA operations
     void createTable();
     void fillTable();

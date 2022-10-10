@@ -48,8 +48,8 @@ NFA::NFA(std::string filename)
     for(auto t : ts){
         std::string beginNodeName = t["from"];
         std::string endNodeName = t["to"];
-        std::string input = t["input"];
-        char inputA = input[0];
+        std::string t_input = t["input"];
+        char inputA = t_input[0];
         for(Node* n : nodes){
             if(n->getName()==beginNodeName){
                 beginState = n;
@@ -58,7 +58,7 @@ NFA::NFA(std::string filename)
                 endState = n;
             }
         }
-        transition* newTransition = new transition(beginState,endState,inputA);
+        auto* newTransition = new transition(beginState,endState,inputA);
         transitions.insert(newTransition);
     }
 }
@@ -97,7 +97,7 @@ void NFA::setTransitions(std::set<transition*>newTransitions){
     NFA::transitions = newTransitions;
 }
 
-std::set<Node*> NFA::transit(std::set<Node*> begin , char a){
+std::set<Node*> NFA::transit(const std::set<Node*>& begin , char a){
     std::set<Node*> c;
     if(alphabet.find(a) == alphabet.end()){
         return {nullptr};
@@ -204,7 +204,7 @@ DFA NFA::toDFA(){
     evaluate(newNodes , tempTransitions);
     eliminateExtra(tempTransitions);
     // Create new states
-    for(std::set<Node*> currentSet : newNodes){
+    for(const std::set<Node*>& currentSet : newNodes){
         int count = 0;
         // Create new node
         Node* newNode = new Node();

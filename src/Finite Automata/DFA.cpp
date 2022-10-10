@@ -48,8 +48,8 @@ DFA::DFA(std::string filename)
     for(auto t : ts){
         std::string beginNodeName = t["from"];
         std::string endNodeName = t["to"];
-        std::string input = t["input"];
-        char inputA = input[0];
+        std::string t_input = t["input"];
+        char inputA = t_input[0];
         for(Node* n : nodes){
             if(n->getName()==beginNodeName){
                 beginState = n;
@@ -58,7 +58,7 @@ DFA::DFA(std::string filename)
                 endState = n;
             }
         }
-        transition* newTransition = new transition(beginState,endState,inputA);
+        auto* newTransition = new transition(beginState,endState,inputA);
         transitions.insert(newTransition);
     }
     //* Create beginning TFA table
@@ -100,7 +100,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
     nodes.clear();
     transitions.clear();
     //* Create new states
-    for(std::set<Node*> currentSet : newNodes){
+    for(const std::set<Node*>& currentSet : newNodes){
         int count = 0;
         //* Create new node
         Node* newNode = new Node();
@@ -112,7 +112,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
         
         //* Create combined name
         newName += ")";
-        //* Add each nodes name
+        //* Add each node's name
         for(Node* currentNode : currentSet){
             // Get new node name
             newName += currentNode->getName();
@@ -126,7 +126,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
                 starting = false;
             }
             //* Check if accepting
-            // If union: one accepting = accepting
+            // Union: one accepting = accepting
             if(!intersect && currentNode->isAccepting()){
                 accepting = true;
             }
@@ -181,7 +181,8 @@ std::set<char> DFA::getAlphabet() const{
 std::set<Node*> DFA::getNodes() const{
     return DFA::nodes;
 }
-std::set<Node*> DFA::getFinal() const{
+
+__attribute__((unused)) std::set<Node*> DFA::getFinal() const{
     return DFA::finalNodes;
 }
 std::set<Node*> DFA::getBegin() const{
@@ -216,7 +217,7 @@ void DFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*
         // Remember old size
         int oldSize = static_cast<int>(newNodes.size());
         // Loop through all node pairs
-        for(std::set<Node*> currentNodes : newNodes){
+        for(const std::set<Node*>& currentNodes : newNodes){
             // Remember beginning
             std::set<Node*> oldTemp;
             // Loop through the alphabet
@@ -408,7 +409,7 @@ DFA DFA::minimize(){
     bool starting = false;
     // Get all the unmarked pairs
     std::set<std::set<Node*>> unmarked;
-    for(auto p : table){
+    for(const auto& p : table){
         if(!p.second){
             for(auto n : nodes){
                 if(p.first.find(n->getName()) != p.first.end()){
@@ -423,7 +424,7 @@ DFA DFA::minimize(){
     for(const auto &p : unmarked){
         newSet = p;
         // Check if there is a common element with another set
-        for(auto q : unmarked){
+        for(const auto& q : unmarked){
             for(auto n : q){
                 if(newSet.find(n) != newSet.end()){
                     newSet.insert(q.begin() , q.end());
@@ -438,7 +439,7 @@ DFA DFA::minimize(){
     // Get all the marked pairs
     std::set<Node*> marked = nodes;
     std::vector<std::string> names;
-    for(auto s : newStates){
+    for(const auto& s : newStates){
         newNode = new Node();
         for(Node* n : s){
             marked.erase(n);
@@ -516,7 +517,7 @@ DFA DFA::minimize(){
     return newDFA;
 }
 
-std::set<std::set<Node*>> DFA::findTransition(std::set<Node*> &beginNodes , char c){
+std::set<std::set<Node*>> DFA::findTransition(std::set<Node*> &beginNodesVector , char c){
     // Find a pair of nodes that transits to the given set with char c
     std::set<Node*> tempNode = {};
     std::set<Node*> newSet;
@@ -525,7 +526,7 @@ std::set<std::set<Node*>> DFA::findTransition(std::set<Node*> &beginNodes , char
         for(auto m : nodes){
             tempNode.insert(transit(n , c));
             tempNode.insert(transit(m , c));
-            if( tempNode == beginNodes){
+            if(tempNode == beginNodesVector){
                 newSet.insert(n);
                 newSet.insert(m);
                 newNode.insert(newSet);
