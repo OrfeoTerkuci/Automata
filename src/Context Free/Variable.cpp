@@ -111,3 +111,14 @@ Variable::~Variable() {
     }
     production.clear();
 }
+
+std::string Variable::getProduction(std::vector<Variable *> &prod) {
+    std::string output;
+    for(auto v : prod){
+        output += v->getName();
+        if(v != *prod.rbegin()){
+            output += " ";
+        }
+    }
+    return output;
+}

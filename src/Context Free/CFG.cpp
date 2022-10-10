@@ -1,5 +1,5 @@
 #include "CFG.h"
-#include "../Finite Automata/Variable.h"
+#include "Variable.h"
 #include <fstream>
 #include <iomanip>
 #include <functional>
@@ -108,23 +108,11 @@ void CFG::print() {
     // Print productions
     current = "P = {";
     current += '\n';
-    for(const auto& v : productions){
-        for(auto p : v.second){
-            current += "    ";
-            current += v.first;
-            current += " -> ";
-            current += "`";
-            if(!p.empty()){
-                for(const auto& r : p){
-                    current += r;
-                    if(r != *p.rbegin()){
-                        current += " ";
-                    }
-                }
-            }
-            current += '`';
-            current += '\n';
+    for(auto v : variables){
+        for(auto p : v->getProductions()){
+            current += "    " + v->getName() + " -> `" + Variable::getProduction(p) + "` \n";
         }
+
     }
     current += '}';
     current += '\n';

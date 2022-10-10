@@ -74,7 +74,7 @@ set(TFA_sources
 set(CFG_sources
         Test_files/CFG_General_test.cpp
         "src/Context Free/CFG.cpp"
-        "src/Finite Automata/Variable.cpp"
+        "src/Context Free/Variable.cpp"
         )
 
 add_executable(DFA ${DFA_sources})
