@@ -72,7 +72,7 @@ set(TFA_sources
 # Ba2INF
 
 set(CFG_sources
-        Test_files/CFG_General_test.cpp
+        Test_files/CFG_test.cpp
         "src/Context Free/CFG.cpp"
         "src/Context Free/Variable.cpp"
         )
