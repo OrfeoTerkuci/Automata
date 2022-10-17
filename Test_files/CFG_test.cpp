@@ -1,4 +1,3 @@
-#include <iostream>
 #include "../src/Context Free/CFG.h"
 
 using namespace std;

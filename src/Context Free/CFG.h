@@ -29,6 +29,11 @@ public:
     CFG();
 
     /**
+     * Prints
+     */
+    void toCNF();
+
+    /**
      * Prints all the elements of the Context Free Grammar
      */
     void print();

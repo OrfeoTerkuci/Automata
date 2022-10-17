@@ -77,6 +77,12 @@ set(CFG_sources
         "src/Context Free/Variable.cpp"
         )
 
+set(CNF_sources
+        "Test_files/CNF_test.cpp"
+        "src/Context Free/CFG.cpp"
+        "src/Context Free/Variable.cpp"
+        )
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -92,6 +98,8 @@ add_executable(RE ${RE_sources})
 add_executable(TFA ${TFA_sources})
 
 add_executable(CFG ${CFG_sources})
+
+add_executable(CNF ${CNF_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 

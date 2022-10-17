@@ -71,6 +71,10 @@ CFG::CFG() {
     startingVar = newVar;
 }
 
+void CFG::toCNF() {
+
+}
+
 void CFG::print() {
     std::string current;
     // Print variables
