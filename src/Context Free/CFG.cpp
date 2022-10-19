@@ -9,6 +9,17 @@ using json = nlohmann::json;
 
 bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
 
+bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
+    if(a.size() == b.size()){
+        for(int i = 0; i < a.size(); i++){
+            if (a[i] != b[i]) {
+                return compareVariables(a[i] , b[i]);
+            }
+        }
+    }
+    return false;
+}
+
 CFG::CFG(std::string filename) {
     //* Read from file
     std::ifstream input(filename);
@@ -38,7 +49,7 @@ CFG::CFG(std::string filename) {
         // Add production to variable
         for(auto v : variables){
             if(p["head"] == v->getName()){
-                v->addProduction(p["body"]);
+                v->addProduction(p["body"] , variables , terminals);
             }
         }
     }
@@ -72,6 +83,119 @@ CFG::CFG() {
 }
 
 void CFG::toCNF() {
+    // Print original CFG
+    std::cout << "Original CFG:\n\n";
+    print();
+    std::cout << "\n-------------------------------------\n" ;
+    // Eliminate epsilon productions
+    eliminateEpsilon();
+    eliminateUnitPairs();
+    eliminateUseless();
+    fixTerminals();
+    fixVariables();
+}
+
+void CFG::eliminateEpsilon() {
+    // Print introduction
+    std::cout << " >> Eliminating epsilon productions" << std::endl;
+    std::vector<Variable*> nullVar = calculateNullables();
+    std::cout << "  Nullables are {";
+    for(auto v : nullVar){
+        std::cout << v->getName();
+        if(v != *nullVar.rbegin()){
+            std::cout << ", ";
+        }
+    }
+    std::cout << "}" << std::endl;
+    int oldSize = 0;
+    for(const auto &v : variables){
+        oldSize += (int)v->getProductions().size();
+    }
+    for(auto &v : nullVar){
+        fixNullable(v);
+    }
+    int newSize = 0;
+    for(const auto &v : variables){
+        newSize += (int)v->getProductions().size();
+    }
+    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n\n";
+    print();
+    std::cout << std::endl;
+}
+
+std::vector<Variable*> CFG::calculateNullables() {
+    // Create container
+    std::set<Variable*> nullVar = {};
+    bool eval = true;
+    while(eval){
+        int oldSize = (int)nullVar.size();
+        for(auto& v : variables){
+            if(v->isNullVar()){
+                nullVar.insert(v);
+            }
+        }
+        eval = oldSize != nullVar.size();
+    }
+    return {nullVar.begin() , nullVar.end()};
+}
+
+void CFG::fixNullable(Variable* &var) {
+    std::vector<std::vector<Variable*>> prods;
+    std::vector<Variable*> newProd;
+    std::vector<Variable*> editProd;
+    for(auto &p : var->getProductions()){
+        newProd = {};
+        editProd = p;
+        // Add original production
+        if(!p.empty() && p[0]->getName().empty()){
+            delete p[0];
+            p.clear();
+            continue;
+        }
+        else if(!p.empty() && !p[0]->getName().empty()){
+            prods.push_back(p);
+        }
+        for(int i = 0; i < p.size(); i++){
+            // Add production without nullable variable
+            if(p[i]->isNullable()){
+                editProd.erase(editProd.begin() + i);
+                if(!editProd.empty()){
+                    prods.push_back(editProd);
+                }
+                editProd = p;
+            }
+            else if(!p[i]->isNullable() && !p[i]->isTerminal()){
+                newProd.push_back(p[i]);
+            }
+        }
+        if(!newProd.empty()){
+            prods.push_back(newProd);
+        }
+
+    }
+    for(auto it = prods.begin(); it != prods.end(); it++){
+        if((*it)[0]->getName().empty()){
+            it = prods.erase(it);
+        }
+    }
+    std::sort(prods.begin() , prods.end() , compareVector);
+    var->setProductions(prods);
+
+}
+
+void CFG::eliminateUnitPairs() {
+
+}
+
+void CFG::eliminateUseless() {
+
+}
+
+void CFG::fixTerminals() {
+
+}
+
+void CFG::fixVariables() {
 
 }
 

@@ -15,21 +15,32 @@ private:
     std::vector<Variable*> terminals;
     Variable* startingVar;
 
+    // Internal functions for CNF conversion
+    void eliminateEpsilon();
+    std::vector<Variable*> calculateNullables();
+    void eliminateUnitPairs();
+    void eliminateUseless();
+    static void fixNullable(Variable* &var);
+    void fixTerminals();
+    void fixVariables();
+
 public:
 
     /**
      * @brief Constructor for Context Free Grammar object
      * @param filename The path to the input file
      */
-    [[maybe_unused]] explicit CFG (std::string filename);
+    explicit CFG (std::string filename);
 
     /**
      * @brief Creates a Context Free Grammar object with default parameters
      */
     CFG();
 
+    // CNF conversion
+
     /**
-     * Prints
+     * Converts the CFG to CNF while displaying all the steps
      */
     void toCNF();
 

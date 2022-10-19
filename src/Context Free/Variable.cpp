@@ -2,9 +2,9 @@
 
 Variable::Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production , bool starting ,
                    bool terminal) :
-                    name(name), production(production) , starting(starting) , terminal(terminal) {}
+                    name(name), production(production) , starting(starting) , terminal(terminal) , nullable(false) {}
 
-Variable::Variable() : production({}) , starting(false) , terminal(false) {}
+Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(false) {}
 
 const std::string &Variable::getName() const {
     return name;
@@ -14,7 +14,7 @@ void Variable::setName(const std::string &newName) {
     Variable::name = newName;
 }
 
-const std::vector<std::vector<Variable*> > &Variable::getProductions() const {
+std::vector<std::vector<Variable*> > Variable::getProductions() const {
     return production;
 }
 
@@ -31,14 +31,23 @@ void Variable::addProduction(std::vector<Variable*> newProduction) {
     }
 }
 
-void Variable::addProduction(std::vector<std::string> newProduction) {
+void Variable::addProduction(std::vector<std::string> newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms) {
     if(newProduction.empty()){
         production.insert(production.begin() , {new Variable()});
     }
     else{
         std::vector<Variable*> newProd;
-        for(const auto& v : newProduction){
-            newProd.push_back(new Variable(v , {}));
+        for(const auto& nv : newProduction){
+            for(auto v : vars){
+                if(nv == v->getName()){
+                    newProd.push_back(v);
+                }
+            }
+            for(auto v : terms){
+                if(nv == v->getName()){
+                    newProd.push_back(v);
+                }
+            }
         }
         production.push_back(newProd);
     }
@@ -102,23 +111,48 @@ bool Variable::operator>=(const Variable &rhs) const {
     return !(*this < rhs);
 }
 
-Variable::~Variable() {
-    for(auto p : production){
-        for(auto v : p){
-            delete v;
-        }
-        p.clear();
-    }
-    production.clear();
-}
-
 std::string Variable::getProduction(std::vector<Variable *> &prod) {
     std::string output;
-    for(auto v : prod){
-        output += v->getName();
-        if(v != *prod.rbegin()){
+    for(int i = 0; i < prod.size(); i++){
+        output += prod[i]->getName();
+        if(i != prod.size() - 1){
             output += " ";
         }
     }
     return output;
+}
+
+bool Variable::isNullable() const {
+    return nullable;
+}
+
+void Variable::setNullable(bool newNullStat) {
+    Variable::nullable = newNullStat;
+}
+
+bool Variable::isNullVar() {
+    if(name.empty() && !terminal){
+        return true;
+    }
+    for(const auto& p : production){
+        for(auto& v :p){
+            if(v->isNullVar() && !v->isTerminal()){
+                nullable = true;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+Variable::~Variable() {
+//    for(auto p : production){
+//        for(auto v : p){
+//            if(v->name.empty()){
+//                delete v;
+//            }
+//        }
+//        p.clear();
+//    }
+//    production.clear();
 }
