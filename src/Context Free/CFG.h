@@ -19,6 +19,10 @@ private:
     void eliminateEpsilon();
     std::vector<Variable*> calculateNullables();
     void eliminateUnitPairs();
+    void eliminateUnitProductions();
+    void sortProductions();
+    std::set<std::pair<Variable* , Variable*>> calculateUnits(int &total);
+    static std::set<std::vector<Variable*>> getProductions(std::set<std::pair<Variable* , Variable*>> &unitPairs , Variable* var);
     void eliminateUseless();
     static void fixNullable(Variable* &var);
     void fixTerminals();

@@ -10,11 +10,12 @@ using json = nlohmann::json;
 bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
 
 bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
-    if(a.size() == b.size()){
-        for(int i = 0; i < a.size(); i++){
-            if (a[i] != b[i]) {
-                return compareVariables(a[i] , b[i]);
-            }
+    for(int i = 0; i < std::min(a.size() , b.size()); i++){
+        if (a[i] != b[i]) {
+            return compareVariables(a[i] , b[i]);
+        }
+        else if(a[i] == b[i] && i == std::min(a.size() , b.size()) - 1){
+            return std::min(a.size() , b.size()) == b.size();
         }
     }
     return false;
@@ -149,7 +150,6 @@ void CFG::fixNullable(Variable* &var) {
         // Add original production
         if(!p.empty() && p[0]->getName().empty()){
             delete p[0];
-            p.clear();
             continue;
         }
         else if(!p.empty() && !p[0]->getName().empty()){
@@ -184,7 +184,100 @@ void CFG::fixNullable(Variable* &var) {
 }
 
 void CFG::eliminateUnitPairs() {
+    int totalPairs = 0;
+    // Print introduction
+    std::cout << " >> Eliminating unit pairs" << std::endl;
+    std::set<std::pair<Variable* , Variable*>> unitPairs = calculateUnits(totalPairs);
+    std::set<std::vector<Variable*>> newProd;
+    std::vector<std::vector<Variable*>> v_prods;
+    std::vector<std::vector<Variable*>> e_prods;
+    std::cout << "  Found " << totalPairs << " unit productions" << std::endl;
+    std::cout << "  Unit pairs: {";
+    for(auto u : unitPairs){
+        std::cout << "(" << u.first->getName() << ", " << u.second->getName() << ")";
+        if(u != *unitPairs.rbegin()){
+            std::cout << ", ";
+        }
+        else{
+            std::cout << "}\n\n";
+        }
+        // {(A, A), (A, C), (A, E), (B, B), (B, C), (B, E), (C, C), (C, E), (D, A), (D, B), (D, C), (D, D), (D, E), (E, E), (S, S)}
+//        newProd = getProductions(unitPairs , u.first);
+        v_prods = u.second->getProductions();
+        newProd.insert(v_prods.begin() , v_prods.end());
+        std::vector<Variable*> sec = {u.second};
+        v_prods = std::vector<std::vector<Variable*>>(newProd.begin() , newProd.end());
+        if(u.first == u.second){
+            newProd = {};
+            continue;
+        }
+        auto vec = u.first->getProductions();
+        // Get intersection
+        std::set_intersection(vec.begin(),vec.end(),
+                              v_prods.begin(),v_prods.end(),
+                              back_inserter(e_prods));
+        // Remove intersection from vector to be inserted
+        vec = {};
+        std::set_difference(v_prods.begin(), v_prods.end(), e_prods.begin(), e_prods.end(),
+                            std::inserter(vec, vec.begin()));
+        u.first->replaceProduction(sec , vec);
+        newProd = {};
+        e_prods = {};
+        v_prods = {};
+    }
+    eliminateUnitProductions();
+    sortProductions();
+    print();
+}
 
+void CFG::sortProductions() {
+    for(auto v : variables){
+        auto vec = v->getProductions();
+        std::sort(vec.begin() , vec.end() , compareVector);
+        v->setProductions(vec);
+    }
+}
+
+void CFG::eliminateUnitProductions() {
+    for(auto v : variables){
+        for(auto p : v->getProductions()){
+            if((p.size() == 1 && !p[0]->isTerminal()) || p.empty()){
+                v->removeProduction(p);
+            }
+        }
+    }
+}
+
+std::set<std::vector<Variable *>> CFG::getProductions(std::set<std::pair<Variable* , Variable*>> &unitPairs , Variable* var) {
+    std::set<std::vector<Variable*>> prods;
+    std::vector<std::vector<Variable*>> v_prods;
+    for(auto p : unitPairs){
+        if(p.first == var && p.first != p.second){
+            v_prods = p.second->getProductions();
+            prods.insert(v_prods.begin() , v_prods.end());
+        }
+    }
+    return prods;
+}
+
+std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits(int &total) {
+    std::set<std::pair<Variable* , Variable*>> units;
+    std::pair<bool , std::set<Variable*> > current_unit;
+    for(auto v : variables){
+        current_unit = v->isUnit();
+        if(current_unit.first){
+            for(auto v1 : current_unit.second){
+                units.insert(std::pair<Variable* , Variable*>(v , v1));
+            }
+        }
+        else{
+            units.insert(std::pair<Variable* , Variable*>(v , *current_unit.second.begin()));
+        }
+        if(!v->getProductions().empty()){
+            total++;
+        }
+    }
+    return units;
 }
 
 void CFG::eliminateUseless() {

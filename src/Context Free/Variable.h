@@ -29,6 +29,10 @@ public:
 
     void addProduction(std::vector<Variable*> newProduction);
 
+    void removeProduction(std::vector<Variable*> &prod);
+
+    void replaceProduction(std::vector<Variable*> &prod , std::vector<std::vector<Variable*>> &newProd);
+
     void addProduction(std::vector<std::string> newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms);
 
     bool isStarting() const;
@@ -48,6 +52,10 @@ public:
     void setNullable(bool newNullStat);
 
     bool isNullVar();
+
+    std::pair<bool , std::set<Variable*> > isUnit();
+
+    bool prodExists(std::vector<Variable*> &newProduction);
 
     // Operator overloads
 

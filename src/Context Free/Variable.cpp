@@ -1,5 +1,14 @@
 #include "Variable.h"
 
+bool Variable::prodExists(std::vector<Variable*> &newProduction){
+    for(const auto& p : production){
+        if(p == newProduction){
+            return true;
+        }
+    }
+    return false;
+}
+
 Variable::Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production , bool starting ,
                    bool terminal) :
                     name(name), production(production) , starting(starting) , terminal(terminal) , nullable(false) {}
@@ -23,11 +32,33 @@ void Variable::setProductions(const std::vector<std::vector<Variable*> > &newPro
 }
 
 void Variable::addProduction(std::vector<Variable*> newProduction) {
+    if(prodExists(newProduction)){
+        return;
+    }
     if(newProduction.empty()){
         production.insert(production.begin() , {new Variable()});
     }
     else{
         production.push_back(newProduction);
+    }
+}
+
+void Variable::removeProduction(std::vector<Variable *> &prod) {
+    for(auto it = production.begin(); it != production.end(); it++){
+        if(*it == prod){
+            it = production.erase(it);
+            return;
+        }
+    }
+}
+
+void Variable::replaceProduction(std::vector<Variable *> &prod, std::vector<std::vector<Variable *>> &newProd) {
+    for(auto it = production.begin(); it != production.end(); it++){
+        if(*it == prod){
+            it = production.erase(it);
+            production.insert(it , newProd.begin() , newProd.end());
+            return;
+        }
     }
 }
 
@@ -145,14 +176,21 @@ bool Variable::isNullVar() {
     return false;
 }
 
-Variable::~Variable() {
-//    for(auto p : production){
-//        for(auto v : p){
-//            if(v->name.empty()){
-//                delete v;
-//            }
-//        }
-//        p.clear();
-//    }
-//    production.clear();
+std::pair<bool , std::set<Variable*> > Variable::isUnit() {
+    if(terminal){
+        return {false , {this} };
+    }
+    else {
+        std::set<Variable*> r = {this};
+
+        for (auto p: production) {
+            if (p.size() == 1 && !p[0]->terminal) {
+                std::set<Variable*> k = p[0]->isUnit().second;
+                r.insert(k.begin() , k.end());
+            }
+        }
+        return {r.size() > 1 , r};
+    }
 }
+
+Variable::~Variable() = default;
