@@ -248,18 +248,6 @@ void CFG::eliminateUnitProductions() {
     }
 }
 
-std::set<std::vector<Variable *>> CFG::getProductions(std::set<std::pair<Variable* , Variable*>> &unitPairs , Variable* var) {
-    std::set<std::vector<Variable*>> prods;
-    std::vector<std::vector<Variable*>> v_prods;
-    for(auto p : unitPairs){
-        if(p.first == var && p.first != p.second){
-            v_prods = p.second->getProductions();
-            prods.insert(v_prods.begin() , v_prods.end());
-        }
-    }
-    return prods;
-}
-
 std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits(int &total) {
     std::set<std::pair<Variable* , Variable*>> units;
     std::pair<bool , std::set<Variable*> > current_unit;
