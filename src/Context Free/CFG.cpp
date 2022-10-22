@@ -33,7 +33,7 @@ CFG::CFG(std::string filename) {
         if(it.key() == "Terminals"){
             std::vector<std::string> a = it.value();
             for(const std::string& s : a){
-                terminals.push_back(new Variable(s , {} , false , true));
+                terminals.push_back(new Variable(s , {} , false , true , true));
             }
         }
         else if(it.key() == "Variables"){
@@ -69,25 +69,21 @@ CFG::CFG(std::string filename) {
 
 }
 
-CFG::CFG() {
-    // Create the terminals
-    terminals = { new Variable("0",{},false,true) ,
-                  new Variable("1",{},false,true) ,
-                  new Variable("a",{},false,true) ,
-                  new Variable("b",{},false,true) };
-    Variable* newVar;
-    newVar = new Variable("BINDIGIT" , { {new Variable("0")} , {new Variable("1")} });
-    variables.push_back(newVar);
-    newVar = new Variable("S" , { "" , "a S b BINDIGIT"} , true );
-    variables.push_back(newVar);
-    startingVar = newVar;
+CFG::CFG() : variables({}) , terminals({}) , startingVar(nullptr) {}
+
+void CFG::sortProductions() {
+    for(auto v : variables){
+        auto vec = v->getProductions();
+        std::sort(vec.begin() , vec.end() , compareVector);
+        v->setProductions(vec);
+    }
 }
 
 void CFG::toCNF() {
     // Print original CFG
     std::cout << "Original CFG:\n\n";
     print();
-    std::cout << "\n-------------------------------------\n" ;
+    std::cout << "\n-------------------------------------\n" << std::endl;
     // Eliminate epsilon productions
     eliminateEpsilon();
     eliminateUnitPairs();
@@ -119,7 +115,7 @@ void CFG::eliminateEpsilon() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n\n";
+    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
     print();
     std::cout << std::endl;
 }
@@ -185,6 +181,10 @@ void CFG::fixNullable(Variable* &var) {
 
 void CFG::eliminateUnitPairs() {
     int totalPairs = 0;
+    int oldSize = 0;
+    for(const auto &v : variables){
+        oldSize += (int)v->getProductions().size();
+    }
     // Print introduction
     std::cout << " >> Eliminating unit pairs" << std::endl;
     std::set<std::pair<Variable* , Variable*>> unitPairs = calculateUnits(totalPairs);
@@ -199,10 +199,8 @@ void CFG::eliminateUnitPairs() {
             std::cout << ", ";
         }
         else{
-            std::cout << "}\n\n";
+            std::cout << "}\n";
         }
-        // {(A, A), (A, C), (A, E), (B, B), (B, C), (B, E), (C, C), (C, E), (D, A), (D, B), (D, C), (D, D), (D, E), (E, E), (S, S)}
-//        newProd = getProductions(unitPairs , u.first);
         v_prods = u.second->getProductions();
         newProd.insert(v_prods.begin() , v_prods.end());
         std::vector<Variable*> sec = {u.second};
@@ -227,15 +225,13 @@ void CFG::eliminateUnitPairs() {
     }
     eliminateUnitProductions();
     sortProductions();
-    print();
-}
-
-void CFG::sortProductions() {
-    for(auto v : variables){
-        auto vec = v->getProductions();
-        std::sort(vec.begin() , vec.end() , compareVector);
-        v->setProductions(vec);
+    int newSize = 0;
+    for(const auto &v : variables){
+        newSize += (int)v->getProductions().size();
     }
+    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
+    print();
+    std::cout << std::endl;
 }
 
 void CFG::eliminateUnitProductions() {
@@ -269,7 +265,135 @@ std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits(int &total) {
 }
 
 void CFG::eliminateUseless() {
+    // Store beginning sizes
+    int oldVar = (int)variables.size();
+    int oldTerm = (int)terminals.size();
+    int oldProd = 0;
+    for(auto v : variables){
+        oldProd += (int)v->getProductions().size();
+    }
+    // Introduction print
+    std::cout << " >> Eliminating useless symbols" << std::endl;
+    // Calculate generating variables
+    std::vector<Variable*> genVar = calculateGenerating();
+    std::sort(genVar.begin() , genVar.end() , compareVariables);
+    std::cout << "  Generating symbols: {";
+    for(auto v : genVar){
+        std::cout << *v;
+        if (v == *genVar.rbegin()) {
+            std::cout << "}" << std::endl;
+        } else {
+            std::cout << ", ";
+        }
+    }
+    // Eliminate non generating variables
+    eliminateNonGenerating();
+    // Calculate reachable variables
+    std::vector<Variable*> reachVar = calculateReachable();
+    std::sort(reachVar.begin() , reachVar.end() , compareVariables);
+    std::cout << "  Reachable  symbols: {";
+    for(auto v : reachVar){
+        std::cout << *v;
+        if (v == *reachVar.rbegin()) {
+            std::cout << "}" << std::endl;
+        } else {
+            std::cout << ", ";
+        }
+    }
+    // Find useful variables
+    std::vector<Variable*> usefulVar;
+    std::set_intersection(genVar.begin() , genVar.end() ,
+                        reachVar.begin() , reachVar.end() ,
+                        std::inserter(usefulVar, usefulVar.end()));
+    std::sort(reachVar.begin() , reachVar.end() , compareVariables);
+    std::cout << "  Useful  symbols: {";
+    for(auto v : usefulVar){
+        std::cout << *v;
+        if (v == *usefulVar.rbegin()) {
+            std::cout << "}" << std::endl;
+        } else {
+            std::cout << ", ";
+        }
+    }
+    eliminateUnreachable(usefulVar);
+    // Results output
+    int newProd = 0;
+    for(auto v : variables){
+        newProd += (int)v->getProductions().size();
+    }
+    std::cout   << "  Removed " << oldVar - variables.size() << " variables, "
+                << oldTerm - terminals.size() << " terminals "
+                << "and " << oldProd - newProd << " productions \n"
+                << std::endl;
+    print();
+}
 
+std::vector<Variable *> CFG::calculateGenerating() {
+    // Create container
+    std::set<Variable*> genVar = {terminals.begin() , terminals.end()};
+    bool eval = true;
+    for(auto v : variables){
+        v->isGeneratingVar();
+        if(v->isGenerating()){
+            genVar.insert(v);
+        }
+    }
+    while(eval){
+        int oldSize = (int)genVar.size();
+        for(auto& v : variables){
+            if(v->isGenerating()){
+                genVar.insert(v);
+            }
+        }
+        eval = oldSize != genVar.size();
+    }
+    return {genVar.begin() , genVar.end()};
+}
+
+void CFG::eliminateNonGenerating() {
+    for(auto it = variables.begin(); it != variables.end(); it++){
+        if(!(*it)->isGenerating()){
+            it = variables.erase(it);
+        }
+        (*it)->eliminateNonGen();
+    }
+}
+
+std::vector<Variable *> CFG::calculateReachable() {
+    static std::set<Variable*> reachVar = {startingVar};
+    int oldSize = (int)reachVar.size();
+    for (auto v: reachVar) {
+        for (const auto &p: v->getProductions()) {
+            for (auto v1: p) {
+                if (v1->isTerminal() || v1->isGenerating()) {
+                    reachVar.insert(v1);
+                }
+            }
+        }
+    }
+    if(oldSize == reachVar.size()){
+        return {reachVar.begin() , reachVar.end()};
+    }
+    return calculateReachable();
+}
+
+void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
+    for(auto it = variables.begin(); it != variables.end(); it++){
+        if((*it)->isTerminal()){
+            continue;
+        }
+        if(!(std::find(reachVars.begin(), reachVars.end(), (*it)) != reachVars.end())){
+            it = variables.erase(it);
+        }
+    }
+    for(auto it = terminals.begin(); it != terminals.end(); it++){
+        if(!(*it)->isTerminal()){
+            continue;
+        }
+        if(!(std::find(reachVars.begin(), reachVars.end(), (*it)) != reachVars.end())){
+            it = terminals.erase(it);
+        }
+    }
 }
 
 void CFG::fixTerminals() {

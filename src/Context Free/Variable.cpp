@@ -10,10 +10,11 @@ bool Variable::prodExists(std::vector<Variable*> &newProduction){
 }
 
 Variable::Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production , bool starting ,
-                   bool terminal) :
-                    name(name), production(production) , starting(starting) , terminal(terminal) , nullable(false) {}
+                   bool terminal , bool generating) :
+                    name(name), production(production) , starting(starting) ,
+                    terminal(terminal) , nullable(false) , generating(generating) {}
 
-Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(false) {}
+Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(false) , generating(false) {}
 
 const std::string &Variable::getName() const {
     return name;
@@ -46,7 +47,7 @@ void Variable::addProduction(std::vector<Variable*> newProduction) {
 void Variable::removeProduction(std::vector<Variable *> &prod) {
     for(auto it = production.begin(); it != production.end(); it++){
         if(*it == prod){
-            it = production.erase(it);
+            production.erase(it);
             return;
         }
     }
@@ -62,7 +63,7 @@ void Variable::replaceProduction(std::vector<Variable *> &prod, std::vector<std:
     }
 }
 
-void Variable::addProduction(std::vector<std::string> newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms) {
+void Variable::addProduction(const std::vector<std::string>& newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms) {
     if(newProduction.empty()){
         production.insert(production.begin() , {new Variable()});
     }
@@ -190,6 +191,60 @@ std::pair<bool , std::set<Variable*> > Variable::isUnit() {
             }
         }
         return {r.size() > 1 , r};
+    }
+}
+
+bool Variable::isGenerating() const {
+    return generating;
+}
+
+void Variable::setGenerating(bool newGenerating) {
+    Variable::generating = newGenerating;
+}
+
+bool Variable::isGeneratingVar() {
+    if(terminal){
+        generating = true;
+        return true;
+    }
+    if(production.empty()){
+        return false;
+    }
+    bool gen = true;
+    while(gen){
+        for(const auto& p : production){
+            gen = true;
+            for(auto v : p){
+                if(!v->isGenerating()){
+                    gen = false;
+                }
+            }
+            if(gen){
+                generating = true;
+                return true;
+            }
+        }
+    }
+    return gen;
+}
+
+std::ostream &operator<<(std::ostream &os, const Variable &variable) {
+    os << variable.name;
+    return os;
+}
+
+void Variable::eliminateNonGen() {
+    bool eval = true;
+    while(eval){
+        eval = false;
+        for(auto it = production.begin(); it != production.end(); it++){
+            for(auto v : *it){
+                if(!v->isGenerating()){
+                    it = production.erase(it);
+                    eval = true;
+                }
+            }
+        }
     }
 }
 

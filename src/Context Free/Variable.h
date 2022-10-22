@@ -13,9 +13,10 @@ private:
     bool starting;
     bool terminal;
     bool nullable;
+    bool generating;
 public:
     Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production = {},
-                      bool starting = false , bool terminal = false);
+                      bool starting = false , bool terminal = false , bool generating = false);
 
     Variable();
 
@@ -33,7 +34,7 @@ public:
 
     void replaceProduction(std::vector<Variable*> &prod , std::vector<std::vector<Variable*>> &newProd);
 
-    void addProduction(std::vector<std::string> newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms);
+    void addProduction(const std::vector<std::string>& newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms);
 
     bool isStarting() const;
 
@@ -47,15 +48,29 @@ public:
 
     static std::string getProduction(std::vector<Variable*> &prod);
 
+    // Nullable check
+
     bool isNullable() const;
 
     void setNullable(bool newNullStat);
 
     bool isNullVar();
 
+    // Unit check
+
     std::pair<bool , std::set<Variable*> > isUnit();
 
     bool prodExists(std::vector<Variable*> &newProduction);
+
+    // Generating check
+
+    bool isGenerating() const;
+
+    void setGenerating(bool newGenerating);
+
+    bool isGeneratingVar();
+
+    void eliminateNonGen();
 
     // Operator overloads
 
@@ -70,6 +85,8 @@ public:
     bool operator<=(const Variable &rhs) const;
 
     bool operator>=(const Variable &rhs) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const Variable &variable);
 
     virtual ~Variable();
 

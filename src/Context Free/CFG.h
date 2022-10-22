@@ -15,16 +15,22 @@ private:
     std::vector<Variable*> terminals;
     Variable* startingVar;
 
+    void sortProductions();
     // Internal functions for CNF conversion
+    // Epsilon elimination
     void eliminateEpsilon();
     std::vector<Variable*> calculateNullables();
+    static void fixNullable(Variable* &var);
+    // Unit pair elimination
     void eliminateUnitPairs();
     void eliminateUnitProductions();
-    void sortProductions();
     std::set<std::pair<Variable* , Variable*>> calculateUnits(int &total);
-
+    // Useless variables elimination
     void eliminateUseless();
-    static void fixNullable(Variable* &var);
+    std::vector<Variable*> calculateGenerating();
+    void eliminateNonGenerating();
+    std::vector<Variable*> calculateReachable();
+    void eliminateUnreachable(const std::vector<Variable*>& reachVars);
     void fixTerminals();
     void fixVariables();
 
