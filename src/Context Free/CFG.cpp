@@ -478,13 +478,13 @@ void CFG::fixTerminals() {
 
 void CFG::fixVariables() {
     std::vector<Variable*> newVars;
-    std::map<std::vector<Variable*> , Variable*> variablesExisting;
+    std::map<std::vector<Variable*> , std::vector<Variable*>> variablesExisting;
     int oldSize = (int)variables.size();
     // Find good bodies
     for(auto v : variables){
         for(const auto& p : v->getProductions()){
             if(p.size() == 2){
-                variablesExisting[p] = v;
+                variablesExisting[p].push_back(v);
             }
         }
     }
@@ -497,12 +497,14 @@ void CFG::fixVariables() {
             if(p.size() > 2){
                 int i = (int)p.size();
                 // Check if new variable already exists
-                if(variablesExisting[ {p[i-2] , p[i-1]} ] == nullptr || variablesExisting[ {p[i-2] , p[i-1]} ] == v ){
+                auto vec = variablesExisting[{p[i - 2], p[i - 1]}];
+                auto v2 = std::find(vec.begin(), vec.end(),v);
+                if(vec.empty() || v2 == vec.end() || *v2 == v ){
                     std::string newName = v->getName() + "_" + std::to_string(el);
                     auto newVar = new Variable(newName);
                     newVar->addProduction({p[i-2] , p[i-1]});
                     variables.push_back(newVar);
-                    variablesExisting[{p[i-2] , p[i-1]}] = newVar;
+                    variablesExisting[{p[i-2] , p[i-1]}].push_back(newVar);
                     newVars.push_back(newVar);
                     varCount++;
                     el++;
@@ -523,12 +525,20 @@ void CFG::fixVariables() {
             }
             for(int i = (int)p.size() - 1; i > 0; i--){
                 // Replace with existing variable
-                if(variablesExisting[{p[i-1] , p[i]}] != nullptr){
-                    p[i-1] = variablesExisting[{p[i-1] , p[i]}];
-                    auto it = p.begin();
-                    std::advance(it , i);
-                    p.erase(it);
-                    bodyCount++;
+                auto vec = variablesExisting[{p[i-1] , p[i]}];
+                if(!vec.empty()){
+                    // Check which variable matches our name
+                    for(auto v2 : vec){
+                        std::string n = v->getName();
+                        std::string n2 = v2->getName().substr(0 , n.length());
+                        if(n2 == n && v2 != v){
+                            p[i-1] = v2;
+                            auto it = p.begin();
+                            std::advance(it , i);
+                            p.erase(it);
+                            bodyCount++;
+                        }
+                    }
                 }
             }
         }

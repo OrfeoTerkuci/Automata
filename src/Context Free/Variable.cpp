@@ -270,11 +270,11 @@ void Variable::eliminateNonGen() {
 }
 
 Variable::~Variable() {
-    for(const auto& p : production){
-        for(auto v : p){
-            if(v->getName().empty()){
-                delete v;
-            }
-        }
-    }
+//    for(const auto& p : production){
+//        for(auto v : p){
+//            if(v->getName().empty()){
+//                delete v;
+//            }
+//        }
+//    }
 };
