@@ -40,7 +40,7 @@ public:
      * @brief Construct a new DFA object from a JSON file
      * @param filename The path of the JSON file
      */
-    explicit DFA(std::string filename);
+    explicit DFA(const std::string& filename);
 
     /**
      * @brief Construct a new DFA from the product of two other DFAs

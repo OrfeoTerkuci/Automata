@@ -18,7 +18,7 @@ private:
     std::set<Node*> beginNodes;
     std::set<transition*> transitions;
 public:
-    explicit NFA(std::string filename);
+    explicit NFA(const std::string& filename);
     NFA();
     // Getters
     std::set<char> getAlphabet() const;

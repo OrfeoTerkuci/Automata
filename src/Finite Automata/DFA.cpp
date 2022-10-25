@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-DFA::DFA(std::string filename)
+DFA::DFA(const std::string& filename)
 {
     //* Read from file
     std::ifstream input(filename);

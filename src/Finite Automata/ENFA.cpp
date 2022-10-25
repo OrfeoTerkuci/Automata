@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-ENFA::ENFA(std::string filename)
+ENFA::ENFA(const std::string& filename)
 {
     // Read from file
     std::ifstream input(filename);

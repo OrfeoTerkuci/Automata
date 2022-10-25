@@ -14,7 +14,7 @@ private:
     std::set<transition*> epsTransitions;
     char eps;
 public:
-    explicit ENFA(std::string filename);
+    explicit ENFA(const std::string& filename);
     explicit ENFA(ENFA* &ref);
     ENFA();
     // Getters
