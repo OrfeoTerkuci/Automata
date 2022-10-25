@@ -467,12 +467,69 @@ void CFG::fixTerminals() {
 }
 
 void CFG::fixVariables() {
-
+    std::vector<Variable*> newVars;
+    std::map<std::vector<Variable*> , Variable*> variablesExisting;
+    int oldSize = (int)variables.size();
+    // Find good bodies
     for(auto v : variables){
-        for(auto &p : v->getProductions()){
-
+        for(const auto& p : v->getProductions()){
+            if(p.size() == 2){
+                variablesExisting[p] = v;
+            }
         }
     }
+    int varCount = 0;
+    // Fix bad bodies
+    for(auto v : variables){
+        int el = 2;
+        for(auto p : v->getProductions()){
+            // If production too long
+            if(p.size() > 2){
+                int i = (int)p.size();
+                // Check if new variable already exists
+                if(variablesExisting[ {p[i-1] , p[i-2]} ] == nullptr || variablesExisting[ {p[i-1] , p[i-2]} ] == v ){
+                    std::string newName = v->getName() + "_" + std::to_string(el);
+                    auto newVar = new Variable(newName);
+                    newVar->addProduction({p[i-1] , p[i-2]});
+                    variables.push_back(newVar);
+                    variablesExisting[{p[i-1] , p[i-2]}] = newVar;
+                    newVars.push_back(newVar);
+                    varCount++;
+                    el++;
+                }
+            }
+        }
+    }
+    int bodyCount = 0;
+    // Replace variables in bad bodies
+    for(auto &v : variables){
+        auto prod = v->getProductions();
+        for(auto &p : prod){
+            if(p.size() == 1 && p[0]->isTerminal()){
+                continue;
+            }
+            if(p.size() == 2){
+                continue;
+            }
+            for(int i = (int)p.size() - 1; i > 0; i--){
+                // Replace with existing variable
+                if(variablesExisting[{p[i-1] , p[i]}] != nullptr){
+                    p[i-1] = variablesExisting[{p[i-1] , p[i]}];
+                    auto it = p.begin();
+                    std::advance(it , i);
+                    p.erase(it);
+                    bodyCount++;
+                }
+            }
+        }
+        v->setProductions(prod);
+    }
+    std::sort(newVars.begin() , newVars.end() , compareVariables);
+    sortProductions();
+    int newSize = (int)variables.size();
+    std::cout   << " >> Broke " << bodyCount << " bodies , added " << newSize - oldSize << " new variables\n"
+                << ">>> Result CFG:\n";
+    print();
 }
 
 void CFG::print() {
