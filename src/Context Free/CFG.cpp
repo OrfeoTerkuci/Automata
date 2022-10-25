@@ -13,10 +13,10 @@ bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
     std::vector<Variable*> v(a.begin(), a.begin() + (int)b.size());
     std::vector<Variable*> v1(b.begin(), b.begin() + (int)a.size());
     if(b == v && b.size() > 1){
-        return true;
+        return false;
     }
     if(a == v1 && a.size() > 1){
-        return true;
+        return false;
     }
     for(int i = 0; i < std::min(a.size() , b.size()); i++){
         if (a[i] != b[i]) {
@@ -74,6 +74,7 @@ CFG::CFG(const std::string& filename) {
 
     std::sort(variables.begin() , variables.end() , compareVariables);
     std::sort(terminals.begin() , terminals.end() , compareVariables);
+    sortProductions();
 
 }
 
@@ -123,14 +124,19 @@ void CFG::eliminateEpsilon() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
+    std::cout << "  Created " << newSize << " productions, original had " << oldSize << "\n" << std::endl;
     print();
     std::cout << std::endl;
 }
 
 std::vector<Variable*> CFG::calculateNullables() {
-    // Create container
     std::set<Variable*> nullVar = {};
+    for(auto& v : variables){
+        if(v->isNullVar()){
+            nullVar.insert(v);
+        }
+    }
+    // Create container
     bool eval = true;
     while(eval){
         int oldSize = (int)nullVar.size();
@@ -192,10 +198,15 @@ void CFG::eliminateUnitPairs() {
     int oldSize = 0;
     for(const auto &v : variables){
         oldSize += (int)v->getProductions().size();
+        for(auto p : v->getProductions()){
+            if(p.size() == 1 && !p[0]->isTerminal()){
+                totalPairs++;
+            }
+        }
     }
     // Print introduction
     std::cout << " >> Eliminating unit pairs" << std::endl;
-    std::set<std::pair<Variable* , Variable*>> unitPairs = calculateUnits(totalPairs);
+    std::set<std::pair<Variable* , Variable*>> unitPairs = calculateUnits();
     std::set<std::vector<Variable*>> newProd;
     std::vector<std::vector<Variable*>> v_prods;
     std::vector<std::vector<Variable*>> e_prods;
@@ -237,7 +248,7 @@ void CFG::eliminateUnitPairs() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
+    std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
     print();
     std::cout << std::endl;
 }
@@ -252,7 +263,7 @@ void CFG::eliminateUnitProductions() {
     }
 }
 
-std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits(int &total) {
+std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits() {
     std::set<std::pair<Variable* , Variable*>> units;
     std::pair<bool , std::set<Variable*> > current_unit;
     for(auto v : variables){
@@ -264,9 +275,6 @@ std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits(int &total) {
         }
         else{
             units.insert(std::pair<Variable* , Variable*>(v , *current_unit.second.begin()));
-        }
-        if(!v->getProductions().empty()){
-            total++;
         }
     }
     return units;
@@ -299,7 +307,7 @@ void CFG::eliminateUseless() {
     // Calculate reachable variables
     std::vector<Variable*> reachVar = calculateReachable();
     std::sort(reachVar.begin() , reachVar.end() , compareVariables);
-    std::cout << "  Reachable  symbols: {";
+    std::cout << "  Reachable symbols: {";
     for(auto v : reachVar){
         std::cout << *v;
         if (v == *reachVar.rbegin()) {
@@ -314,7 +322,7 @@ void CFG::eliminateUseless() {
                         reachVar.begin() , reachVar.end() ,
                         std::inserter(usefulVar, usefulVar.end()));
     std::sort(reachVar.begin() , reachVar.end() , compareVariables);
-    std::cout << "  Useful  symbols: {";
+    std::cout << "  Useful symbols: {";
     for(auto v : usefulVar){
         std::cout << *v;
         if (v == *usefulVar.rbegin()) {
@@ -334,6 +342,7 @@ void CFG::eliminateUseless() {
                 << "and " << oldProd - newProd << " productions \n"
                 << std::endl;
     print();
+    std::cout << std::endl;
 }
 
 std::vector<Variable *> CFG::calculateGenerating() {
@@ -447,11 +456,12 @@ void CFG::fixTerminals() {
         v->setProductions(prod);
     }
     std::sort(newVars.begin() , newVars.end() , compareVariables);
+    std::sort(variables.begin() , variables.end() , compareVariables);
     sortProductions();
     std::cout   << " >> Replacing terminals in bad bodies \n"
-                << "  Added " << newVars.size() << " new variables: {";
+                << "  Added " << (int)newVars.size() << " new variables: {";
     for(auto v : newVars){
-        std::cout << v;
+        std::cout << *v;
         if (v != *newVars.rbegin()) {
             std::cout << ", ";
         }
@@ -461,7 +471,7 @@ void CFG::fixTerminals() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
+    std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
     print();
     std::cout << std::endl;
 }
@@ -487,12 +497,12 @@ void CFG::fixVariables() {
             if(p.size() > 2){
                 int i = (int)p.size();
                 // Check if new variable already exists
-                if(variablesExisting[ {p[i-1] , p[i-2]} ] == nullptr || variablesExisting[ {p[i-1] , p[i-2]} ] == v ){
+                if(variablesExisting[ {p[i-2] , p[i-1]} ] == nullptr || variablesExisting[ {p[i-2] , p[i-1]} ] == v ){
                     std::string newName = v->getName() + "_" + std::to_string(el);
                     auto newVar = new Variable(newName);
-                    newVar->addProduction({p[i-1] , p[i-2]});
+                    newVar->addProduction({p[i-2] , p[i-1]});
                     variables.push_back(newVar);
-                    variablesExisting[{p[i-1] , p[i-2]}] = newVar;
+                    variablesExisting[{p[i-2] , p[i-1]}] = newVar;
                     newVars.push_back(newVar);
                     varCount++;
                     el++;
@@ -525,10 +535,12 @@ void CFG::fixVariables() {
         v->setProductions(prod);
     }
     std::sort(newVars.begin() , newVars.end() , compareVariables);
+    std::sort(variables.begin() , variables.end() , compareVariables);
     sortProductions();
     int newSize = (int)variables.size();
-    std::cout   << " >> Broke " << bodyCount << " bodies , added " << newSize - oldSize << " new variables\n"
-                << ">>> Result CFG:\n";
+    std::cout   << " >> Broke " << bodyCount << " bodies, added " << newSize - oldSize << " new variables\n"
+                << ">>> Result CFG:\n"
+                << std::endl;
     print();
 }
 
@@ -563,7 +575,7 @@ void CFG::print() {
     current += '\n';
     for(auto v : variables){
         for(auto p : v->getProductions()){
-            current += "    " + v->getName() + " -> `" + Variable::getProduction(p) + "` \n";
+            current += "  " + v->getName() + " -> `" + Variable::getProduction(p) + "` \n";
         }
 
     }

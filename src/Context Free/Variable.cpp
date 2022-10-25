@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include <map>
 
 bool Variable::prodExists(std::vector<Variable*> &newProduction){
     for(const auto& p : production){
@@ -14,7 +15,7 @@ Variable::Variable(const std::string &name, const std::vector<std::vector<Variab
                     name(name), production(production) , starting(starting) ,
                     terminal(terminal) , nullable(false) , generating(generating) {}
 
-Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(false) , generating(false) {}
+Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(true) , generating(false) {}
 
 const std::string &Variable::getName() const {
     return name;
@@ -122,12 +123,19 @@ bool Variable::operator!=(const Variable &rhs) const {
 }
 
 bool Variable::operator<(const Variable &rhs) const {
-    if(isdigit(name[0]) && isalpha(rhs.name[0])){
-        return true;
+//    if(isdigit(name[0]) && isalpha(rhs.name[0])){
+//        return true;
+//    }
+//    else if(isdigit(rhs.name[0]) && isalpha(name[0])){
+//        return false;
+//    }
+    if(name.empty()){
+        return rhs.name.empty();
     }
-    else if(isdigit(rhs.name[0]) && isalpha(name[0])){
-        return false;
+    if (rhs.name.empty()){
+        return !name.empty();
     }
+
     return name < rhs.name;
 }
 
@@ -167,17 +175,21 @@ bool Variable::isNullVar() {
         return true;
     }
     if(terminal){
-        return true;
+        return false;
     }
     for(const auto& p : production){
-        for(auto& v :p){
+        for(auto v : p){
             if(v == this){
                 continue;
             }
-            if(v->isNullVar() && !v->isTerminal()){
+            if(v->isNullable() && !v->isTerminal()){
                 nullable = true;
                 return true;
             }
+//            if(v->isNullVar() && !v->isTerminal()){
+//                nullable = true;
+//                return true;
+//            }
         }
     }
     return false;
@@ -257,4 +269,12 @@ void Variable::eliminateNonGen() {
     }
 }
 
-Variable::~Variable() = default;
+Variable::~Variable() {
+    for(const auto& p : production){
+        for(auto v : p){
+            if(v->getName().empty()){
+                delete v;
+            }
+        }
+    }
+};

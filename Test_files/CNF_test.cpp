@@ -3,10 +3,10 @@
 using namespace std;
 
 int main() {
-    CFG cfg("../Input_files/input-cnf1.json");
-    cfg.toCNF();
-//    CFG cfg1("../Input_files/input-cnf2.json");
-//    cfg1.toCNF();
+//    CFG cfg("../Input_files/input-cnf1.json");
+//    cfg.toCNF();
+    CFG cfg1("../Input_files/input-cnf2.json");
+    cfg1.toCNF();
     return 0;
 }
 

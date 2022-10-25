@@ -24,7 +24,7 @@ private:
     // Unit pair elimination
     void eliminateUnitPairs();
     void eliminateUnitProductions();
-    std::set<std::pair<Variable* , Variable*>> calculateUnits(int &total);
+    std::set<std::pair<Variable* , Variable*>> calculateUnits();
     // Useless variables elimination
     void eliminateUseless();
     std::vector<Variable*> calculateGenerating();
