@@ -166,8 +166,14 @@ bool Variable::isNullVar() {
     if(name.empty() && !terminal){
         return true;
     }
+    if(terminal){
+        return true;
+    }
     for(const auto& p : production){
         for(auto& v :p){
+            if(v == this){
+                continue;
+            }
             if(v->isNullVar() && !v->isTerminal()){
                 nullable = true;
                 return true;
@@ -215,6 +221,9 @@ bool Variable::isGeneratingVar() {
         for(const auto& p : production){
             gen = true;
             for(auto v : p){
+                if(v == this){
+                    continue;
+                }
                 if(!v->isGenerating()){
                     gen = false;
                 }

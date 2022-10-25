@@ -10,6 +10,14 @@ using json = nlohmann::json;
 bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
 
 bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
+    std::vector<Variable*> v(a.begin(), a.begin() + (int)b.size());
+    std::vector<Variable*> v1(b.begin(), b.begin() + (int)a.size());
+    if(b == v && b.size() > 1){
+        return true;
+    }
+    if(a == v1 && a.size() > 1){
+        return true;
+    }
     for(int i = 0; i < std::min(a.size() , b.size()); i++){
         if (a[i] != b[i]) {
             return compareVariables(a[i] , b[i]);
@@ -21,7 +29,7 @@ bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
     return false;
 }
 
-CFG::CFG(std::string filename) {
+CFG::CFG(const std::string& filename) {
     //* Read from file
     std::ifstream input(filename);
     json j;
@@ -397,11 +405,74 @@ void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
 }
 
 void CFG::fixTerminals() {
-
+    std::vector<Variable*> newVars;
+    std::map<Variable* , Variable*> terminalsExisting;
+    int oldSize = 0;
+    for(auto v : variables){
+        oldSize += (int)v->getProductions().size();
+    }
+    // Find good bodies
+    for(auto v : variables){
+        for(auto p : v->getProductions()){
+            if(p.size() == 1 && p[0]->isTerminal()){
+                terminalsExisting[p[0]] = v;
+            }
+        }
+    }
+    // Fix bad bodies
+    for(auto t : terminals){
+        if(terminalsExisting[t] == nullptr){
+            std::string newName = "_" + t->getName();
+            auto newVar = new Variable(newName);
+            newVar->addProduction({t});
+            variables.push_back(newVar);
+            terminalsExisting[t] = newVar;
+            newVars.push_back(newVar);
+        }
+    }
+    // Replace variables in bad bodies
+    for(auto &v : variables){
+        auto prod = v->getProductions();
+        for(auto &p : prod){
+            if(p.size() == 1){
+                continue;
+            }
+            for(auto &v1 : p){
+                // Replace with existing variable
+                if(v1->isTerminal()){
+                    v1 = terminalsExisting[v1];
+                }
+            }
+        }
+        v->setProductions(prod);
+    }
+    std::sort(newVars.begin() , newVars.end() , compareVariables);
+    sortProductions();
+    std::cout   << " >> Replacing terminals in bad bodies \n"
+                << "  Added " << newVars.size() << " new variables: {";
+    for(auto v : newVars){
+        std::cout << v;
+        if (v != *newVars.rbegin()) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << "}\n";
+    int newSize = 0;
+    for(const auto &v : variables){
+        newSize += (int)v->getProductions().size();
+    }
+    std::cout << "  Created " << newSize << " productions , original had " << oldSize << "\n" << std::endl;
+    print();
+    std::cout << std::endl;
 }
 
 void CFG::fixVariables() {
 
+    for(auto v : variables){
+        for(auto &p : v->getProductions()){
+
+        }
+    }
 }
 
 void CFG::print() {
