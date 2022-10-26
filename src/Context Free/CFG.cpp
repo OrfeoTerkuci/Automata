@@ -88,19 +88,6 @@ void CFG::sortProductions() {
     }
 }
 
-void CFG::toCNF() {
-    // Print original CFG
-    std::cout << "Original CFG:\n\n";
-    print();
-    std::cout << "\n-------------------------------------\n" << std::endl;
-    // Eliminate epsilon productions
-    eliminateEpsilon();
-    eliminateUnitPairs();
-    eliminateUseless();
-    fixTerminals();
-    fixVariables();
-}
-
 void CFG::eliminateEpsilon() {
     // Print introduction
     std::cout << " >> Eliminating epsilon productions" << std::endl;
@@ -554,6 +541,35 @@ void CFG::fixVariables() {
     print();
 }
 
+void CFG::toCNF() {
+    // Print original CFG
+    std::cout << "Original CFG:\n\n";
+    print();
+    std::cout << "\n-------------------------------------\n" << std::endl;
+    // Eliminate epsilon productions
+    eliminateEpsilon();
+    eliminateUnitPairs();
+    eliminateUseless();
+    fixTerminals();
+    fixVariables();
+}
+
+void CFG::accepts(const std::string &input) {
+    /*
+| {A, C, S}  |
+| {}         | {A, C, S}  |
+| {}         | {B}        | {B}     |
+| {A, S}     | {B}        | {C, S}  | {A, S}  |
+| {B}        | {A, C}     | {A, C}  | {B}     | {A, C}  |
+     */
+
+    bool res = false;
+
+
+
+    std::cout << std::boolalpha << res;
+}
+
 void CFG::print() {
     std::string current;
     // Print variables
@@ -599,8 +615,6 @@ void CFG::print() {
     current += '\n';
     std::cout << current;
     std::cout << "S = " << startingVar->getName() << std::endl;
-
-
 }
 
 CFG::~CFG() {

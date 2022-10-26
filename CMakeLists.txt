@@ -83,6 +83,12 @@ set(CNF_sources
         "src/Context Free/Variable.cpp"
         )
 
+set(CYK_sources
+        "Test_files/CYK_test.cpp"
+        "src/Context Free/CFG.cpp"
+        "src/Context Free/Variable.cpp"
+        )
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -100,6 +106,8 @@ add_executable(TFA ${TFA_sources})
 add_executable(CFG ${CFG_sources})
 
 add_executable(CNF ${CNF_sources})
+
+add_executable(CYK ${CYK_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 

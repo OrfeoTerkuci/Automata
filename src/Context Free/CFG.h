@@ -54,6 +54,8 @@ public:
      */
     void toCNF();
 
+    void accepts(const std::string& input);
+
     /**
      * Prints all the elements of the Context Free Grammar
      */
