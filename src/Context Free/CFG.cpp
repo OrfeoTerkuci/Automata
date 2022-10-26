@@ -564,10 +564,93 @@ void CFG::accepts(const std::string &input) {
      */
 
     bool res = false;
+    std::vector<int> max_elem = std::vector<int>(input.length() , 0);
+    // Initialize table
+    std::vector<std::vector<std::set<Variable*>>> table;
+    for (int i = 0; i < input.size(); ++i) {
+        std::vector<std::set<Variable*>> current(input.length() - i , std::set<Variable*>({}));
+        table.push_back(current);
+    }
 
+    std::vector<std::set<Variable*>>& currentRow = table[0];
+    std::vector<std::set<Variable*>> nextRow;
+    // Initialize first row
+    for(int i = 0; i < input.size(); i++){
+        for(auto v : variables){
+            if(v->hasProduction(input[i])){
+                currentRow[i].insert(v);
+            }
+        }
+    }
+    // Start the algorithm
+    for (int i = 1; i < table.size(); ++i) {
+        for (int j = 0; j < table[i].size(); ++j) {
+            // Triangulate
+            std::set<Variable*> elementUnder;
+            std::set<Variable*> elementDiag;
+            std::set<Variable*> newElem = {};
+            for (int k = 0; k < i; ++k) {
+                // Get element under
+                elementUnder = table[k][j];
+                // Get element diagonally
+                elementDiag = table[i - k - 1][j + k + 1];
+                // Merge sets
+                // Check for pairings
+                for(auto v1 : elementUnder){
+                    for(auto v2 : elementDiag){
+                        for(auto v : variables){
+                            if(v->hasProduction({v1 , v2})){
+                                newElem.insert(v);
+                            }
+                        }
+                    }
+                }
+                elementUnder = {};
+                elementDiag = {};
+                // Set new element
+                table[i][j] = newElem;
+            }
+        }
+    }
+    // Print table
+    // Get max width of table cell
+    for (int i = 0; i < table.size(); ++i) {
+        for (int j = 0; j < table[i].size(); ++j) {
+            if(max_elem[j] < table[i][j].size()){
+                max_elem[j] = (int)table[i][j].size();
+            }
+        }
+    }
+    int width;
+    int remain;
+    for (int i = (int)table.size() - 1; i >= 0; --i) {
+        // Find width
+        for (int j = 0 ; j < table[i].size(); ++j) {
+            width = 5 + 3 * max_elem[j] - 2;
+            remain = width;
+            std::cout << "| {";
+            remain -= 2;
+            for(Variable* v : table[i][j]){
+                std::cout << *v;
+                remain--;
+                if (v != *table[i][j].rbegin()) {
+                    std::cout << ", ";
+                    remain -= 2;
+                }
+            }
+            std::cout << "}";
+            remain--;
+            for (int k = 0; k < remain; ++k) {
+                std::cout << " ";
+            }
+        }
+        std::cout << "|" << std::endl;
+    }
 
-
-    std::cout << std::boolalpha << res;
+    if(std::find(table[input.length() - 1][0].begin() , table[input.length() - 1][0].end() , startingVar) != table[input.length() - 1][0].end()){
+        res = true;
+    }
+    std::cout << std::boolalpha << res << std::endl;
 }
 
 void CFG::print() {

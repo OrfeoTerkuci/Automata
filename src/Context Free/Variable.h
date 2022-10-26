@@ -48,6 +48,10 @@ public:
 
     static std::string getProduction(std::vector<Variable*> &prod);
 
+    bool hasProduction(const char &t) const;
+
+    bool hasProduction(const std::vector<Variable*>& p) const;
+
     // Nullable check
 
     bool isNullable() const;

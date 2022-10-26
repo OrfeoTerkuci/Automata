@@ -259,11 +259,31 @@ void Variable::eliminateNonGen() {
 }
 
 Variable::~Variable() {
-//    for(const auto& p : production){
-//        for(auto v : p){
-//            if(v->getName().empty()){
-//                delete v;
-//            }
-//        }
-//    }
+    for(const auto& p : production){
+        for(auto v : p){
+            if(v->getName().empty()){
+                delete v;
+            }
+        }
+    }
+}
+
+bool Variable::hasProduction(const char &t) const {
+    for(const auto& p : production){
+        for(const auto& v : p){
+            if(v->getName()[0] == t){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Variable::hasProduction(const std::vector<Variable*>& p) const {
+    for(const auto& p1 : production){
+        if(p1 == p){
+            return true;
+        }
+    }
+    return false;
 };
