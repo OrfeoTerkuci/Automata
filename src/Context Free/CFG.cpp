@@ -476,61 +476,52 @@ void CFG::fixVariables() {
         }
     }
     int varCount = 0;
+    int bodyCount = 0;
     // Fix bad bodies
-    for(auto v : variables){
+    for(auto v : variables) {
         int el = 2;
-        for(auto p : v->getProductions()){
+        auto prod = v->getProductions();
+        for (auto &p: prod) {
             // If production too long
-            if(p.size() > 2){
-                int i = (int)p.size();
+            while (p.size() > 2) {
+                int i = (int) p.size();
                 // Check if new variable already exists
                 auto vec = variablesExisting[{p[i - 2], p[i - 1]}];
-                auto v2 = std::find(vec.begin(), vec.end(),v);
-                if(vec.empty() || v2 == vec.end() || *v2 == v ){
+                auto v2 = std::find(vec.begin(), vec.end(), v);
+                if (vec.empty() || v2 == vec.end() || *v2 == v) {
                     std::string newName = v->getName() + "_" + std::to_string(el);
                     auto newVar = new Variable(newName);
-                    newVar->addProduction({p[i-2] , p[i-1]});
+                    newVar->addProduction({p[i - 2], p[i - 1]});
                     variables.push_back(newVar);
-                    variablesExisting[{p[i-2] , p[i-1]}].push_back(newVar);
+                    variablesExisting[{p[i - 2], p[i - 1]}].push_back(newVar);
                     newVars.push_back(newVar);
                     varCount++;
                     el++;
                 }
-            }
-        }
-    }
-    int bodyCount = 0;
-    // Replace variables in bad bodies
-    for(auto &v : variables){
-        auto prod = v->getProductions();
-        for(auto &p : prod){
-            if(p.size() == 1 && p[0]->isTerminal()){
-                continue;
-            }
-            if(p.size() == 2){
-                continue;
-            }
-            for(int i = (int)p.size() - 1; i > 0; i--){
-                // Replace with existing variable
-                auto vec = variablesExisting[{p[i-1] , p[i]}];
-                if(!vec.empty()){
-                    // Check which variable matches our name
-                    for(auto v2 : vec){
-                        std::string n = v->getName();
-                        std::string n2 = v2->getName().substr(0 , n.length());
-                        if(n2 == n && v2 != v){
-                            p[i-1] = v2;
-                            auto it = p.begin();
-                            std::advance(it , i);
-                            p.erase(it);
-                            bodyCount++;
+                for (int j = (int) p.size() - 1; i > 0; i--) {
+                    // Replace with existing variable
+                    vec = variablesExisting[{p[j - 1], p[j]}];
+                    if (!vec.empty()) {
+                        // Check which variable matches our name
+                        for (auto v3: vec) {
+                            std::string n = v->getName();
+                            std::string n2 = v3->getName().substr(0, n.length());
+                            if (n2 == n && v3 != v) {
+                                p[j - 1] = v3;
+                                auto it = p.begin();
+                                std::advance(it, j);
+                                it = p.erase(it);
+                                bodyCount++;
+                            }
                         }
                     }
+
                 }
             }
         }
         v->setProductions(prod);
     }
+
     std::sort(newVars.begin() , newVars.end() , compareVariables);
     std::sort(variables.begin() , variables.end() , compareVariables);
     sortProductions();
