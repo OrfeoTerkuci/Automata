@@ -605,10 +605,10 @@ void CFG::accepts(const std::string &input) {
     }
     // Print table
     // Get max width of table cell
-    for (int i = 0; i < table.size(); ++i) {
-        for (int j = 0; j < table[i].size(); ++j) {
-            if(max_elem[j] < table[i][j].size()){
-                max_elem[j] = (int)table[i][j].size();
+    for (auto & i : table) {
+        for (int j = 0; j < i.size(); ++j) {
+            if(max_elem[j] < i[j].size()){
+                max_elem[j] = (int)i[j].size();
             }
         }
     }
