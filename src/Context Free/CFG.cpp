@@ -584,10 +584,16 @@ void CFG::print() {
     current = "P = {";
     current += '\n';
     for(auto v : variables){
+        // Get productions in a vector
+        std::vector<std::string> prod;
         for(auto p : v->getProductions()){
-            current += "  " + v->getName() + " -> `" + Variable::getProduction(p) + "` \n";
+            prod.push_back(Variable::getProduction(p));
         }
-
+        std::sort(prod.begin() , prod.end());
+        for(const auto& s : prod){
+            current += "  " + v->getName() + " -> " + s + " \n";
+        }
+        prod.clear();
     }
     current += '}';
     current += '\n';

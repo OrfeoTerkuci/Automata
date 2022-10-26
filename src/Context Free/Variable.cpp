@@ -1,4 +1,5 @@
 #include "Variable.h"
+#include <string>
 #include <map>
 
 bool Variable::prodExists(std::vector<Variable*> &newProduction){
@@ -123,20 +124,8 @@ bool Variable::operator!=(const Variable &rhs) const {
 }
 
 bool Variable::operator<(const Variable &rhs) const {
-//    if(isdigit(name[0]) && isalpha(rhs.name[0])){
-//        return true;
-//    }
-//    else if(isdigit(rhs.name[0]) && isalpha(name[0])){
-//        return false;
-//    }
-    if(name.empty()){
-        return rhs.name.empty();
-    }
-    if (rhs.name.empty()){
-        return !name.empty();
-    }
-
-    return name < rhs.name;
+    if (name.empty()) return false;
+    return rhs.name.empty() || !(rhs.name < name);
 }
 
 bool Variable::operator>(const Variable &rhs) const {
@@ -151,15 +140,20 @@ bool Variable::operator>=(const Variable &rhs) const {
     return !(*this < rhs);
 }
 
+std::ostream &operator<<(std::ostream &os, const Variable &variable) {
+    os << variable.name;
+    return os;
+}
+
 std::string Variable::getProduction(std::vector<Variable *> &prod) {
-    std::string output;
+    std::string output = "`";
     for(int i = 0; i < prod.size(); i++){
         output += prod[i]->getName();
         if(i != prod.size() - 1){
             output += " ";
         }
     }
-    return output;
+    return output + '`';
 }
 
 bool Variable::isNullable() const {
@@ -247,11 +241,6 @@ bool Variable::isGeneratingVar() {
         }
     }
     return gen;
-}
-
-std::ostream &operator<<(std::ostream &os, const Variable &variable) {
-    os << variable.name;
-    return os;
 }
 
 void Variable::eliminateNonGen() {
