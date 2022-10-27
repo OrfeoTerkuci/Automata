@@ -89,6 +89,16 @@ set(CYK_sources
         "src/Context Free/Variable.cpp"
         )
 
+set(PDA_sources
+        Test_files/PDA_test.cpp
+        "src/Context Free/PDA.h"
+        "src/Context Free/PDA.cpp"
+        "src/Context Free/CFG.h"
+        "src/Context Free/CFG.cpp"
+        "src/Context Free/State.cpp"
+        "src/Context Free/Transition.cpp"
+        )
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -108,6 +118,8 @@ add_executable(CFG ${CFG_sources})
 add_executable(CNF ${CNF_sources})
 
 add_executable(CYK ${CYK_sources})
+
+add_executable(PDA ${PDA_sources})
 
 #install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
 

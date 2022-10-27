@@ -86,7 +86,7 @@ ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
     std::string beginName = std::to_string(count);
     std::string endName = std::to_string(count + 1);
     count += 2;
-    // Create begin and end states
+    // Create beginState and endState states
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
     // Create containers
@@ -103,7 +103,7 @@ ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
     if(ref.size() == 1){
         return ref[0];
     }
-    // Link the new start and end node to both ENFA's
+    // Link the new start and endState node to both ENFA's
     // Get current and next ENFA in the vector
     // If more than 2 : recursive call until 2 left
     while(ref.size() > 2){
@@ -116,22 +116,22 @@ ENFA* RE::createPlus(std::vector<ENFA*> &ref , int &count) {
     }
     e = ref[0];
     f = ref[1];
-    // Create new transition from begin node to begin node of the ENFA
+    // Create new transition from beginState node to beginState node of the ENFA
     auto* newTransE_begin = new transition(begin , *e->getBegin().begin(), eps);
     newTransE_begin->getEndNode()->setStarting(false);
     transitions.insert(newTransE_begin);
 
-    // Create new transition from end node of the ENFA to the end node
+    // Create new transition from endState node of the ENFA to the endState node
     auto* newTransE_end = new transition(*e->getFinal().begin() , end, eps);
     newTransE_end->getBeginNode()->setAccepting(false);
     transitions.insert(newTransE_end);
 
-    // Create new transition from begin node to begin node of the ENFA
+    // Create new transition from beginState node to beginState node of the ENFA
     auto* newTransF_begin = new transition(begin , *f->getBegin().begin(), eps);
     newTransF_begin->getEndNode()->setStarting(false);
     transitions.insert(newTransF_begin);
 
-    // Create new transition from end node of the ENFA to the end node
+    // Create new transition from endState node of the ENFA to the endState node
     auto* newTransF_end = new transition(*f->getFinal().begin() , end, eps);
     newTransF_end->getBeginNode()->setAccepting(false);
     transitions.insert(newTransF_end);
@@ -296,13 +296,13 @@ ENFA* RE::createStar(std::string beginName , std::string endName , ENFA &R) cons
     std::set<Node*> nodes = R.getNodes();
     std::set<transition*> transitions = R.getTransitions();
     std::set<transition*> eps_transitions = R.getEpsTransitions();
-    // Create the new start and end state
+    // Create the new start and endState state
     Node* begin = new Node(beginName , true , false);
     Node* end = new Node(endName , false , true);
     nodes.insert(begin);
     nodes.insert(end);
     // Create new transitions
-    // New begin node -> R begin node
+    // New beginState node -> R beginState node
     auto* newBeginTrans = new transition(begin , *R.getBegin().begin() , eps);
     auto* newEndTrans = new transition(*R.getFinal().begin() , end , eps);
     newBeginTrans->getEndNode()->setStarting(false);
@@ -410,7 +410,7 @@ std::vector<ENFA*> RE::splitRegex(std::string &reg , int &count , std::vector<in
             temp = {};
             continue;
         }
-        // If end of bracket
+        // If endState of bracket
         else if(c == ')'){
             beginReg.push_back(createConcatenation(current));
             index.back() = i;

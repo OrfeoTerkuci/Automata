@@ -31,7 +31,7 @@ DFA::DFA(const std::string& filename)
         Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
         nodes.insert(newState);
     }
-    // Designate begin and final nodes
+    // Designate beginState and final nodes
     for(Node* n : nodes){
         if(n->isAccepting()){
             finalNodes.insert(n);
@@ -73,7 +73,7 @@ DFA::DFA(DFA &dfa1, DFA &dfa2 , bool intersect) {
     for( char c : dfa2.getAlphabet() ){
         alphabet.insert(c);
     }
-    //* Set begin state as the pair of both begin states
+    //* Set beginState state as the pair of both beginState states
     beginNodes.insert( *dfa1.getBegin().begin() );
     beginNodes.insert( *dfa2.getBegin().begin() );
     //* Copy all the nodes
@@ -224,7 +224,7 @@ void DFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*
             for( char c: alphabet){
                 // Loop through both nodes
                 for(Node* tempNode : currentNodes){
-                    // Add end node of transition
+                    // Add endState node of transition
                     oldTemp.insert( transit(tempNode , c ) );
                 }
                 // Add newly acquired pair
@@ -234,7 +234,7 @@ void DFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*
                     // Add used transitions
                     newTransition = new transitionNFA();
                     newTransition->setBeginNodes(currentNodes);
-                    // Add end nodes to transition
+                    // Add endState nodes to transition
                     newTransition->setEndNodes(oldTemp);
                     newTransition->setInput(c);
                     // Add transition to container
@@ -634,7 +634,7 @@ bool DFA::operator==(DFA &dfa2){
     fillTable();
     // Print filled table
     printTable();
-    // Check whether the pair of begin nodes has been filled
+    // Check whether the pair of beginState nodes has been filled
     Node* b1 = *getBegin().begin();
     Node* b2 = *dfa2.getBegin().begin();
     // Reset the nodes and transitions

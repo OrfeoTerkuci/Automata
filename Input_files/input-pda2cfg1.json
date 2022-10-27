@@ -1,0 +1,13 @@
+{
+  "States": ["p", "q"],
+  "Alphabet": ["0", "1"],
+  "StackAlphabet": ["X", "Z0"],
+  "Transitions": [
+    {"from": "q", "input": "1", "stacktop": "X", "to": "p", "replacement": []},
+    {"from": "p", "input": "1", "stacktop": "X", "to": "p", "replacement": []},
+    {"from": "q", "input": "0", "stacktop": "Z0", "to": "q", "replacement": ["X"]},
+    {"from": "q", "input": "0", "stacktop": "X", "to": "q", "replacement": ["X", "X"]}
+  ],
+  "StartState": "q",
+  "StartStack": "Z0"
+}

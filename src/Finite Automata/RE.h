@@ -67,8 +67,8 @@ public:
     /**
      * @brief Create an enfa for epsilon language {eps}
      * 
-     * @param beginName Name of the begin state
-     * @param endName Name of the end state
+     * @param beginName Name of the beginState state
+     * @param endName Name of the endState state
      * @return ENFA The epsilon enfa
      */
     ENFA* createEpsilon(std::string beginName , std::string endName) const;
@@ -76,8 +76,8 @@ public:
     /**
      * @brief Create an enfa for the empty language {}
      * 
-     * @param beginName Name of the begin state
-     * @param endName Name of the end state
+     * @param beginName Name of the beginState state
+     * @param endName Name of the endState state
      * @return ENFA The empty enfa
      */
     ENFA* createEmpty(std::string beginName , std::string endName) const;
@@ -85,8 +85,8 @@ public:
     /**
      * @brief Create an enfa for the language {a}
      * 
-     * @param beginName Name of the begin state
-     * @param endName Name of the end state
+     * @param beginName Name of the beginState state
+     * @param endName Name of the endState state
      * @param a The character
      * @return ENFA The enfa for the language {a}
      */
@@ -97,8 +97,8 @@ public:
     /**
      * @brief Create an enfa for the plus operation (R + S)
      * 
-     * @param beginName Name of the begin state
-     * @param endName Name of the end state
+     * @param beginName Name of the beginState state
+     * @param endName Name of the endState state
      * @param ref The std::vector of the enfa's to plus
      * @return ENFA The enfa for the operation R + S
      */
@@ -124,8 +124,8 @@ public:
     /**
      * @brief Create an enfa for the star operation (R*)
      * 
-     * @param beginName Name of the begin state
-     * @param endName Name of the end state
+     * @param beginName Name of the beginState state
+     * @param endName Name of the endState state
      * @param R The base enfa
      * @return ENFA The enfa for the operation R*
      */

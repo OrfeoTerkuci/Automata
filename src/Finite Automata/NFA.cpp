@@ -31,7 +31,7 @@ NFA::NFA(const std::string& filename)
         Node* newState = new Node(state["name"],state["starting"],state["accepting"]);
         nodes.insert(newState);
     }
-    // Designate begin and final nodes
+    // Designate beginState and final nodes
     for(Node* n : nodes){
         if(n->isAccepting()){
             finalNodes.insert(n);
@@ -131,7 +131,7 @@ void NFA::evaluate(std::set<std::set<Node*>> &newNodes , std::set<transitionNFA*
                     // Add used transitions
                     newTransition = new transitionNFA();
                     newTransition->setBeginNodes(oldTemp);
-                    // Add end nodes to transition
+                    // Add endState nodes to transition
                     newTransition->setEndNodes(tempNodes);
                     newTransition->setInput(c);
                     // Add transition to container
@@ -196,7 +196,7 @@ DFA NFA::toDFA(){
     std::set<Node*> dfaBegin;
     std::set<Node*> dfaFinalNodes;
     std::set<transition*> dfaTransitions;
-    // Lazy evaluation begin
+    // Lazy evaluation beginState
     // Create powerset to push to DFA
     std::set<std::set<Node*>>newNodes = {beginNodes};
     // Create temporary transitions container

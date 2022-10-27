@@ -76,7 +76,7 @@ public:
     std::set<Node*> getFinal() const;
 
     /**
-     * @brief Getter for the begin states
+     * @brief Getter for the beginState states
      * @return std::set<Node*> All the final states in the DFA
      */
     std::set<Node*> getBegin() const;
@@ -108,8 +108,8 @@ public:
     void setFinal(std::set<Node*>newFinalNodes);
 
     /**
-     * @brief Setter for the begin states
-     * @param newBeginNodes A set of Node pointers for the new begin state(s) of the DFA
+     * @brief Setter for the beginState states
+     * @param newBeginNodes A set of Node pointers for the new beginState state(s) of the DFA
      */
     void setBegin(std::set<Node*>newBeginNodes);
 

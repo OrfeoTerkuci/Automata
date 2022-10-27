@@ -60,7 +60,7 @@ SOFTWARE.
 #include <array> // array
 #include <ciso646> // and, not
 #include <forward_list> // forward_list
-#include <iterator> // inserter, front_inserter, end
+#include <iterator> // inserter, front_inserter, endState
 #include <map> // map
 #include <string> // string
 #include <tuple> // tuple, make_tuple
@@ -1708,7 +1708,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 
 
 // This file contains all internal macro definitions
-// You MUST include macro_unscope.hpp at the end of json.hpp to undef all of them
+// You MUST include macro_unscope.hpp at the endState of json.hpp to undef all of them
 
 // exclude unsupported compilers
 #if !defined(JSON_SKIP_UNSUPPORTED_COMPILER_CHECK)
@@ -1902,13 +1902,13 @@ Exceptions have ids 1xx.
 
 name / id                      | example message | description
 ------------------------------ | --------------- | -------------------------
-json.exception.parse_error.101 | parse error at 2: unexpected end of input; expected string literal | This error indicates a syntax error while deserializing a JSON text. The error message describes that an unexpected token (character) was encountered, and the member @a byte indicates the error position.
+json.exception.parse_error.101 | parse error at 2: unexpected endState of input; expected string literal | This error indicates a syntax error while deserializing a JSON text. The error message describes that an unexpected token (character) was encountered, and the member @a byte indicates the error position.
 json.exception.parse_error.102 | parse error at 14: missing or wrong low surrogate | JSON uses the `\uxxxx` format to describe Unicode characters. Code points above above 0xFFFF are split into two `\uxxxx` entries ("surrogate pairs"). This error indicates that the surrogate pair is incomplete or contains an invalid code point.
 json.exception.parse_error.103 | parse error: code points above 0x10FFFF are invalid | Unicode supports code points up to 0x10FFFF. Code points above 0x10FFFF are invalid.
 json.exception.parse_error.104 | parse error: JSON patch must be an array of objects | [RFC 6902](https://tools.ietf.org/html/rfc6902) requires a JSON Patch document to be a JSON document that represents an array of objects.
 json.exception.parse_error.105 | parse error: operation must have string member 'op' | An operation of a JSON Patch document must contain exactly one "op" member, whose value indicates the operation to perform. Its value must be one of "add", "remove", "replace", "move", "copy", or "test"; other values are errors.
-json.exception.parse_error.106 | parse error: array index '01' must not begin with '0' | An array index in a JSON Pointer ([RFC 6901](https://tools.ietf.org/html/rfc6901)) may be `0` or any number without a leading `0`.
-json.exception.parse_error.107 | parse error: JSON pointer must be empty or begin with '/' - was: 'foo' | A JSON Pointer must be a Unicode string containing a sequence of zero or more reference tokens, each prefixed by a `/` character.
+json.exception.parse_error.106 | parse error: array index '01' must not beginState with '0' | An array index in a JSON Pointer ([RFC 6901](https://tools.ietf.org/html/rfc6901)) may be `0` or any number without a leading `0`.
+json.exception.parse_error.107 | parse error: JSON pointer must be empty or beginState with '/' - was: 'foo' | A JSON Pointer must be a Unicode string containing a sequence of zero or more reference tokens, each prefixed by a `/` character.
 json.exception.parse_error.108 | parse error: escape character '~' must be followed with '0' or '1' | In a JSON Pointer, only `~0` and `~1` are valid escape sequences.
 json.exception.parse_error.109 | parse error: array index 'one' is not a number | A JSON Pointer array index must be a number.
 json.exception.parse_error.110 | parse error at 1: cannot read 2 bytes from vector | When parsing CBOR or MessagePack, the byte vector ends before the complete value has been read.
@@ -1917,7 +1917,7 @@ json.exception.parse_error.113 | parse error at 2: expected a CBOR string; last 
 json.exception.parse_error.114 | parse error: Unsupported BSON record type 0x0F | The parsing of the corresponding BSON record type is not implemented (yet).
 
 @note For an input with n bytes, 1 is the index of the first character and n+1
-      is the index of the terminating null byte or the end of file. This also
+      is the index of the terminating null byte or the endState of file. This also
       holds true when reading a byte vector (CBOR or MessagePack).
 
 @liveexample{The following code shows how a `parse_error` exception can be
@@ -1965,7 +1965,7 @@ class parse_error : public exception
     The byte index of the last read character in the input file.
 
     @note For an input with n bytes, 1 is the index of the first character and
-          n+1 is the index of the terminating null byte or the end of file.
+          n+1 is the index of the terminating null byte or the endState of file.
           This also holds true when reading a byte vector (CBOR or MessagePack).
     */
     const std::size_t byte;
@@ -1994,8 +1994,8 @@ name / id                           | example message | description
 json.exception.invalid_iterator.201 | iterators are not compatible | The iterators passed to constructor @ref basic_json(InputIT first, InputIT last) are not compatible, meaning they do not belong to the same container. Therefore, the range (@a first, @a last) is invalid.
 json.exception.invalid_iterator.202 | iterator does not fit current value | In an erase or insert function, the passed iterator @a pos does not belong to the JSON value for which the function was called. It hence does not define a valid position for the deletion/insertion.
 json.exception.invalid_iterator.203 | iterators do not fit current value | Either iterator passed to function @ref erase(IteratorType first, IteratorType last) does not belong to the JSON value from which values shall be erased. It hence does not define a valid range to delete values from.
-json.exception.invalid_iterator.204 | iterators out of range | When an iterator range for a primitive type (number, boolean, or string) is passed to a constructor or an erase function, this range has to be exactly (@ref begin(), @ref end()), because this is the only way the single stored value is expressed. All other ranges are invalid.
-json.exception.invalid_iterator.205 | iterator out of range | When an iterator for a primitive type (number, boolean, or string) is passed to an erase function, the iterator has to be the @ref begin() iterator, because it is the only way to address the stored value. All other iterators are invalid.
+json.exception.invalid_iterator.204 | iterators out of range | When an iterator range for a primitive type (number, boolean, or string) is passed to a constructor or an erase function, this range has to be exactly (@ref beginState(), @ref endState()), because this is the only way the single stored value is expressed. All other ranges are invalid.
+json.exception.invalid_iterator.205 | iterator out of range | When an iterator for a primitive type (number, boolean, or string) is passed to an erase function, the iterator has to be the @ref beginState() iterator, because it is the only way to address the stored value. All other iterators are invalid.
 json.exception.invalid_iterator.206 | cannot construct with iterators from null | The iterators passed to constructor @ref basic_json(InputIT first, InputIT last) belong to a JSON null value and hence to not define a valid range.
 json.exception.invalid_iterator.207 | cannot use key() for non-object iterators | The key() member function can only be used on iterators belonging to a JSON object, because other types do not have a concept of a key.
 json.exception.invalid_iterator.208 | cannot use operator[] for object iterators | The operator[] to specify a concrete offset cannot be used on iterators belonging to a JSON object, because JSON objects are unordered.
@@ -2004,7 +2004,7 @@ json.exception.invalid_iterator.210 | iterators do not fit | The iterator range 
 json.exception.invalid_iterator.211 | passed iterators may not belong to container | The iterator range passed to the insert function must not be a subrange of the container to insert to.
 json.exception.invalid_iterator.212 | cannot compare iterators of different containers | When two iterators are compared, they must belong to the same container.
 json.exception.invalid_iterator.213 | cannot compare order of object iterators | The order of object iterators cannot be compared, because JSON objects are unordered.
-json.exception.invalid_iterator.214 | cannot get value | Cannot get value for iterator: Either the iterator belongs to a null value or it is an iterator to a primitive type (number, boolean, or string), but the iterator is different to @ref begin().
+json.exception.invalid_iterator.214 | cannot get value | Cannot get value for iterator: Either the iterator belongs to a null value or it is an iterator to a primitive type (number, boolean, or string), but the iterator is different to @ref beginState().
 
 @liveexample{The following code shows how an `invalid_iterator` exception can be
 caught.,invalid_iterator}
@@ -2098,7 +2098,7 @@ Exceptions have ids 4xx.
 name / id                       | example message | description
 ------------------------------- | --------------- | -------------------------
 json.exception.out_of_range.401 | array index 3 is out of range | The provided array index @a i is larger than @a size-1.
-json.exception.out_of_range.402 | array index '-' (3) is out of range | The special array index `-` in a JSON Pointer never describes a valid element of the array, but the index past the end. That is, it can only be used to add elements at this position, but not to read it.
+json.exception.out_of_range.402 | array index '-' (3) is out of range | The special array index `-` in a JSON Pointer never describes a valid element of the array, but the index past the endState. That is, it can only be used to add elements at this position, but not to read it.
 json.exception.out_of_range.403 | key 'foo' not found | The provided key was not found in the JSON object.
 json.exception.out_of_range.404 | unresolved reference token 'foo' | A reference token in a JSON Pointer could not be resolved.
 json.exception.out_of_range.405 | JSON pointer has no parent | The JSON Patch operations 'remove' and 'add' can not be applied to the root element of the JSON value.
@@ -3264,7 +3264,7 @@ constexpr const auto& from_json = detail::static_const<detail::from_json_fn>::va
 
 #include <algorithm> // copy
 #include <ciso646> // or, and, not
-#include <iterator> // begin, end
+#include <iterator> // beginState, endState
 #include <string> // string
 #include <tuple> // tuple, get
 #include <type_traits> // is_same, is_constructible, is_floating_point, is_enum, underlying_type
@@ -3393,13 +3393,13 @@ template<typename IteratorType> class iteration_proxy
     explicit iteration_proxy(typename IteratorType::reference cont) noexcept
         : container(cont) {}
 
-    /// return iterator begin (needed for range-based for)
+    /// return iterator beginState (needed for range-based for)
     iteration_proxy_value<IteratorType> begin() noexcept
     {
         return iteration_proxy_value<IteratorType>(container.begin());
     }
 
-    /// return iterator end (needed for range-based for)
+    /// return iterator endState (needed for range-based for)
     iteration_proxy_value<IteratorType> end() noexcept
     {
         return iteration_proxy_value<IteratorType>(container.end());
@@ -3867,7 +3867,7 @@ struct adl_serializer
 #include <cstdio> //FILE *
 #include <cstring> // strlen
 #include <istream> // istream
-#include <iterator> // begin, end, iterator_traits, random_access_iterator_tag, distance, next
+#include <iterator> // beginState, endState, iterator_traits, random_access_iterator_tag, distance, next
 #include <memory> // shared_ptr, make_shared, addressof
 #include <numeric> // accumulate
 #include <string> // string, char_traits
@@ -3972,7 +3972,7 @@ class input_stream_adapter : public input_adapter_protocol
 
     // std::istream/std::streambuf use std::char_traits<char>::to_int_type, to
     // ensure that std::char_traits<char>::eof() and the character 0xFF do not
-    // end up as the same value, eg. 0xFFFFFFFF.
+    // endState up as the same value, eg. 0xFFFFFFFF.
     std::char_traits<char>::int_type get_character() override
     {
         auto res = sb.sbumpc();
@@ -4401,7 +4401,7 @@ struct json_sax
     virtual bool key(string_t& val) = 0;
 
     /*!
-    @brief the end of an object was read
+    @brief the endState of an object was read
     @return whether parsing should proceed
     */
     virtual bool end_object() = 0;
@@ -4415,7 +4415,7 @@ struct json_sax
     virtual bool start_array(std::size_t elements) = 0;
 
     /*!
-    @brief the end of an array was read
+    @brief the endState of an array was read
     @return whether parsing should proceed
     */
     virtual bool end_array() = 0;
@@ -5251,7 +5251,7 @@ class binary_reader
             if (JSON_HEDLEY_UNLIKELY(current != std::char_traits<char>::eof()))
             {
                 return sax->parse_error(chars_read, get_token_string(),
-                                        parse_error::create(110, chars_read, exception_message(format, "expected end of input; last byte: 0x" + get_token_string(), "value")));
+                                        parse_error::create(110, chars_read, exception_message(format, "expected endState of input; last byte: 0x" + get_token_string(), "value")));
             }
         }
 
@@ -5301,7 +5301,7 @@ class binary_reader
     @brief Parses a C-style string from the BSON input.
     @param[in, out] result  A reference to the string variable where the read
                             string is to be stored.
-    @return `true` if the \x00-byte indicating the end of the string was
+    @return `true` if the \x00-byte indicating the endState of the string was
              encountered before the EOF; false` indicates an unexpected EOF.
     */
     bool get_bson_cstr(string_t& result)
@@ -5327,7 +5327,7 @@ class binary_reader
     /*!
     @brief Parses a zero-terminated string of length @a len from the BSON
            input.
-    @param[in] len  The length (including the zero-byte at the end) of the
+    @param[in] len  The length (including the zero-byte at the endState) of the
                     string to be read.
     @param[in, out] result  A reference to the string variable where the read
                             string is to be stored.
@@ -7019,7 +7019,7 @@ class binary_reader
     @return whether string creation completed
 
     @note We can not reserve @a len bytes for the result, because @a len
-          may be too large. Usually, @ref unexpect_eof() detects the end of
+          may be too large. Usually, @ref unexpect_eof() detects the endState of
           the input before we run out of string memory.
     */
     template<typename NumberType>
@@ -7050,8 +7050,8 @@ class binary_reader
     {
         if (JSON_HEDLEY_UNLIKELY(current == std::char_traits<char>::eof()))
         {
-            return sax->parse_error(chars_read, "<end of file>",
-                                    parse_error::create(110, chars_read, exception_message(format, "unexpected end of input", context)));
+            return sax->parse_error(chars_read, "<endState of file>",
+                                    parse_error::create(110, chars_read, exception_message(format, "unexpected endState of input", context)));
         }
         return true;
     }
@@ -7177,15 +7177,15 @@ class lexer
         value_unsigned,   ///< an unsigned integer -- use get_number_unsigned() for actual value
         value_integer,    ///< a signed integer -- use get_number_integer() for actual value
         value_float,      ///< an floating point number -- use get_number_float() for actual value
-        begin_array,      ///< the character for array begin `[`
-        begin_object,     ///< the character for object begin `{`
-        end_array,        ///< the character for array end `]`
-        end_object,       ///< the character for object end `}`
+        begin_array,      ///< the character for array beginState `[`
+        begin_object,     ///< the character for object beginState `{`
+        end_array,        ///< the character for array endState `]`
+        end_object,       ///< the character for object endState `}`
         name_separator,   ///< the name separator `:`
         value_separator,  ///< the value separator `,`
         parse_error,      ///< indicating a parse error
-        end_of_input,     ///< indicating the end of the input buffer
-        literal_or_value  ///< a literal or the begin of a value (only for diagnostics)
+        end_of_input,     ///< indicating the endState of the input buffer
+        literal_or_value  ///< a literal or the beginState of a value (only for diagnostics)
     };
 
     /// return name of values of type token_type (only used for errors)
@@ -7224,7 +7224,7 @@ class lexer
             case token_type::parse_error:
                 return "<parse error>";
             case token_type::end_of_input:
-                return "end of input";
+                return "endState of input";
             case token_type::literal_or_value:
                 return "'[', '{', or a literal";
             // LCOV_EXCL_START
@@ -7375,7 +7375,7 @@ class lexer
             // get next character
             switch (get())
             {
-                // end of file while parsing string
+                // endState of file while parsing string
                 case std::char_traits<char>::eof():
                 {
                     error_message = "invalid string: missing closing quote";
@@ -8595,7 +8595,7 @@ scan_number_done:
             case '9':
                 return scan_number();
 
-            // end of input (the null byte is needed when parsing from
+            // endState of input (the null byte is needed when parsing from
             // string literals)
             case '\0':
             case std::char_traits<char>::eof():
@@ -9004,7 +9004,7 @@ class parser
             // we reached this line after we successfully parsed a value
             if (states.empty())
             {
-                // empty stack: we reached the end of the hierarchy: done
+                // empty stack: we reached the endState of the hierarchy: done
                 return true;
             }
 
@@ -9167,8 +9167,8 @@ namespace detail
 This class models an iterator for primitive JSON types (boolean, number,
 string). It's only purpose is to allow the iterator/const_iterator classes
 to "iterate" over primitive values. Internally, the iterator is modeled by
-a `difference_type` variable. Value begin_value (`0`) models the begin,
-end_value (`1`) models past the end.
+a `difference_type` variable. Value begin_value (`0`) models the beginState,
+end_value (`1`) models past the endState.
 */
 class primitive_iterator_t
 {
@@ -9192,7 +9192,7 @@ class primitive_iterator_t
         m_it = begin_value;
     }
 
-    /// set iterator to a defined past the end
+    /// set iterator to a defined past the endState
     void set_end() noexcept
     {
         m_it = end_value;
@@ -9204,7 +9204,7 @@ class primitive_iterator_t
         return m_it == begin_value;
     }
 
-    /// return whether the iterator is at end
+    /// return whether the iterator is at endState
     constexpr bool is_end() const noexcept
     {
         return m_it == end_value;
@@ -9495,7 +9495,7 @@ class iter_impl
 
             case value_t::null:
             {
-                // set to end so begin()==end() is true: null is empty
+                // set to endState so beginState()==endState() is true: null is empty
                 m_it.primitive_iterator.set_end();
                 break;
             }
@@ -10106,7 +10106,7 @@ class json_pointer
                   string is assumed which references the whole JSON value
 
     @throw parse_error.107 if the given JSON pointer @a s is nonempty and does
-                           not begin with a slash (`/`); see example below
+                           not beginState with a slash (`/`); see example below
 
     @throw parse_error.108 if a tilde (`~`) in the given JSON pointer @a s is
     not followed by `0` (representing `~`) or `1` (representing `/`); see
@@ -10152,7 +10152,7 @@ class json_pointer
     }
 
     /*!
-    @brief append another JSON pointer at the end of this JSON pointer
+    @brief append another JSON pointer at the endState of this JSON pointer
 
     @param[in] ptr  JSON pointer to append
     @return JSON pointer with @a ptr appended
@@ -10176,7 +10176,7 @@ class json_pointer
     }
 
     /*!
-    @brief append an unescaped reference token at the end of this JSON pointer
+    @brief append an unescaped reference token at the endState of this JSON pointer
 
     @param[in] token  reference token to append
     @return JSON pointer with @a token appended without escaping @a token
@@ -10198,7 +10198,7 @@ class json_pointer
     }
 
     /*!
-    @brief append an array index at the end of this JSON pointer
+    @brief append an array index at the endState of this JSON pointer
 
     @param[in] array_index  array index to append
     @return JSON pointer with @a array_index appended
@@ -10219,7 +10219,7 @@ class json_pointer
     }
 
     /*!
-    @brief create a new JSON pointer by appending the right JSON pointer at the end of the left JSON pointer
+    @brief create a new JSON pointer by appending the right JSON pointer at the endState of the left JSON pointer
 
     @param[in] lhs  JSON pointer
     @param[in] rhs  JSON pointer
@@ -10240,7 +10240,7 @@ class json_pointer
     }
 
     /*!
-    @brief create a new JSON pointer by appending the unescaped token at the end of the JSON pointer
+    @brief create a new JSON pointer by appending the unescaped token at the endState of the JSON pointer
 
     @param[in] ptr  JSON pointer
     @param[in] token  reference token
@@ -10260,7 +10260,7 @@ class json_pointer
     }
 
     /*!
-    @brief create a new JSON pointer by appending the array-index-token at the end of the JSON pointer
+    @brief create a new JSON pointer by appending the array-index-token at the endState of the JSON pointer
 
     @param[in] ptr  JSON pointer
     @param[in] array_index  array index
@@ -10352,7 +10352,7 @@ class json_pointer
     }
 
     /*!
-    @brief append an unescaped token at the end of the reference pointer
+    @brief append an unescaped token at the endState of the reference pointer
 
     @param[in] token  token to add
 
@@ -10553,12 +10553,12 @@ class json_pointer
                     {
                         JSON_THROW(detail::parse_error::create(106, 0,
                                                                "array index '" + reference_token +
-                                                               "' must not begin with '0'"));
+                                                               "' must not beginState with '0'"));
                     }
 
                     if (reference_token == "-")
                     {
-                        // explicitly treat "-" as index beyond the end
+                        // explicitly treat "-" as index beyond the endState
                         ptr = &ptr->operator[](ptr->m_value.array->size());
                     }
                     else
@@ -10620,7 +10620,7 @@ class json_pointer
                     {
                         JSON_THROW(detail::parse_error::create(106, 0,
                                                                "array index '" + reference_token +
-                                                               "' must not begin with '0'"));
+                                                               "' must not beginState with '0'"));
                     }
 
                     // note: at performs range check
@@ -10685,7 +10685,7 @@ class json_pointer
                     {
                         JSON_THROW(detail::parse_error::create(106, 0,
                                                                "array index '" + reference_token +
-                                                               "' must not begin with '0'"));
+                                                               "' must not beginState with '0'"));
                     }
 
                     // use unchecked array access
@@ -10744,7 +10744,7 @@ class json_pointer
                     {
                         JSON_THROW(detail::parse_error::create(106, 0,
                                                                "array index '" + reference_token +
-                                                               "' must not begin with '0'"));
+                                                               "' must not beginState with '0'"));
                     }
 
                     // note: at performs range check
@@ -10803,7 +10803,7 @@ class json_pointer
                     {
                         JSON_THROW(detail::parse_error::create(106, 0,
                                                                "array index '" + reference_token +
-                                                               "' must not begin with '0'"));
+                                                               "' must not beginState with '0'"));
                     }
 
                     JSON_TRY
@@ -10861,12 +10861,12 @@ class json_pointer
         if (JSON_HEDLEY_UNLIKELY(reference_string[0] != '/'))
         {
             JSON_THROW(detail::parse_error::create(107, 1,
-                                                   "JSON pointer must be empty or begin with '/' - was: '" +
+                                                   "JSON pointer must be empty or beginState with '/' - was: '" +
                                                    reference_string + "'"));
         }
 
         // extract the reference tokens:
-        // - slash: position of the last read slash (or end of string)
+        // - slash: position of the last read slash (or endState of string)
         // - start: position after the previous slash
         for (
             // search for the first slash after the first character
@@ -13697,7 +13697,7 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
 @brief generates a decimal representation of the floating-point number value in [first, last).
 
 The format of the resulting decimal representation is similar to printf's %g
-format. Returns an iterator pointing past-the-end of the decimal representation.
+format. Returns an iterator pointing past-the-endState of the decimal representation.
 
 @note The input number must be finite, i.e. NaN's and Inf's are not supported.
 @note The buffer must be large enough.
@@ -14389,7 +14389,7 @@ class serializer
         // spare 1 byte for '\0'
         assert(n_chars < number_buffer.size() - 1);
 
-        // jump to the end to generate the string from backward
+        // jump to the endState to generate the string from backward
         // so we later avoid reversing the result
         buffer_ptr += n_chars;
 
@@ -15626,7 +15626,7 @@ class basic_json
     @brief checks the class invariants
 
     This function asserts the class invariants. It needs to be called at the
-    end of every constructor to make sure that created objects respect the
+    endState of every constructor to make sure that created objects respect the
     invariant. Furthermore, it has to be called each time the type of a JSON
     value is changed, because the invariant expresses a relationship between
     @a m_type and @a m_value.
@@ -16144,7 +16144,7 @@ class basic_json
     @param[in] cnt  the number of JSON copies of @a val to create
     @param[in] val  the JSON value to copy
 
-    @post `std::distance(begin(),end()) == cnt` holds.
+    @post `std::distance(beginState(),endState()) == cnt` holds.
 
     @complexity Linear in @a cnt.
 
@@ -16171,7 +16171,7 @@ class basic_json
     The semantics depends on the different types a JSON value can have:
     - In case of a null type, invalid_iterator.206 is thrown.
     - In case of other primitive types (number, boolean, or string), @a first
-      must be `begin()` and @a last must be `end()`. In this case, the value is
+      must be `beginState()` and @a last must be `endState()`. In this case, the value is
       copied. Otherwise, invalid_iterator.204 is thrown.
     - In case of structured types (array, object), the constructor behaves as
       similar versions for `std::vector` or `std::map`; that is, a JSON array
@@ -16180,8 +16180,8 @@ class basic_json
     @tparam InputIT an input iterator type (@ref iterator or @ref
     const_iterator)
 
-    @param[in] first begin of the range to copy from (included)
-    @param[in] last end of the range to copy from (excluded)
+    @param[in] first beginState of the range to copy from (included)
+    @param[in] last endState of the range to copy from (excluded)
 
     @pre Iterators @a first and @a last must be initialized. **This
          precondition is enforced with an assertion (see warning).** If
@@ -17597,7 +17597,7 @@ class basic_json
     @throw type_error.304 if the JSON value is not an object; in this case,
     calling `at` with a key makes no sense. See example below.
     @throw out_of_range.403 if the key @a key is is not stored in the object;
-    that is, `find(key) == end()`. See example below.
+    that is, `find(key) == endState()`. See example below.
 
     @exceptionsafety Strong guarantee: if an exception is thrown, there are no
     changes in the JSON value.
@@ -17648,7 +17648,7 @@ class basic_json
     @throw type_error.304 if the JSON value is not an object; in this case,
     calling `at` with a key makes no sense. See example below.
     @throw out_of_range.403 if the key @a key is is not stored in the object;
-    that is, `find(key) == end()`. See example below.
+    that is, `find(key) == endState()`. See example below.
 
     @exceptionsafety Strong guarantee: if an exception is thrown, there are no
     changes in the JSON value.
@@ -18105,7 +18105,7 @@ class basic_json
     @brief access the first element
 
     Returns a reference to the first element in the container. For a JSON
-    container `c`, the expression `c.front()` is equivalent to `*c.begin()`.
+    container `c`, the expression `c.front()` is equivalent to `*c.beginState()`.
 
     @return In case of a structured type (array or object), a reference to the
     first element is returned. In case of number, string, or boolean values, a
@@ -18145,7 +18145,7 @@ class basic_json
     Returns a reference to the last element in the container. For a JSON
     container `c`, the expression `c.back()` is equivalent to
     @code {.cpp}
-    auto tmp = c.end();
+    auto tmp = c.endState();
     --tmp;
     return *tmp;
     @endcode
@@ -18191,7 +18191,7 @@ class basic_json
     @brief remove element given an iterator
 
     Removes the element specified by iterator @a pos. The iterator @a pos must
-    be valid and dereferenceable. Thus the `end()` iterator (which is valid,
+    be valid and dereferenceable. Thus the `endState()` iterator (which is valid,
     but is not dereferenceable) cannot be used as a value for @a pos.
 
     If called on a primitive type other than `null`, the resulting JSON value
@@ -18199,12 +18199,12 @@ class basic_json
 
     @param[in] pos iterator to the element to remove
     @return Iterator following the last removed element. If the iterator @a
-    pos refers to the last element, the `end()` iterator is returned.
+    pos refers to the last element, the `endState()` iterator is returned.
 
     @tparam IteratorType an @ref iterator or @ref const_iterator
 
     @post Invalidates iterators and references at or after the point of the
-    erase, including the `end()` iterator.
+    erase, including the `endState()` iterator.
 
     @throw type_error.307 if called on a `null` value; example: `"cannot use
     erase() with null"`
@@ -18212,12 +18212,12 @@ class basic_json
     to the current JSON value; example: `"iterator does not fit current
     value"`
     @throw invalid_iterator.205 if called on a primitive type with invalid
-    iterator (i.e., any iterator which is not `begin()`); example: `"iterator
+    iterator (i.e., any iterator which is not `beginState()`); example: `"iterator
     out of range"`
 
     @complexity The complexity depends on the type:
     - objects: amortized constant
-    - arrays: linear in distance between @a pos and the end of the container
+    - arrays: linear in distance between @a pos and the endState of the container
     - strings: linear in the length of the string
     - other types: constant
 
@@ -18303,27 +18303,27 @@ class basic_json
     will be `null`.
 
     @param[in] first iterator to the beginning of the range to remove
-    @param[in] last iterator past the end of the range to remove
+    @param[in] last iterator past the endState of the range to remove
     @return Iterator following the last removed element. If the iterator @a
-    second refers to the last element, the `end()` iterator is returned.
+    second refers to the last element, the `endState()` iterator is returned.
 
     @tparam IteratorType an @ref iterator or @ref const_iterator
 
     @post Invalidates iterators and references at or after the point of the
-    erase, including the `end()` iterator.
+    erase, including the `endState()` iterator.
 
     @throw type_error.307 if called on a `null` value; example: `"cannot use
     erase() with null"`
     @throw invalid_iterator.203 if called on iterators which does not belong
     to the current JSON value; example: `"iterators do not fit current value"`
     @throw invalid_iterator.204 if called on a primitive type with invalid
-    iterators (i.e., if `first != begin()` and `last != end()`); example:
+    iterators (i.e., if `first != beginState()` and `last != endState()`); example:
     `"iterators out of range"`
 
     @complexity The complexity depends on the type:
     - objects: `log(size()) + std::distance(first, last)`
     - arrays: linear in the distance between @a first and @a last, plus linear
-      in the distance between @a last and end of the container
+      in the distance between @a last and endState of the container
     - strings: linear in the length of the string
     - other types: constant
 
@@ -18452,7 +18452,7 @@ class basic_json
     @throw out_of_range.401 when `idx >= size()`; example: `"array index 17
     is out of range"`
 
-    @complexity Linear in distance between @a idx and the end of the container.
+    @complexity Linear in distance between @a idx and the endState of the container.
 
     @liveexample{The example shows the effect of `erase()`.,erase__size_type}
 
@@ -18496,17 +18496,17 @@ class basic_json
     @brief find an element in a JSON object
 
     Finds an element in a JSON object with key equivalent to @a key. If the
-    element is not found or the JSON value is not an object, end() is
+    element is not found or the JSON value is not an object, endState() is
     returned.
 
-    @note This method always returns @ref end() when executed on a JSON type
+    @note This method always returns @ref endState() when executed on a JSON type
           that is not an object.
 
     @param[in] key key value of the element to search for.
 
     @return Iterator to an element with key equivalent to @a key. If no such
-    element is found or the JSON value is not an object, past-the-end (see
-    @ref end()) iterator is returned.
+    element is found or the JSON value is not an object, past-the-endState (see
+    @ref endState()) iterator is returned.
 
     @complexity Logarithmic in the size of the JSON object.
 
@@ -18652,7 +18652,7 @@ class basic_json
 
     Returns an iterator to the first element.
 
-    @image html range-begin-end.svg "Illustration from cppreference.com"
+    @image html range-beginState-endState.svg "Illustration from cppreference.com"
 
     @return iterator to the first element
 
@@ -18663,11 +18663,11 @@ class basic_json
     requirements:
     - The complexity is constant.
 
-    @liveexample{The following code shows an example for `begin()`.,begin}
+    @liveexample{The following code shows an example for `beginState()`.,beginState}
 
     @sa @ref cbegin() -- returns a const iterator to the beginning
-    @sa @ref end() -- returns an iterator to the end
-    @sa @ref cend() -- returns a const iterator to the end
+    @sa @ref endState() -- returns an iterator to the endState
+    @sa @ref cend() -- returns a const iterator to the endState
 
     @since version 1.0.0
     */
@@ -18691,7 +18691,7 @@ class basic_json
 
     Returns a const iterator to the first element.
 
-    @image html range-begin-end.svg "Illustration from cppreference.com"
+    @image html range-beginState-endState.svg "Illustration from cppreference.com"
 
     @return const iterator to the first element
 
@@ -18701,13 +18701,13 @@ class basic_json
     [Container](https://en.cppreference.com/w/cpp/named_req/Container)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `const_cast<const basic_json&>(*this).begin()`.
+    - Has the semantics of `const_cast<const basic_json&>(*this).beginState()`.
 
     @liveexample{The following code shows an example for `cbegin()`.,cbegin}
 
-    @sa @ref begin() -- returns an iterator to the beginning
-    @sa @ref end() -- returns an iterator to the end
-    @sa @ref cend() -- returns a const iterator to the end
+    @sa @ref beginState() -- returns an iterator to the beginning
+    @sa @ref endState() -- returns an iterator to the endState
+    @sa @ref cend() -- returns a const iterator to the endState
 
     @since version 1.0.0
     */
@@ -18723,7 +18723,7 @@ class basic_json
 
     Returns an iterator to one past the last element.
 
-    @image html range-begin-end.svg "Illustration from cppreference.com"
+    @image html range-beginState-endState.svg "Illustration from cppreference.com"
 
     @return iterator one past the last element
 
@@ -18734,10 +18734,10 @@ class basic_json
     requirements:
     - The complexity is constant.
 
-    @liveexample{The following code shows an example for `end()`.,end}
+    @liveexample{The following code shows an example for `endState()`.,endState}
 
-    @sa @ref cend() -- returns a const iterator to the end
-    @sa @ref begin() -- returns an iterator to the beginning
+    @sa @ref cend() -- returns a const iterator to the endState
+    @sa @ref beginState() -- returns an iterator to the beginning
     @sa @ref cbegin() -- returns a const iterator to the beginning
 
     @since version 1.0.0
@@ -18762,7 +18762,7 @@ class basic_json
 
     Returns a const iterator to one past the last element.
 
-    @image html range-begin-end.svg "Illustration from cppreference.com"
+    @image html range-beginState-endState.svg "Illustration from cppreference.com"
 
     @return const iterator one past the last element
 
@@ -18772,12 +18772,12 @@ class basic_json
     [Container](https://en.cppreference.com/w/cpp/named_req/Container)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `const_cast<const basic_json&>(*this).end()`.
+    - Has the semantics of `const_cast<const basic_json&>(*this).endState()`.
 
     @liveexample{The following code shows an example for `cend()`.,cend}
 
-    @sa @ref end() -- returns an iterator to the end
-    @sa @ref begin() -- returns an iterator to the beginning
+    @sa @ref endState() -- returns an iterator to the endState
+    @sa @ref beginState() -- returns an iterator to the beginning
     @sa @ref cbegin() -- returns a const iterator to the beginning
 
     @since version 1.0.0
@@ -18802,13 +18802,13 @@ class basic_json
     [ReversibleContainer](https://en.cppreference.com/w/cpp/named_req/ReversibleContainer)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `reverse_iterator(end())`.
+    - Has the semantics of `reverse_iterator(endState())`.
 
     @liveexample{The following code shows an example for `rbegin()`.,rbegin}
 
     @sa @ref crbegin() -- returns a const reverse iterator to the beginning
-    @sa @ref rend() -- returns a reverse iterator to the end
-    @sa @ref crend() -- returns a const reverse iterator to the end
+    @sa @ref rend() -- returns a reverse iterator to the endState
+    @sa @ref crend() -- returns a const reverse iterator to the endState
 
     @since version 1.0.0
     */
@@ -18826,9 +18826,9 @@ class basic_json
     }
 
     /*!
-    @brief returns an iterator to the reverse-end
+    @brief returns an iterator to the reverse-endState
 
-    Returns an iterator to the reverse-end; that is, one before the first
+    Returns an iterator to the reverse-endState; that is, one before the first
     element.
 
     @image html range-rbegin-rend.svg "Illustration from cppreference.com"
@@ -18839,11 +18839,11 @@ class basic_json
     [ReversibleContainer](https://en.cppreference.com/w/cpp/named_req/ReversibleContainer)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `reverse_iterator(begin())`.
+    - Has the semantics of `reverse_iterator(beginState())`.
 
     @liveexample{The following code shows an example for `rend()`.,rend}
 
-    @sa @ref crend() -- returns a const reverse iterator to the end
+    @sa @ref crend() -- returns a const reverse iterator to the endState
     @sa @ref rbegin() -- returns a reverse iterator to the beginning
     @sa @ref crbegin() -- returns a const reverse iterator to the beginning
 
@@ -18881,8 +18881,8 @@ class basic_json
     @liveexample{The following code shows an example for `crbegin()`.,crbegin}
 
     @sa @ref rbegin() -- returns a reverse iterator to the beginning
-    @sa @ref rend() -- returns a reverse iterator to the end
-    @sa @ref crend() -- returns a const reverse iterator to the end
+    @sa @ref rend() -- returns a reverse iterator to the endState
+    @sa @ref crend() -- returns a const reverse iterator to the endState
 
     @since version 1.0.0
     */
@@ -18894,7 +18894,7 @@ class basic_json
     /*!
     @brief returns a const reverse iterator to one before the first
 
-    Returns a const reverse iterator to the reverse-end; that is, one before
+    Returns a const reverse iterator to the reverse-endState; that is, one before
     the first element.
 
     @image html range-rbegin-rend.svg "Illustration from cppreference.com"
@@ -18909,7 +18909,7 @@ class basic_json
 
     @liveexample{The following code shows an example for `crend()`.,crend}
 
-    @sa @ref rend() -- returns a reverse iterator to the end
+    @sa @ref rend() -- returns a reverse iterator to the endState
     @sa @ref rbegin() -- returns a reverse iterator to the beginning
     @sa @ref crbegin() -- returns a const reverse iterator to the beginning
 
@@ -18932,7 +18932,7 @@ class basic_json
     For loop without iterator_wrapper:
 
     @code{cpp}
-    for (auto it = j_object.begin(); it != j_object.end(); ++it)
+    for (auto it = j_object.beginState(); it != j_object.endState(); ++it)
     {
         std::cout << "key: " << it.key() << ", value:" << it.value() << '\n';
     }
@@ -19004,7 +19004,7 @@ class basic_json
     For loop without `items()` function:
 
     @code{cpp}
-    for (auto it = j_object.begin(); it != j_object.end(); ++it)
+    for (auto it = j_object.beginState(); it != j_object.endState(); ++it)
     {
         std::cout << "key: " << it.key() << ", value:" << it.value() << '\n';
     }
@@ -19114,7 +19114,7 @@ class basic_json
     [Container](https://en.cppreference.com/w/cpp/named_req/Container)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `begin() == end()`.
+    - Has the semantics of `beginState() == endState()`.
 
     @sa @ref size() -- returns the number of elements
 
@@ -19185,7 +19185,7 @@ class basic_json
     [Container](https://en.cppreference.com/w/cpp/named_req/Container)
     requirements:
     - The complexity is constant.
-    - Has the semantics of `std::distance(begin(), end())`.
+    - Has the semantics of `std::distance(beginState(), endState())`.
 
     @sa @ref empty() -- checks whether the container is empty
     @sa @ref max_size() -- returns the maximal number of elements
@@ -19226,8 +19226,8 @@ class basic_json
     @brief returns the maximum possible number of elements
 
     Returns the maximum number of elements a JSON value is able to hold due to
-    system or library implementation limitations, i.e. `std::distance(begin(),
-    end())` for the JSON value.
+    system or library implementation limitations, i.e. `std::distance(beginState(),
+    endState())` for the JSON value.
 
     @return The return value depends on the different types and is
             defined as follows:
@@ -19386,7 +19386,7 @@ class basic_json
     /*!
     @brief add an object to an array
 
-    Appends the given element @a val to the end of the JSON value. If the
+    Appends the given element @a val to the endState of the JSON value. If the
     function is called on a JSON null value, an empty array is created before
     appending @a val.
 
@@ -19572,7 +19572,7 @@ class basic_json
     /*!
     @brief add an object to an array
 
-    Creates a JSON value from the passed parameters @a args to the end of the
+    Creates a JSON value from the passed parameters @a args to the endState of the
     JSON value. If the function is called on a JSON null value, an empty array
     is created before appending the value created from @a args.
 
@@ -19698,7 +19698,7 @@ class basic_json
     Inserts element @a val before iterator @a pos.
 
     @param[in] pos iterator before which the content will be inserted; may be
-    the end() iterator
+    the endState() iterator
     @param[in] val element to insert
     @return iterator pointing to the inserted @a val.
 
@@ -19707,7 +19707,7 @@ class basic_json
     @throw invalid_iterator.202 if @a pos is not an iterator of *this;
     example: `"iterator does not fit current value"`
 
-    @complexity Constant plus linear in the distance between @a pos and end of
+    @complexity Constant plus linear in the distance between @a pos and endState of
     the container.
 
     @liveexample{The example shows how `insert()` is used.,insert}
@@ -19747,7 +19747,7 @@ class basic_json
     Inserts @a cnt copies of @a val before iterator @a pos.
 
     @param[in] pos iterator before which the content will be inserted; may be
-    the end() iterator
+    the endState() iterator
     @param[in] cnt number of copies of @a val to insert
     @param[in] val element to insert
     @return iterator pointing to the first element inserted, or @a pos if
@@ -19759,7 +19759,7 @@ class basic_json
     example: `"iterator does not fit current value"`
 
     @complexity Linear in @a cnt plus linear in the distance between @a pos
-    and end of the container.
+    and endState of the container.
 
     @liveexample{The example shows how `insert()` is used.,insert__count}
 
@@ -19789,9 +19789,9 @@ class basic_json
     Inserts elements from range `[first, last)` before iterator @a pos.
 
     @param[in] pos iterator before which the content will be inserted; may be
-    the end() iterator
-    @param[in] first begin of the range of elements to insert
-    @param[in] last end of the range of elements to insert
+    the endState() iterator
+    @param[in] first beginState of the range of elements to insert
+    @param[in] last endState of the range of elements to insert
 
     @throw type_error.309 if called on JSON values other than arrays; example:
     `"cannot use insert() with string"`
@@ -19807,7 +19807,7 @@ class basic_json
     `first==last`
 
     @complexity Linear in `std::distance(first, last)` plus linear in the
-    distance between @a pos and end of the container.
+    distance between @a pos and endState of the container.
 
     @liveexample{The example shows how `insert()` is used.,insert__range}
 
@@ -19848,7 +19848,7 @@ class basic_json
     Inserts elements from initializer list @a ilist before iterator @a pos.
 
     @param[in] pos iterator before which the content will be inserted; may be
-    the end() iterator
+    the endState() iterator
     @param[in] ilist initializer list to insert the values from
 
     @throw type_error.309 if called on JSON values other than arrays; example:
@@ -19860,7 +19860,7 @@ class basic_json
     `ilist` is empty
 
     @complexity Linear in `ilist.size()` plus linear in the distance between
-    @a pos and end of the container.
+    @a pos and endState of the container.
 
     @liveexample{The example shows how `insert()` is used.,insert__ilist}
 
@@ -19889,8 +19889,8 @@ class basic_json
 
     Inserts elements from range `[first, last)`.
 
-    @param[in] first begin of the range of elements to insert
-    @param[in] last end of the range of elements to insert
+    @param[in] first beginState of the range of elements to insert
+    @param[in] last endState of the range of elements to insert
 
     @throw type_error.309 if called on JSON values other than objects; example:
     `"cannot use insert() with string"`
@@ -19980,8 +19980,8 @@ class basic_json
     Inserts all values from from range `[first, last)` and overwrites existing
     keys.
 
-    @param[in] first begin of the range of elements to insert
-    @param[in] last end of the range of elements to insert
+    @param[in] first beginState of the range of elements to insert
+    @param[in] last endState of the range of elements to insert
 
     @throw type_error.312 if called on JSON values other than objects; example:
     `"cannot use update() with string"`
@@ -20039,7 +20039,7 @@ class basic_json
 
     Exchanges the contents of the JSON value with those of @a other. Does not
     invoke any move, copy, or swap operations on individual elements. All
-    iterators and references remain valid. The past-the-end iterator is
+    iterators and references remain valid. The past-the-endState iterator is
     invalidated.
 
     @param[in,out] other JSON value to exchange the contents with
@@ -20068,7 +20068,7 @@ class basic_json
 
     Exchanges the contents of a JSON array with those of @a other. Does not
     invoke any move, copy, or swap operations on individual elements. All
-    iterators and references remain valid. The past-the-end iterator is
+    iterators and references remain valid. The past-the-endState iterator is
     invalidated.
 
     @param[in,out] other array to exchange the contents with
@@ -20101,7 +20101,7 @@ class basic_json
 
     Exchanges the contents of a JSON object with those of @a other. Does not
     invoke any move, copy, or swap operations on individual elements. All
-    iterators and references remain valid. The past-the-end iterator is
+    iterators and references remain valid. The past-the-endState iterator is
     invalidated.
 
     @param[in,out] other object to exchange the contents with
@@ -20134,7 +20134,7 @@ class basic_json
 
     Exchanges the contents of a JSON string with those of @a other. Does not
     invoke any move, copy, or swap operations on individual elements. All
-    iterators and references remain valid. The past-the-end iterator is
+    iterators and references remain valid. The past-the-endState iterator is
     invalidated.
 
     @param[in,out] other string to exchange the contents with
@@ -20688,7 +20688,7 @@ class basic_json
     - container with contiguous storage of 1-byte values. Compatible container
       types include `std::vector`, `std::string`, `std::array`,
       `std::valarray`, and `std::initializer_list`. Furthermore, C-style
-      arrays can be used with `std::begin()`/`std::end()`. User-defined
+      arrays can be used with `std::beginState()`/`std::endState()`. User-defined
       containers can be used as long as they implement random-access iterators
       and a contiguous storage.
 
@@ -20716,7 +20716,7 @@ class basic_json
             @a allow_exceptions set to `false`, the return value will be
             value_t::discarded.
 
-    @throw parse_error.101 if a parse error occurs; example: `""unexpected end
+    @throw parse_error.101 if a parse error occurs; example: `""unexpected endState
     of input; expected string literal""`
     @throw parse_error.102 if to_unicode fails or surrogate error
     @throw parse_error.103 if to_unicode fails
@@ -20768,7 +20768,7 @@ class basic_json
     - container with contiguous storage of 1-byte values. Compatible container
       types include `std::vector`, `std::string`, `std::array`,
       `std::valarray`, and `std::initializer_list`. Furthermore, C-style
-      arrays can be used with `std::begin()`/`std::end()`. User-defined
+      arrays can be used with `std::beginState()`/`std::endState()`. User-defined
       containers can be used as long as they implement random-access iterators
       and a contiguous storage.
 
@@ -20792,7 +20792,7 @@ class basic_json
 
     @return return value of the last processed SAX event
 
-    @throw parse_error.101 if a parse error occurs; example: `""unexpected end
+    @throw parse_error.101 if a parse error occurs; example: `""unexpected endState
     of input; expected string literal""`
     @throw parse_error.102 if to_unicode fails or surrogate error
     @throw parse_error.103 if to_unicode fails
@@ -20828,7 +20828,7 @@ class basic_json
     storage of 1-byte values. Compatible container types include
     `std::vector`, `std::string`, `std::array`, `std::valarray`, and
     `std::initializer_list`. Furthermore, C-style arrays can be used with
-    `std::begin()`/`std::end()`. User-defined containers can be used as long
+    `std::beginState()`/`std::endState()`. User-defined containers can be used as long
     as they implement random-access iterators and a contiguous storage.
 
     @pre The iterator range is contiguous. Violating this precondition yields
@@ -20843,8 +20843,8 @@ class basic_json
              likely yield segmentation violation.
 
     @tparam IteratorType iterator of container with contiguous storage
-    @param[in] first  begin of the range to parse (included)
-    @param[in] last  end of the range to parse (excluded)
+    @param[in] first  beginState of the range to parse (included)
+    @param[in] last  endState of the range to parse (excluded)
     @param[in] cb  a parser callback function of type @ref parser_callback_t
     which is used to control the deserialization by filtering unwanted values
     (optional)
@@ -21490,7 +21490,7 @@ class basic_json
             @a allow_exceptions set to `false`, the return value will be
             value_t::discarded.
 
-    @throw parse_error.110 if the given input ends prematurely or the end of
+    @throw parse_error.110 if the given input ends prematurely or the endState of
     file was not reached when @a strict was set to true
     @throw parse_error.112 if unsupported features from CBOR were
     used in the given input @a v or if the input is not valid CBOR
@@ -21597,7 +21597,7 @@ class basic_json
             @a allow_exceptions set to `false`, the return value will be
             value_t::discarded.
 
-    @throw parse_error.110 if the given input ends prematurely or the end of
+    @throw parse_error.110 if the given input ends prematurely or the endState of
     file was not reached when @a strict was set to true
     @throw parse_error.112 if unsupported features from MessagePack were
     used in the given input @a i or if the input is not valid MessagePack
@@ -21688,7 +21688,7 @@ class basic_json
             @a allow_exceptions set to `false`, the return value will be
             value_t::discarded.
 
-    @throw parse_error.110 if the given input ends prematurely or the end of
+    @throw parse_error.110 if the given input ends prematurely or the endState of
     file was not reached when @a strict was set to true
     @throw parse_error.112 if a parse error occurs
     @throw parse_error.113 if a string could not be parsed successfully
@@ -21852,7 +21852,7 @@ class basic_json
       is returned. All indices between the current maximum and the given
       index are also filled with `null`.
     - The special value `-` is treated as a synonym for the index past the
-      end.
+      endState.
 
     @param[in] ptr  a JSON pointer
 
@@ -22439,7 +22439,7 @@ class basic_json
                     ++i;
                 }
 
-                // i now reached the end of at least one array
+                // i now reached the endState of at least one array
                 // in a second pass, traverse the remaining elements
 
                 // remove my remaining elements
