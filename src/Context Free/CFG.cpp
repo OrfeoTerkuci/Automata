@@ -88,6 +88,30 @@ void CFG::sortProductions() {
     }
 }
 
+const std::vector<Variable *> &CFG::getVariables() const {
+    return variables;
+}
+
+void CFG::setVariables(const std::vector<Variable *> &newVars) {
+    CFG::variables = newVars;
+}
+
+const std::vector<Variable *> &CFG::getTerminals() const {
+    return terminals;
+}
+
+void CFG::setTerminals(const std::vector<Variable *> &newTerms) {
+    CFG::terminals = newTerms;
+}
+
+Variable *CFG::getStartingVar() const {
+    return startingVar;
+}
+
+void CFG::setStartingVar(Variable *newStartingVar) {
+    CFG::startingVar = newStartingVar;
+}
+
 void CFG::eliminateEpsilon() {
     // Print introduction
     std::cout << " >> Eliminating epsilon productions" << std::endl;
@@ -653,10 +677,8 @@ void CFG::print() {
         if(v != *variables.rbegin()){
             current += ", ";
         }
-        else{
-            current += "}";
-        }
     }
+    current += "}";
     std::cout << current << std::endl;
     // Print terminals
     current = "T = {";
@@ -665,10 +687,8 @@ void CFG::print() {
         if(t != *terminals.rbegin()){
             current += ", ";
         }
-        else{
-            current += "}";
-        }
     }
+    current += "}";
     std::cout << current << std::endl;
     // Print productions
     current = "P = {";
@@ -687,8 +707,10 @@ void CFG::print() {
     }
     current += '}';
     current += '\n';
-    std::cout << current;
-    std::cout << "S = " << startingVar->getName() << std::endl;
+    std::cout << current << "S = ";
+    if(startingVar != nullptr){
+         std::cout << startingVar->getName() << std::endl;
+    }
 }
 
 CFG::~CFG() {

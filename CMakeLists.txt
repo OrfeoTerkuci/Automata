@@ -97,6 +97,8 @@ set(PDA_sources
         "src/Context Free/CFG.cpp"
         "src/Context Free/State.cpp"
         "src/Context Free/Transition.cpp"
+        "src/Context Free/Variable.h"
+        "src/Context Free/Variable.cpp"
         )
 
 add_executable(DFA ${DFA_sources})

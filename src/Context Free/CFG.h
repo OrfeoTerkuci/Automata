@@ -48,6 +48,20 @@ public:
      */
     CFG();
 
+    // Getters and setters
+
+    const std::vector<Variable *> &getVariables() const;
+
+    void setVariables(const std::vector<Variable *> &newVars);
+
+    const std::vector<Variable *> &getTerminals() const;
+
+    void setTerminals(const std::vector<Variable *> &newTerms);
+
+    Variable *getStartingVar() const;
+
+    void setStartingVar(Variable *newStartingVar);
+
     // CNF conversion
 
     /**
@@ -55,6 +69,10 @@ public:
      */
     void toCNF();
 
+    /**
+     * Prints the CYK table and whether the input is accepted or not
+     * @param input The input to check
+     */
     void accepts(const std::string& input);
 
     /**
