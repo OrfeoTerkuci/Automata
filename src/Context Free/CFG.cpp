@@ -18,6 +18,14 @@ bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
     if(a == v1 && a.size() > 1){
         return false;
     }
+    // Case `` vs something
+    if(a.size() == 1 && a[0]->getName().empty() && !b.empty()){
+        return b[0]->getName()[0] > '`';
+    }
+    // Case something vs ``
+    else if(b.size() == 1 && b[0]->getName().empty() && !a.empty()){
+        return a[0]->getName()[0] < '`';
+    }
     for(int i = 0; i < std::min(a.size() , b.size()); i++){
         if (a[i] != b[i]) {
             return compareVariables(a[i] , b[i]);
@@ -691,6 +699,7 @@ void CFG::print() {
     current += "}";
     std::cout << current << std::endl;
     // Print productions
+    sortProductions();
     current = "P = {";
     current += '\n';
     for(auto v : variables){
@@ -699,7 +708,7 @@ void CFG::print() {
         for(auto p : v->getProductions()){
             prod.push_back(Variable::getProduction(p));
         }
-        std::sort(prod.begin() , prod.end());
+//        std::sort(prod.begin() , prod.end());
         for(const auto& s : prod){
             current += "  " + v->getName() + " -> " + s + " \n";
         }

@@ -153,7 +153,7 @@ std::string Variable::getProduction(std::vector<Variable *> &prod) {
             output += " ";
         }
     }
-    return output + '`';
+    return output + "`";
 }
 
 bool Variable::isNullable() const {

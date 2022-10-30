@@ -154,7 +154,7 @@ CFG PDA::toCFG() {
                     }
 //                    last_state = states.begin();
                     *current_last == *states.rbegin() ? current_last = states.begin() : current_last++;
-                    current_first = *current_last;
+                    current_first = t->getEnd();
                 }
                 i += 2;
                 j--;
