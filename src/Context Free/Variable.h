@@ -15,7 +15,7 @@ private:
     bool nullable;
     bool generating;
 public:
-    Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production = {},
+    explicit Variable(std::string name, std::vector<std::vector<Variable*> > production = {},
                       bool starting = false , bool terminal = false , bool generating = false);
 
     Variable();

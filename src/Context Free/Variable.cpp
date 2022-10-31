@@ -1,19 +1,15 @@
 #include "Variable.h"
 #include <string>
-#include <map>
+#include <algorithm>
+#include <utility>
 
 bool Variable::prodExists(std::vector<Variable*> &newProduction){
-    for(const auto& p : production){
-        if(p == newProduction){
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(production.begin() , production.end() , [&](const auto& p){return p == newProduction;});
 }
 
-Variable::Variable(const std::string &name, const std::vector<std::vector<Variable*> > &production , bool starting ,
+Variable::Variable(std::string name, std::vector<std::vector<Variable*> > production , bool starting ,
                    bool terminal , bool generating) :
-                    name(name), production(production) , starting(starting) ,
+                    name(std::move(name)), production(std::move(production)) , starting(starting) ,
                     terminal(terminal) , nullable(false) , generating(generating) {}
 
 Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(true) , generating(false) {}
@@ -270,13 +266,8 @@ bool Variable::hasProduction(const char &t) const {
 }
 
 bool Variable::hasProduction(const std::vector<Variable*>& p) const {
-    for(const auto& p1 : production){
-        if(p1 == p){
-            return true;
-        }
-    }
-    return false;
-};
+    return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p1){ return p1 == p;});
+}
 
 Variable::~Variable() {
     for(const auto& p : production){
