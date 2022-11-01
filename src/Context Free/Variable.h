@@ -14,6 +14,8 @@ private:
     bool terminal;
     bool nullable;
     bool generating;
+
+    static std::set<Variable*> first(const std::vector<Variable*>& prod);
 public:
     explicit Variable(std::string name, std::vector<std::vector<Variable*> > production = {},
                       bool starting = false , bool terminal = false , bool generating = false);
@@ -75,6 +77,11 @@ public:
     bool isGeneratingVar();
 
     void eliminateNonGen();
+
+    // FIRST and FOLLOW sets
+    std::set<Variable*> calculateFirst();
+
+    std::set<Variable*> calculateFollow();
 
     // Operator overloads
 

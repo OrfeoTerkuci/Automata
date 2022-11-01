@@ -34,6 +34,8 @@ private:
     void eliminateUnreachable(const std::vector<Variable*>& reachVars);
     void fixTerminals();
     void fixVariables();
+    // Internal functions for LL(1) parser
+
 
 public:
 
@@ -74,6 +76,11 @@ public:
      * @param input The input to check
      */
     void accepts(const std::string& input);
+
+    /**
+     * Constructs and prints the LL(1) table for the grammar
+     */
+    void ll();
 
     /**
      * Prints all the elements of the Context Free Grammar

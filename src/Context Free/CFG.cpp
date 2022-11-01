@@ -676,6 +676,24 @@ void CFG::accepts(const std::string &input) {
     std::cout << std::boolalpha << res << std::endl;
 }
 
+void CFG::ll() {
+    std::cout << ">>> Building LL(1) Table" << std::endl;
+    std::cout << " >> FIRST:" << std::endl;
+    for(auto v : variables){
+        std::cout << "    " << *v << ": {";
+        auto vec = v->calculateFirst();
+        for(auto f : vec){
+            std::cout << *f;
+            if(f != *vec.rbegin()){
+                std::cout << ", ";
+            }
+        }
+        std::cout << "}" << std::endl;
+    }
+
+
+}
+
 void CFG::print() {
     std::string current;
     // Print variables

@@ -101,6 +101,12 @@ set(PDA_sources
         "src/Context Free/Variable.cpp"
         )
 
+set(LL1_sources
+        "Test_files/LL1_test.cpp"
+        "src/Context Free/CFG.cpp"
+        "src/Context Free/Variable.cpp"
+        )
+
 add_executable(DFA ${DFA_sources})
 
 add_executable(NFA ${NFA_sources})
@@ -123,7 +129,12 @@ add_executable(CYK ${CYK_sources})
 
 add_executable(PDA ${PDA_sources})
 
-#install( TARGETS  DESTINATION ${PROJECT_SOURCE_DIR}/debug )
+add_executable(LL1 ${LL1_sources})
+
+#INSTALL(TARGETS CNF DESTINATION bin)
+#IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+#    SET (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
+#ENDIF()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

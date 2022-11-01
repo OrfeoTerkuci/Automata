@@ -269,6 +269,69 @@ bool Variable::hasProduction(const std::vector<Variable*>& p) const {
     return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p1){ return p1 == p;});
 }
 
+std::set<Variable *> Variable::calculateFirst() {
+    if(terminal){
+        return {this};
+    }
+    // Initialize return set
+    std::set<Variable*> firstSet;
+    // Check if nullable
+    isNullVar();
+    if(nullable){
+        // Get epsilon production
+        for(auto p : production){
+            if(p.size() == 1 && p[0]->getName().empty()){
+                firstSet.insert(p[0]);
+            }
+        }
+    }
+    for(const auto& p : production){
+        std::set<Variable*> vec = first(p);
+        firstSet.insert(vec.begin() , vec.end());
+    }
+
+    return firstSet;
+}
+
+std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
+    // prod = {Y1 , Y2 , Y3 , ... , Yn}
+    std::set<Variable*> prod_set;
+    std::set<Variable*> nextSet;
+    std::set<Variable*> res;
+    if(prod.size() == 1 && prod[0]->getName().empty()){
+        return {prod[0]};
+    }
+    for(int i = 0; i < prod.size(); i++){
+        // Calculate FIRST(var)
+        prod_set = prod[i]->calculateFirst();
+        // If it doesn't contain epsilon
+        if(!std::any_of(prod_set.begin() , prod_set.end() , [&](Variable* v){return v->getName().empty();})){
+            return prod_set;
+        }
+        // If last element and contains epsilon
+        if(i == prod.size() - 1){
+            return prod_set;
+        }
+        // If it contains epsilon but not last element
+        // Remove epsilon
+        for (auto it = prod_set.begin(); it != prod_set.end(); it++) {
+            if((*it)->getName().empty()){
+                prod_set.erase(it);
+                break;
+            }
+        }
+        nextSet = prod[i+1]->calculateFirst();
+        // FIRST(X) = { FIRST(Y1) – Є } U { FIRST(Y2) }
+        std::set_union(prod_set.begin() , prod_set.end() , nextSet.begin() , nextSet.end() , std::inserter(res , res.begin()));
+        return res;
+    }
+
+
+}
+
+std::set<Variable *> Variable::calculateFollow() {
+}
+
 Variable::~Variable() {
     for(const auto& p : production){
         for(auto v : p){
