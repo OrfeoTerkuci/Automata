@@ -677,19 +677,135 @@ void CFG::accepts(const std::string &input) {
 }
 
 void CFG::ll() {
+    // Initialize containers
+    std::map<Variable* , std::set<Variable*>> firstVars;
+    std::map<Variable* , std::set<Variable*>> followVars;
     std::cout << ">>> Building LL(1) Table" << std::endl;
     std::cout << " >> FIRST:" << std::endl;
+    // Calculate first and follow sets
+    bool eval = true;
+    for(auto v : variables){
+        firstVars[v] = v->calculateFirst();
+    }
+    for(auto v : firstVars){
+        v.first->setFirstVar(v.second);
+    }
+    while(eval){
+        eval = false;
+        for(auto v : variables){
+            int oldSize = (int)v->getFollowVar().size();
+            for(const auto& p : v->getProductions()){
+                Variable::follow(v , p);
+            }
+            if(oldSize != (int)v->getFollowVar().size()){
+                eval = true;
+            }
+        }
+    }
+
+    for(auto v : variables){
+        followVars[v] = v->getFollowVar();
+    }
+    // Print first and follow sets
     for(auto v : variables){
         std::cout << "    " << *v << ": {";
-        auto vec = v->calculateFirst();
-        for(auto f : vec){
+        // Print first sets
+        for(auto f : firstVars[v]){
             std::cout << *f;
-            if(f != *vec.rbegin()){
+            if(f != *firstVars[v].rbegin()){
                 std::cout << ", ";
             }
         }
         std::cout << "}" << std::endl;
     }
+    std::cout << " >> FOLLOW:" << std::endl;
+    for(auto v : variables){
+        std::cout << "    " << *v << ": {";
+        // Print first sets
+        for(auto f : followVars[v]){
+            if(f->getName().empty()){
+                continue;
+            }
+            std::cout << *f;
+            if(f != *followVars[v].rbegin()){
+                std::cout << ", ";
+            }
+        }
+        std::cout << "}" << std::endl;
+    }
+    std::cout << ">>> Table is built.\n"
+                 "\n"
+                 "-------------------------------------" << std::endl;
+    // Get the max column width
+    std::map<Variable* , int> width;
+    std::map<Variable* , std::vector<Variable*>> elements;
+    int varMax = 0;
+    int varWidth;
+    for(auto v : variables){
+        if (v->getName().size() > varMax) varMax = (int) v->getName().size();
+    }
+    varWidth = varMax + 3;
+    for(auto t : terminals){
+        for(auto v : variables){
+            for(auto p : v->getProductions()){
+                if(p.empty()){
+                    continue;
+                }
+                if(p[0] == t && width[t] < (int) Variable::getProduction(p).size() + 3) {
+                    width[t] = (int)Variable::getProduction(p).size() + 3;
+                }
+            }
+        }
+    }
+    // Get all table elements
+    for(auto v : variables){
+        for(auto t : terminals){
+            for(auto p : v->getProductions()){
+                if(p.empty()){
+                    continue;
+                }
+            }
+        }
+    }
+    // Print table
+    // Lookahead symbols row
+    std::cout << "|";
+    std::cout << std::string(varWidth , ' ');
+    std::cout << "|";
+    for(auto p : width){
+        int k = p.second;
+        std::cout << " ";
+        std::cout << p.first->getName();
+        k -= (int)p.first->getName().size() + 1;
+        std::cout << std::string(k , ' ');
+        std::cout << "|";
+    }
+    std::cout << " <EOS>  |" << std::endl;
+    std::cout << "|" << std::string(varWidth , '-') << "|";
+    for(auto p : width){
+        std::cout << std::string(p.second , '-') << "|";
+    }
+    std::cout << "--------|" << std::endl;
+    // Print table cells
+    for(auto v : variables){
+        std::cout << "| " << v->getName() << std::string(varWidth - v->getName().size() - 1 , ' ') << "|";
+        for(auto s : width){
+            bool found = false;
+            for(auto p : v->getProductions()){
+                if(!p.empty() && p[0] == s.first){
+                    std::string prod = Variable::getProduction(p);
+                    std::cout << " " << prod << std::string(s.second - prod.size() - 1 , ' ') << "|";
+                    found = true;
+                    break;
+                }
+            }
+            if(!found){
+                std::cout << std::string(s.second , ' ') << "|";
+            }
+        }
+        std::cout << std::endl;
+    }
+
 
 
 }

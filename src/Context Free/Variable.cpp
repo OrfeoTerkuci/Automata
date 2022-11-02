@@ -10,7 +10,7 @@ bool Variable::prodExists(std::vector<Variable*> &newProduction){
 Variable::Variable(std::string name, std::vector<std::vector<Variable*> > production , bool starting ,
                    bool terminal , bool generating) :
                     name(std::move(name)), production(std::move(production)) , starting(starting) ,
-                    terminal(terminal) , nullable(false) , generating(generating) {}
+                    terminal(terminal) , nullable(false) , generating(generating) {if (terminal) firstVar = {this};}
 
 Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(true) , generating(false) {}
 
@@ -271,6 +271,7 @@ bool Variable::hasProduction(const std::vector<Variable*>& p) const {
 
 std::set<Variable *> Variable::calculateFirst() {
     if(terminal){
+        firstVar = {this};
         return {this};
     }
     // Initialize return set
@@ -282,14 +283,15 @@ std::set<Variable *> Variable::calculateFirst() {
         for(auto p : production){
             if(p.size() == 1 && p[0]->getName().empty()){
                 firstSet.insert(p[0]);
+                firstVar.insert(p[0]);
             }
         }
     }
     for(const auto& p : production){
         std::set<Variable*> vec = first(p);
         firstSet.insert(vec.begin() , vec.end());
+        firstVar.insert(vec.begin() , vec.end());
     }
-
     return firstSet;
 }
 
@@ -299,6 +301,7 @@ std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
     std::set<Variable*> nextSet;
     std::set<Variable*> res;
     if(prod.size() == 1 && prod[0]->getName().empty()){
+        firstVar = {prod[0]};
         return {prod[0]};
     }
     for(int i = 0; i < prod.size(); i++){
@@ -306,10 +309,14 @@ std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
         prod_set = prod[i]->calculateFirst();
         // If it doesn't contain epsilon
         if(!std::any_of(prod_set.begin() , prod_set.end() , [&](Variable* v){return v->getName().empty();})){
+            firstVar = prod_set;
+            prod[i]->firstVar = prod_set;
             return prod_set;
         }
         // If last element and contains epsilon
         if(i == prod.size() - 1){
+            firstVar = prod_set;
+            prod[i]->firstVar = prod_set;
             return prod_set;
         }
         // If it contains epsilon but not last element
@@ -323,13 +330,74 @@ std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
         nextSet = prod[i+1]->calculateFirst();
         // FIRST(X) = { FIRST(Y1) – Є } U { FIRST(Y2) }
         std::set_union(prod_set.begin() , prod_set.end() , nextSet.begin() , nextSet.end() , std::inserter(res , res.begin()));
+        firstVar = res;
+        prod[i+1]->firstVar = res;
         return res;
     }
-
-
+    firstVar = {};
+    return {};
 }
 
-std::set<Variable *> Variable::calculateFollow() {
+void Variable::follow(Variable* var , const std::vector<Variable*>& prod) {
+    // Starting variable
+    if(var->starting){
+        if(!std::any_of(var->followVar.begin() , var->followVar.end() , [&](Variable* v){return v->getName() == "<EOS>";})){
+            var->followVar.insert(new Variable("<EOS>"));
+        }
+    }
+    Variable* currentVar;
+    Variable* nextVar;
+    for (int i = 0; i < prod.size(); ++i) {
+        currentVar = prod[i];
+        if(currentVar->terminal || currentVar->name.empty()){
+            continue;
+        }
+        if(i != prod.size() - 1){
+            nextVar = prod[i+1];
+            auto vec = nextVar->firstVar;
+            // Contains epsilon?
+            if(std::any_of(vec.begin() , vec.end() , [&](Variable* v){return v->getName().empty();})){
+                vec.erase(std::find_if(vec.begin() , vec.end() , [&](Variable* v){return v->getName().empty();}));
+                currentVar->followVar.insert(vec.begin() , vec.end());
+                int k = i + 2;
+                while(k < prod.size()){
+                    vec = prod[k]->firstVar;
+                    if(!std::any_of(vec.begin() , vec.end() , [&](Variable* v){return v->getName().empty();})){
+                        currentVar->followVar.insert(vec.begin() , vec.end());
+                        break;
+                    }
+                    else{
+                        vec.erase(std::find_if(vec.begin() , vec.end() , [&](Variable* v){return v->getName().empty();}));
+                        currentVar->followVar.insert(vec.begin() , vec.end());
+                    }
+                    k++;
+                }
+                currentVar->followVar.insert(var->followVar.begin() , var->followVar.end());
+            }
+            else{
+                currentVar->followVar.insert(vec.begin() , vec.end());
+            }
+        }
+        else{
+            currentVar->followVar.insert(var->followVar.begin() , var->followVar.end());
+        }
+    }
+}
+
+const std::set<Variable *> &Variable::getFirstVar() const {
+    return firstVar;
+}
+
+void Variable::setFirstVar(const std::set<Variable *> &firstVar) {
+    Variable::firstVar = firstVar;
+}
+
+const std::set<Variable *> &Variable::getFollowVar() const {
+    return followVar;
+}
+
+void Variable::setFollowVar(const std::set<Variable *> &followVar) {
+    Variable::followVar = followVar;
 }
 
 Variable::~Variable() {

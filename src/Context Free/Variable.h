@@ -15,7 +15,11 @@ private:
     bool nullable;
     bool generating;
 
-    static std::set<Variable*> first(const std::vector<Variable*>& prod);
+    std::set<Variable*> firstVar;
+    std::set<Variable*> followVar;
+
+    std::set<Variable*> first(const std::vector<Variable*>& prod);
+
 public:
     explicit Variable(std::string name, std::vector<std::vector<Variable*> > production = {},
                       bool starting = false , bool terminal = false , bool generating = false);
@@ -81,7 +85,15 @@ public:
     // FIRST and FOLLOW sets
     std::set<Variable*> calculateFirst();
 
-    std::set<Variable*> calculateFollow();
+    static void follow(Variable* var , const std::vector<Variable*>& prod);
+
+    const std::set<Variable *> &getFollowVar() const;
+
+    void setFollowVar(const std::set<Variable *> &followVar);
+
+    const std::set<Variable *> &getFirstVar() const;
+
+    void setFirstVar(const std::set<Variable *> &firstVar);
 
     // Operator overloads
 
