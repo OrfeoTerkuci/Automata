@@ -10,12 +10,11 @@ using json = nlohmann::json;
 bool compareVariables(Variable* a, Variable* b) { return (*a < *b); }
 
 bool compareVector(std::vector<Variable*> a , std::vector<Variable*> b) {
-    std::vector<Variable*> v(a.begin(), a.begin() + (int)b.size());
-    std::vector<Variable*> v1(b.begin(), b.begin() + (int)a.size());
-    if(b == v && b.size() > 1){
+
+    if(std::includes(a.begin() , a.end() , b.begin() , b.end()) && b.size() > 1){
         return false;
     }
-    if(a == v1 && a.size() > 1){
+    if(std::includes(b.begin() , b.end() , a.begin() , a.end()) && a.size() > 1){
         return false;
     }
     // Case `` vs something
@@ -702,17 +701,21 @@ void CFG::ll() {
             }
         }
     }
+    std::vector<Variable*> firstVars_vec;
+    std::vector<Variable*> followVars_vec;
 
     for(auto v : variables){
         followVars[v] = v->getFollowVar();
     }
     // Print first and follow sets
     for(auto v : variables){
+        firstVars_vec = {firstVars[v].begin() , firstVars[v].end()};
+        std::sort(firstVars_vec.begin() , firstVars_vec.end() , compareVariables);
         std::cout << "    " << *v << ": {";
         // Print first sets
-        for(auto f : firstVars[v]){
+        for(auto f : firstVars_vec){
             std::cout << *f;
-            if(f != *firstVars[v].rbegin()){
+            if(f != *firstVars_vec.rbegin()){
                 std::cout << ", ";
             }
         }
@@ -720,14 +723,16 @@ void CFG::ll() {
     }
     std::cout << " >> FOLLOW:" << std::endl;
     for(auto v : variables){
+        followVars_vec = {followVars[v].begin() , followVars[v].end()};
+        std::sort(followVars_vec.begin() , followVars_vec.end() , compareVariables);
         std::cout << "    " << *v << ": {";
         // Print first sets
-        for(auto f : followVars[v]){
+        for(auto f : followVars_vec){
             if(f->getName().empty()){
                 continue;
             }
             std::cout << *f;
-            if(f != *followVars[v].rbegin()){
+            if(f != *followVars_vec.rbegin()){
                 std::cout << ", ";
             }
         }
@@ -735,10 +740,17 @@ void CFG::ll() {
     }
     std::cout << ">>> Table is built.\n"
                  "\n"
-                 "-------------------------------------" << std::endl;
+                 "-------------------------------------"
+                 "\n"
+                 << std::endl;
     // Get the max column width
     std::map<Variable* , int> width;
-    std::map<Variable* , std::vector<Variable*>> elements;
+    std::map< Variable* , std::vector< std::pair<Variable* , std::vector<Variable*> > > > elements;
+    for(auto v : variables){
+        elements[v] = std::vector< std::pair<Variable* , std::vector<Variable*> > >(terminals.size() + 1 ,
+                                                         std::pair<Variable* , std::vector<Variable*> >(nullptr , {})
+                                                         );
+    }
     int varMax = 0;
     int varWidth;
     for(auto v : variables){
@@ -759,18 +771,52 @@ void CFG::ll() {
     }
     // Get all table elements
     for(auto v : variables){
-        for(auto t : terminals){
-            for(auto p : v->getProductions()){
+        auto firstVec = v->getFirstVar();
+        auto followVec = v->getFollowVar();
+        for(int i = 0; i < terminals.size(); i++){
+            // If neither -> put <ERR> in (leave it empty)
+            if(firstVec.find(terminals[i]) == firstVec.end() && followVec.find(terminals[i]) == followVec.end()){
+                elements[v][i] = std::pair<Variable* , std::vector<Variable*>>(terminals[i] , {});
+            }
+            for(const auto& p : v->getProductions()){
                 if(p.empty()){
                     continue;
                 }
+                // If t in first set -> put production in
+                if(firstVec.find(terminals[i]) != firstVec.end() && p[0] == terminals[i]){
+                    elements[v][i] = std::pair<Variable* , std::vector<Variable*>>(terminals[i] , p);
+                }
+                // If t in follow set -> put epsilon production in
+                if(followVec.find(terminals[i]) != followVec.end() && p[0]->getName().empty()){
+                    elements[v][i] = std::pair<Variable* , std::vector<Variable*>>(terminals[i] , p);
+                }
             }
+        }
+        // For <EOS>
+        auto endVar = std::find_if(followVec.begin() , followVec.end() , [&](Variable* v1){return v1->getName() == "<EOS>";});
+        auto endVar2 = std::find_if(firstVec.begin() , firstVec.end() , [&](Variable* v1){return v1->getName().empty();});
+        if(endVar != followVec.end() && endVar2 != firstVec.end()){
+            elements[v].back() = std::pair<Variable* , std::vector<Variable*>>(*endVar , {*endVar});
+        }
+    }
+    // Recheck size
+    for(auto t : terminals){
+        for(auto v : variables){
+            auto firstVec = v->getFirstVar();
+            auto followVec = v->getFollowVar();
+            auto endVar = std::find_if(followVec.begin() , followVec.end() , [&](Variable* v1){return v1->getName() == "<EOS>";});
+            auto endVar2 = std::find_if(firstVec.begin() , firstVec.end() , [&](Variable* v1){return v1->getName().empty();});
+            if(width[t] == 0 && (endVar != followVec.end() || endVar2 != firstVec.end())){
+                width[t] = 3 + (int)t->getName().size();
+            }
+        }
+        if(width[t] == 0){
+            width[t] = 8;
         }
     }
     // Print table
     // Lookahead symbols row
-    std::cout << "|";
-    std::cout << std::string(varWidth , ' ');
+    std::cout << std::string(varWidth + 1 , ' ');
     std::cout << "|";
     for(auto p : width){
         int k = p.second;
@@ -789,25 +835,52 @@ void CFG::ll() {
     // Print table cells
     for(auto v : variables){
         std::cout << "| " << v->getName() << std::string(varWidth - v->getName().size() - 1 , ' ') << "|";
+        // Loop through the columns
+        auto vec = elements[v];
         for(auto s : width){
-            bool found = false;
-            for(auto p : v->getProductions()){
-                if(!p.empty() && p[0] == s.first){
-                    std::string prod = Variable::getProduction(p);
-                    std::cout << " " << prod << std::string(s.second - prod.size() - 1 , ' ') << "|";
-                    found = true;
+            auto sym = s.first;
+            int k = s.second;
+            std::cout << " ";
+            k -= 1;
+            for(auto p : vec){
+                if(p.first == sym){
+                    if(!p.second.empty()){
+                        if(!p.second[0]->getName().empty()){
+                            std::string cell = Variable::getProduction(p.second);
+                            std::cout << cell;
+                            k -= (int)cell.size();
+                        }
+                    }
+                    else{
+                        std::cout << "<ERR>";
+                        k -= 5;
+                    }
+                    std::cout << std::string(k , ' ') << "|";
                     break;
                 }
             }
-            if(!found){
-                std::cout << std::string(s.second , ' ') << "|";
-            }
         }
+        if(vec.back().first == nullptr && vec.back().second.empty()){
+            std::cout << " <ERR>  |";
+        }
+        else{
+            std::cout << "        |";
+        }
+
         std::cout << std::endl;
     }
-
-
-
+    std::cout << "|" << std::string(varWidth , '-') << "|";
+    for(auto p : width){
+        std::cout << std::string(p.second , '-') << "|";
+    }
+    std::cout << "--------|" << std::endl;
+//    for(auto v : variables){
+//        for(auto v1 : v->getFollowVar()){
+//            if(v1->getName() == "<EOS>"){
+//                delete v1;
+//            }
+//        }
+//    }
 }
 
 void CFG::print() {

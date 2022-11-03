@@ -89,11 +89,11 @@ public:
 
     const std::set<Variable *> &getFollowVar() const;
 
-    void setFollowVar(const std::set<Variable *> &followVar);
+    void setFollowVar(const std::set<Variable *> &newFollowSet);
 
     const std::set<Variable *> &getFirstVar() const;
 
-    void setFirstVar(const std::set<Variable *> &firstVar);
+    void setFirstVar(const std::set<Variable *> &newFirstSet);
 
     // Operator overloads
 

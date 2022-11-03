@@ -4,7 +4,7 @@
 #include <utility>
 
 bool Variable::prodExists(std::vector<Variable*> &newProduction){
-    return std::any_of(production.begin() , production.end() , [&](const auto& p){return p == newProduction;});
+    return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p){return p == newProduction;});
 }
 
 Variable::Variable(std::string name, std::vector<std::vector<Variable*> > production , bool starting ,
@@ -304,7 +304,7 @@ std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
         firstVar = {prod[0]};
         return {prod[0]};
     }
-    for(int i = 0; i < prod.size(); i++){
+    for(int i = 0; i < prod.size(); ++i){
         // Calculate FIRST(var)
         prod_set = prod[i]->calculateFirst();
         // If it doesn't contain epsilon
@@ -388,25 +388,32 @@ const std::set<Variable *> &Variable::getFirstVar() const {
     return firstVar;
 }
 
-void Variable::setFirstVar(const std::set<Variable *> &firstVar) {
-    Variable::firstVar = firstVar;
+void Variable::setFirstVar(const std::set<Variable *> &newFirstSet) {
+    Variable::firstVar = newFirstSet;
 }
 
 const std::set<Variable *> &Variable::getFollowVar() const {
     return followVar;
 }
 
-void Variable::setFollowVar(const std::set<Variable *> &followVar) {
-    Variable::followVar = followVar;
+void Variable::setFollowVar(const std::set<Variable *> &newFollowSet) {
+    Variable::followVar = newFollowSet;
 }
 
 Variable::~Variable() {
-    for(const auto& p : production){
-        for(auto v : p){
-            if(v->getName().empty()){
-                delete v;
-            }
+//    for(const auto& p : production){
+//        for(auto v : p){
+//            if(v->getName().empty()){
+//                delete v;
+//            }
+//        }
+//    }
+    production.clear();
+    for(auto v : followVar){
+        if(v->name == "<EOS>"){
+            delete v;
         }
     }
-    production.clear();
+    followVar.clear();
+    firstVar.clear();
 }
