@@ -400,20 +400,4 @@ void Variable::setFollowVar(const std::set<Variable *> &newFollowSet) {
     Variable::followVar = newFollowSet;
 }
 
-Variable::~Variable() {
-//    for(const auto& p : production){
-//        for(auto v : p){
-//            if(v->getName().empty()){
-//                delete v;
-//            }
-//        }
-//    }
-    production.clear();
-    for(auto v : followVar){
-        if(v->name == "<EOS>"){
-            delete v;
-        }
-    }
-    followVar.clear();
-    firstVar.clear();
-}
+Variable::~Variable() = default;

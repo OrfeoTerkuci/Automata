@@ -4,12 +4,12 @@ project(Automata VERSION 1.1.0)
 #include(CTest)
 #enable_testing()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0")
+set(CMAKE_CXX_FLAGS_INIT "-Werror -Wall -Wextra -Wpedantic")
+
+set(CMAKE_CXX_STANDARD 14)
 
 # Ba1INF
 set(DFA_sources
-        Test_files/DFA_test.cpp
         "src/Finite Automata/DFA.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
@@ -17,16 +17,6 @@ set(DFA_sources
         )
 
 set(NFA_sources
-        Test_files/NFA_test.cpp
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/NFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
-        )
-
-set(SSC_sources
-        Test_files/SSC_test.cpp
         "src/Finite Automata/DFA.cpp"
         "src/Finite Automata/NFA.cpp"
         "src/Finite Automata/Node.cpp"
@@ -35,16 +25,7 @@ set(SSC_sources
         )
 
 set(MSSC_sources
-        Test_files/MSSC_test.cpp
         "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
-        )
-
-set(PA_sources
-        Test_files/Product_test.cpp
         "src/Finite Automata/DFA.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
@@ -52,17 +33,8 @@ set(PA_sources
         )
 
 set(RE_sources
-        Test_files/REGEX_test.cpp
         "src/Finite Automata/RE.cpp"
         "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
-        )
-
-set(TFA_sources
-        Test_files/TFA_test.cpp
         "src/Finite Automata/DFA.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
@@ -72,19 +44,6 @@ set(TFA_sources
 # Ba2INF
 
 set(CFG_sources
-        Test_files/CFG_test.cpp
-        "src/Context Free/CFG.cpp"
-        "src/Context Free/Variable.cpp"
-        )
-
-set(CNF_sources
-        "Test_files/CNF_test.cpp"
-        "src/Context Free/CFG.cpp"
-        "src/Context Free/Variable.cpp"
-        )
-
-set(CYK_sources
-        "Test_files/CYK_test.cpp"
         "src/Context Free/CFG.cpp"
         "src/Context Free/Variable.cpp"
         )
@@ -102,39 +61,39 @@ set(PDA_sources
         )
 
 set(LL1_sources
-        "Test_files/LL1_test.cpp"
         "src/Context Free/CFG.cpp"
         "src/Context Free/Variable.cpp"
         )
 
-add_executable(DFA ${DFA_sources})
+add_executable(DFA ${DFA_sources} Test_files/DFA_test.cpp)
 
-add_executable(NFA ${NFA_sources})
+add_executable(NFA ${NFA_sources} Test_files/NFA_test.cpp)
 
-add_executable(SSC ${SSC_sources})
+add_executable(SSC ${NFA_sources} Test_files/SSC_test.cpp)
 
-add_executable(MSSC ${MSSC_sources})
+add_executable(MSSC ${MSSC_sources} Test_files/MSSC_test.cpp)
 
-add_executable(PA ${PA_sources})
+add_executable(PA ${DFA_sources} Test_files/Product_test.cpp)
 
-add_executable(RE ${RE_sources})
+add_executable(RE ${RE_sources} Test_files/REGEX_test.cpp)
 
-add_executable(TFA ${TFA_sources})
+add_executable(TFA ${DFA_sources} Test_files/TFA_test.cpp)
 
-add_executable(CFG ${CFG_sources})
+add_executable(CFG ${CFG_sources} Test_files/CFG_test.cpp)
 
-add_executable(CNF ${CNF_sources})
+add_executable(CNF ${CFG_sources} "Test_files/CNF_test.cpp")
 
-add_executable(CYK ${CYK_sources})
+add_executable(CYK ${CFG_sources} "Test_files/CYK_test.cpp")
 
 add_executable(PDA ${PDA_sources})
 
-add_executable(LL1 ${LL1_sources})
+add_executable(LL1 ${CFG_sources} "Test_files/LL1_test.cpp")
 
-#INSTALL(TARGETS CNF DESTINATION bin)
-#IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-#    SET (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
-#ENDIF()
+INSTALL(TARGETS DFA NFA SSC MSSC PA RE TFA CFG CNF CYK PDA LL1 DESTINATION "${CMAKE_BINARY_DIR}/installed")
+
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
+endif()
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

@@ -874,13 +874,6 @@ void CFG::ll() {
         std::cout << std::string(p.second , '-') << "|";
     }
     std::cout << "--------|" << std::endl;
-//    for(auto v : variables){
-//        for(auto v1 : v->getFollowVar()){
-//            if(v1->getName() == "<EOS>"){
-//                delete v1;
-//            }
-//        }
-//    }
 }
 
 void CFG::print() {
@@ -931,11 +924,27 @@ void CFG::print() {
 
 CFG::~CFG() {
     for(auto v : variables){
+        for(auto & it : v->getProductions()){
+            for(auto & it1 : it){
+                if(it1->getName().empty()){
+                    std::cout << "Deleting " << *it1 << std::endl;
+                    delete it1;
+                }
+            }
+        }
+        for(auto it : v->getFollowVar()){
+            if(it->getName() == "<EOS>"){
+                std::cout << "Deleting " << *it << std::endl;
+                delete it;
+            }
+        }
+    }
+    for(auto v : variables){
         delete v;
     }
-    variables.clear();
     for(auto t : terminals){
         delete t;
     }
     terminals.clear();
+    variables.clear();
 }
