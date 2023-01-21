@@ -7,9 +7,9 @@ bool Variable::prodExists(std::vector<Variable*> &newProduction){
     return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p){return p == newProduction;});
 }
 
-Variable::Variable(std::string name, std::vector<std::vector<Variable*> > production , bool starting ,
+Variable::Variable(const std::string& name, const std::vector<std::vector<Variable*>>& production , bool starting ,
                    bool terminal , bool generating) :
-                    name(std::move(name)), production(std::move(production)) , starting(starting) ,
+                    name(name), production(std::move(production)) , starting(starting) ,
                     terminal(terminal) , nullable(false) , generating(generating) {if (terminal) firstVar = {this};}
 
 Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(true) , generating(false) {}
@@ -265,6 +265,18 @@ bool Variable::hasProduction(const char &t) const {
     return false;
 }
 
+bool Variable::hasProduction(const std::string &t) const{
+    for(const auto& p : production){
+        for(const auto& v : p){
+            if(v->getName() == t){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 bool Variable::hasProduction(const std::vector<Variable*>& p) const {
     return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p1){ return p1 == p;});
 }
@@ -395,7 +407,6 @@ void Variable::setFirstVar(const std::set<Variable *> &newFirstSet) {
 const std::set<Variable *> &Variable::getFollowVar() const {
     return followVar;
 }
-
 void Variable::setFollowVar(const std::set<Variable *> &newFollowSet) {
     Variable::followVar = newFollowSet;
 }

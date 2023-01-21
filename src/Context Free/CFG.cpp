@@ -587,20 +587,45 @@ void CFG::accepts(const std::string &input) {
 
     bool res = false;
     std::vector<int> max_elem = std::vector<int>(input.length() , 0);
+    // Split line into words
+    std::istringstream iss(input);
+    std::vector<std::string> tokens;
+    copy(std::istream_iterator<std::string>(iss),
+         std::istream_iterator<std::string>(),
+         back_inserter(tokens));
     // Initialize table
     std::vector<std::vector<std::set<Variable*>>> table;
-    for (int i = 0; i < input.size(); ++i) {
-        std::vector<std::set<Variable*>> current(input.length() - i , std::set<Variable*>({}));
-        table.push_back(current);
+    if(tokens.size() == 1){
+        for (int i = 0; i < input.size(); ++i) {
+            std::vector<std::set<Variable*>> current(input.length() - i , std::set<Variable*>({}));
+            table.push_back(current);
+        }
+    }
+    else{
+        for (int i = 0; i < tokens.size(); ++i) {
+            std::vector<std::set<Variable*>> current(tokens.size() - i , std::set<Variable*>({}));
+            table.push_back(current);
+        }
     }
 
     std::vector<std::set<Variable*>>& currentRow = table[0];
     std::vector<std::set<Variable*>> nextRow;
     // Initialize first row
-    for(int i = 0; i < input.size(); i++){
-        for(auto v : variables){
-            if(v->hasProduction(input[i])){
-                currentRow[i].insert(v);
+    if(tokens.size() == 1){
+        for(int i = 0; i < input.size(); i++){
+            for(auto v : variables){
+                if(v->hasProduction(input[i])){
+                    currentRow[i].insert(v);
+                }
+            }
+        }
+    }
+    else{
+        for(int i = 0; i < tokens.size(); i++){
+            for(auto v : variables){
+                if(v->hasProduction(tokens[i])){
+                    currentRow[i].insert(v);
+                }
             }
         }
     }
@@ -621,7 +646,8 @@ void CFG::accepts(const std::string &input) {
                 for(auto v1 : elementUnder){
                     for(auto v2 : elementDiag){
                         for(auto v : variables){
-                            if(v->hasProduction({v1 , v2})){
+                            std::vector<Variable*> prod = {v1 , v2};
+                            if(v->hasProduction(prod)){
                                 newElem.insert(v);
                             }
                         }
@@ -669,7 +695,10 @@ void CFG::accepts(const std::string &input) {
         std::cout << "|" << std::endl;
     }
 
-    if(std::find(table[input.length() - 1][0].begin() , table[input.length() - 1][0].end() , startingVar) != table[input.length() - 1][0].end()){
+    if(tokens.size() == 1 && std::find(table[input.length() - 1][0].begin() , table[input.length() - 1][0].end() , startingVar) != table[input.length() - 1][0].end()){
+        res = true;
+    }
+    else if(std::find(table[tokens.size() - 1][0].begin() , table[tokens.size() - 1][0].end() , startingVar) != table[tokens.size() - 1][0].end()){
         res = true;
     }
     std::cout << std::boolalpha << res << std::endl;

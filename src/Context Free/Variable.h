@@ -21,10 +21,10 @@ private:
     std::set<Variable*> first(const std::vector<Variable*>& prod);
 
 public:
-    explicit Variable(std::string name, std::vector<std::vector<Variable*> > production = {},
-                      bool starting = false , bool terminal = false , bool generating = false);
+    explicit Variable(const std::string& name, const std::vector<std::vector<Variable*>>& production = {},
+                      bool starting = false, bool terminal = false, bool generating = false);
 
-    Variable();
+    explicit Variable();
 
     const std::string &getName() const;
 
@@ -55,6 +55,8 @@ public:
     static std::string getProduction(std::vector<Variable*> &prod);
 
     bool hasProduction(const char &t) const;
+
+    bool hasProduction(const std::string &t) const;
 
     bool hasProduction(const std::vector<Variable*>& p) const;
 
