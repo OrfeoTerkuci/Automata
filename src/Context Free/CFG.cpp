@@ -61,9 +61,9 @@ CFG::CFG(const std::string& filename) {
 
     // Read the productions
     auto prods = j["Productions"];
-    for(auto p : prods){
+    for(const auto& p : prods){
         // Add production to variable
-        for(auto v : variables){
+        for(const auto& v : variables){
             if(p["head"] == v->getName()){
                 v->addProduction(p["body"] , variables , terminals);
             }
@@ -72,7 +72,7 @@ CFG::CFG(const std::string& filename) {
 
     // Set starting variable
     auto s = j["Start"];
-    for(auto v : variables){
+    for(const auto& v : variables){
         if(v->getName() == s){
             v->setStarting(true);
             startingVar = v;
@@ -83,9 +83,9 @@ CFG::CFG(const std::string& filename) {
     std::sort(terminals.begin() , terminals.end() , compareVariables);
     sortProductions();
 
-}
+    CFG::filename = filename;
 
-CFG::CFG() : variables({}) , terminals({}) , startingVar(nullptr) {}
+}
 
 void CFG::sortProductions() {
     for(auto v : variables){
@@ -95,42 +95,22 @@ void CFG::sortProductions() {
     }
 }
 
-const std::vector<Variable *> &CFG::getVariables() const {
-    return variables;
-}
-
-void CFG::setVariables(const std::vector<Variable *> &newVars) {
-    CFG::variables = newVars;
-}
-
-const std::vector<Variable *> &CFG::getTerminals() const {
-    return terminals;
-}
-
-void CFG::setTerminals(const std::vector<Variable *> &newTerms) {
-    CFG::terminals = newTerms;
-}
-
-Variable *CFG::getStartingVar() const {
-    return startingVar;
-}
-
-void CFG::setStartingVar(Variable *newStartingVar) {
-    CFG::startingVar = newStartingVar;
-}
-
-void CFG::eliminateEpsilon() {
+void CFG::eliminateEpsilon(bool printToggle) {
     // Print introduction
-    std::cout << " >> Eliminating epsilon productions" << std::endl;
-    std::vector<Variable*> nullVar = calculateNullables();
-    std::cout << "  Nullables are {";
-    for(auto v : nullVar){
-        std::cout << v->getName();
-        if(v != *nullVar.rbegin()){
-            std::cout << ", ";
-        }
+    if(printToggle) {
+        std::cout << " >> Eliminating epsilon productions" << std::endl;
     }
-    std::cout << "}" << std::endl;
+        std::vector<Variable*> nullVar = calculateNullables();
+    if(printToggle){
+        std::cout << "  Nullables are {";
+        for(auto v : nullVar){
+            std::cout << v->getName();
+            if(v != *nullVar.rbegin()){
+                std::cout << ", ";
+            }
+        }
+        std::cout << "}" << std::endl;
+    }
     int oldSize = 0;
     for(const auto &v : variables){
         oldSize += (int)v->getProductions().size();
@@ -142,9 +122,11 @@ void CFG::eliminateEpsilon() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " productions, original had " << oldSize << "\n" << std::endl;
-    print();
-    std::cout << std::endl;
+    if(printToggle){
+        std::cout << "  Created " << newSize << " productions, original had " << oldSize << "\n" << std::endl;
+        print();
+        std::cout << std::endl;
+    }
 }
 
 std::vector<Variable*> CFG::calculateNullables() {
@@ -211,7 +193,7 @@ void CFG::fixNullable(Variable* &var) {
 
 }
 
-void CFG::eliminateUnitPairs() {
+void CFG::eliminateUnitPairs(bool printToggle) {
     int totalPairs = 0;
     int oldSize = 0;
     for(const auto &v : variables){
@@ -223,20 +205,26 @@ void CFG::eliminateUnitPairs() {
         }
     }
     // Print introduction
-    std::cout << " >> Eliminating unit pairs" << std::endl;
+    if(printToggle){
+        std::cout << " >> Eliminating unit pairs" << std::endl;
+    }
     std::set<std::pair<Variable* , Variable*>> unitPairs = calculateUnits();
     std::set<std::vector<Variable*>> newProd;
     std::vector<std::vector<Variable*>> v_prods;
     std::vector<std::vector<Variable*>> e_prods;
-    std::cout << "  Found " << totalPairs << " unit productions" << std::endl;
-    std::cout << "  Unit pairs: {";
+    if(printToggle){
+        std::cout << "  Found " << totalPairs << " unit productions" << std::endl;
+        std::cout << "  Unit pairs: {";
+    }
     for(auto u : unitPairs){
-        std::cout << "(" << u.first->getName() << ", " << u.second->getName() << ")";
-        if(u != *unitPairs.rbegin()){
-            std::cout << ", ";
-        }
-        else{
-            std::cout << "}\n";
+        if(printToggle){
+            std::cout << "(" << u.first->getName() << ", " << u.second->getName() << ")";
+            if(u != *unitPairs.rbegin()){
+                std::cout << ", ";
+            }
+            else{
+                std::cout << "}\n";
+            }
         }
         v_prods = u.second->getProductions();
         newProd.insert(v_prods.begin() , v_prods.end());
@@ -266,9 +254,11 @@ void CFG::eliminateUnitPairs() {
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
-    print();
-    std::cout << std::endl;
+    if(printToggle){
+        std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
+        print();
+        std::cout << std::endl;
+    }
 }
 
 void CFG::eliminateUnitProductions() {
@@ -298,7 +288,7 @@ std::set<std::pair<Variable* , Variable*>> CFG::calculateUnits() {
     return units;
 }
 
-void CFG::eliminateUseless() {
+void CFG::eliminateUseless(bool printToggle) {
     // Store beginning sizes
     int oldVar = (int)variables.size();
     int oldTerm = (int)terminals.size();
@@ -307,17 +297,21 @@ void CFG::eliminateUseless() {
         oldProd += (int)v->getProductions().size();
     }
     // Introduction print
-    std::cout << " >> Eliminating useless symbols" << std::endl;
+    if(printToggle){
+        std::cout << " >> Eliminating useless symbols" << std::endl;
+    }
     // Calculate generating variables
     std::vector<Variable*> genVar = calculateGenerating();
     std::sort(genVar.begin() , genVar.end() , compareVariables);
-    std::cout << "  Generating symbols: {";
-    for(auto v : genVar){
-        std::cout << *v;
-        if (v == *genVar.rbegin()) {
-            std::cout << "}" << std::endl;
-        } else {
-            std::cout << ", ";
+    if(printToggle){
+        std::cout << "  Generating symbols: {";
+        for(auto v : genVar){
+            std::cout << *v;
+            if (v == *genVar.rbegin()) {
+                std::cout << "}" << std::endl;
+            } else {
+                std::cout << ", ";
+            }
         }
     }
     // Eliminate non generating variables
@@ -325,13 +319,15 @@ void CFG::eliminateUseless() {
     // Calculate reachable variables
     std::vector<Variable*> reachVar = calculateReachable();
     std::sort(reachVar.begin() , reachVar.end() , compareVariables);
-    std::cout << "  Reachable symbols: {";
-    for(auto v : reachVar){
-        std::cout << *v;
-        if (v == *reachVar.rbegin()) {
-            std::cout << "}" << std::endl;
-        } else {
-            std::cout << ", ";
+    if(printToggle){
+        std::cout << "  Reachable symbols: {";
+        for(auto v : reachVar){
+            std::cout << *v;
+            if (v == *reachVar.rbegin()) {
+                std::cout << "}" << std::endl;
+            } else {
+                std::cout << ", ";
+            }
         }
     }
     // Find useful variables
@@ -339,33 +335,56 @@ void CFG::eliminateUseless() {
     std::set_intersection(genVar.begin() , genVar.end() ,
                         reachVar.begin() , reachVar.end() ,
                         std::inserter(usefulVar, usefulVar.end()));
-    std::sort(reachVar.begin() , reachVar.end() , compareVariables);
-    std::cout << "  Useful symbols: {";
-    for(auto v : usefulVar){
-        std::cout << *v;
-        if (v == *usefulVar.rbegin()) {
-            std::cout << "}" << std::endl;
-        } else {
-            std::cout << ", ";
+    // Insert reachable terminals that might be missing
+    for(const auto& t : terminals){
+        if(t->isGenerating() && t->isReachable()){
+            if(std::find_if(usefulVar.begin() , usefulVar.end() ,
+                            [&](Variable* v){return t->getName() == v->getName();}) == usefulVar.end())
+            usefulVar.push_back(t);
         }
     }
+    for(const auto& v : variables){
+        if(v->isGenerating() && v->isReachable() && std::find_if(usefulVar.begin() , usefulVar.end() ,
+                        [&](Variable* v1){return v->getName() == v1->getName();}) == usefulVar.end()){
+            usefulVar.push_back(v);
+        }
+    }
+    std::sort(reachVar.begin() , reachVar.end() , compareVariables);
+    if(printToggle){
+        std::cout << "  Useful symbols: {";
+        for(auto v : usefulVar){
+            std::cout << *v;
+            if (v == *usefulVar.rbegin()) {
+                std::cout << "}" << std::endl;
+            } else {
+                std::cout << ", ";
+            }
+        }
+    }
+
     eliminateUnreachable(usefulVar);
     // Results output
     int newProd = 0;
     for(auto v : variables){
         newProd += (int)v->getProductions().size();
     }
-    std::cout   << "  Removed " << oldVar - variables.size() << " variables, "
-                << oldTerm - terminals.size() << " terminals "
-                << "and " << oldProd - newProd << " productions \n"
-                << std::endl;
-    print();
-    std::cout << std::endl;
+    if(printToggle){
+        std::cout   << "  Removed " << oldVar - variables.size() << " variables, "
+                    << oldTerm - terminals.size() << " terminals "
+                    << "and " << oldProd - newProd << " productions \n"
+                    << std::endl;
+        print();
+        std::cout << std::endl;
+    }
+
 }
 
 std::vector<Variable *> CFG::calculateGenerating() {
     // Create container
     std::set<Variable*> genVar = {terminals.begin() , terminals.end()};
+    for(auto t : terminals){
+        t->isGeneratingVar();
+    }
     bool eval = true;
     for(auto v : variables){
         v->isGeneratingVar();
@@ -376,6 +395,7 @@ std::vector<Variable *> CFG::calculateGenerating() {
     while(eval){
         int oldSize = (int)genVar.size();
         for(auto& v : variables){
+            v->isGeneratingVar();
             if(v->isGenerating()){
                 genVar.insert(v);
             }
@@ -401,6 +421,7 @@ std::vector<Variable *> CFG::calculateReachable() {
         for (const auto &p: v->getProductions()) {
             for (auto v1: p) {
                 if (v1->isTerminal() || v1->isGenerating()) {
+                    v1->setReachable(true);
                     reachVar.insert(v1);
                 }
             }
@@ -431,7 +452,7 @@ void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
     }
 }
 
-void CFG::fixTerminals() {
+void CFG::fixTerminals(bool printToggle) {
     std::vector<Variable*> newVars;
     std::map<Variable* , Variable*> terminalsExisting;
     int oldSize = 0;
@@ -476,28 +497,34 @@ void CFG::fixTerminals() {
     std::sort(newVars.begin() , newVars.end() , compareVariables);
     std::sort(variables.begin() , variables.end() , compareVariables);
     sortProductions();
-    std::cout   << " >> Replacing terminals in bad bodies \n"
-                << "  Added " << (int)newVars.size() << " new variables: {";
-    for(auto v : newVars){
-        std::cout << *v;
-        if (v != *newVars.rbegin()) {
-            std::cout << ", ";
+    if(printToggle){
+        std::cout   << " >> Replacing terminals in bad bodies \n"
+                    << "  Added " << (int)newVars.size() << " new variables: {";
+        for(auto v : newVars){
+            std::cout << *v;
+            if (v != *newVars.rbegin()) {
+                std::cout << ", ";
+            }
         }
+        std::cout << "}\n";
     }
-    std::cout << "}\n";
+
     int newSize = 0;
     for(const auto &v : variables){
         newSize += (int)v->getProductions().size();
     }
-    std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
-    print();
-    std::cout << std::endl;
+    if(printToggle){
+        std::cout << "  Created " << newSize << " new productions, original had " << oldSize << "\n" << std::endl;
+        print();
+        std::cout << std::endl;
+    }
 }
 
-void CFG::fixVariables() {
+void CFG::fixVariables(bool printToggle) {
     std::vector<Variable*> newVars;
     std::map<std::vector<Variable*> , std::vector<Variable*>> variablesExisting;
-    int oldSize = (int)variables.size();
+    int oldSize = (int) variables.size();
+    int newSize = 0;
     // Find good bodies
     for(auto v : variables){
         for(const auto& p : v->getProductions()){
@@ -508,75 +535,88 @@ void CFG::fixVariables() {
     }
     int varCount = 0;
     int bodyCount = 0;
+    int originalSize = (int)variables.size();
     // Fix bad bodies
-    for(auto v : variables) {
-        int el = 2;
-        auto prod = v->getProductions();
-        for (auto &p: prod) {
-            // If production too long
-            while (p.size() > 2) {
-                int i = (int) p.size();
-                // Check if new variable already exists
-                auto vec = variablesExisting[{p[i - 2], p[i - 1]}];
-                auto v2 = std::find(vec.begin(), vec.end(), v);
-                if (vec.empty() || v2 == vec.end() || *v2 == v) {
-                    std::string newName = v->getName() + "_" + std::to_string(el);
-                    auto newVar = new Variable(newName);
-                    newVar->addProduction({p[i - 2], p[i - 1]});
-                    variables.push_back(newVar);
-                    variablesExisting[{p[i - 2], p[i - 1]}].push_back(newVar);
-                    newVars.push_back(newVar);
-                    varCount++;
-                    el++;
-                }
-                for (int j = (int) p.size() - 1; i > 0; i--) {
-                    // Replace with existing variable
-                    vec = variablesExisting[{p[j - 1], p[j]}];
-                    if (!vec.empty()) {
-                        // Check which variable matches our name
-                        for (auto v3: vec) {
-                            std::string n = v->getName();
-                            std::string n2 = v3->getName().substr(0, n.length());
-                            if (n2 == n && v3 != v) {
-                                p[j - 1] = v3;
-                                auto it = p.begin();
-                                std::advance(it, j);
-                                it = p.erase(it);
-                                bodyCount++;
+    while(newSize != oldSize){
+        oldSize = (int)variables.size();
+        std::vector<Variable*> newVariables;
+        for(auto v : variables) {
+            int el = 2;
+            auto prod = v->getProductions();
+            for (auto &p: prod) {
+                // If production too long
+                while (p.size() > 2) {
+                    int i = (int) p.size();
+                    // Check if new variable already exists
+                    auto vec = variablesExisting[{p[i - 2], p[i - 1]}];
+                    auto v2 = std::find(vec.begin(), vec.end(), v);
+                    if (vec.empty() || v2 == vec.end() || *v2 == v) {
+                        std::string newName = v->getName() + "_" + std::to_string(el);
+                        auto newVar = new Variable(newName);
+                        newVar->addProduction({p[i - 2], p[i - 1]});
+                        auto it2 = v;
+                        newVariables.push_back(newVar);
+                        v = it2;
+                        variablesExisting[{p[i - 2], p[i - 1]}].push_back(newVar);
+                        newVars.push_back(newVar);
+                        varCount++;
+                        el++;
+                    }
+                    for (int j = (int) p.size() - 1; j > 0; --j) {
+                        // Replace with existing variable
+                        vec = variablesExisting[{p[j - 1], p[j]}];
+                        if (!vec.empty()) {
+                            // Check which variable matches our name
+                            for (auto v3: vec) {
+                                std::string n = v->getName();
+                                std::string n2 = v3->getName().substr(0, n.length());
+                                if (n2 == n && v3 != v) {
+                                    p[j - 1] = v3;
+                                    auto it = p.begin();
+                                    std::advance(it, j);
+                                    it = p.erase(it);
+                                    bodyCount++;
+                                    break;
+                                }
                             }
                         }
-                    }
 
+                    }
                 }
             }
+            v->setProductions(prod);
         }
-        v->setProductions(prod);
+        variables.insert(variables.end() , newVariables.begin() , newVariables.end());
+        newSize = (int)variables.size();
     }
-
     std::sort(newVars.begin() , newVars.end() , compareVariables);
     std::sort(variables.begin() , variables.end() , compareVariables);
     sortProductions();
-    int newSize = (int)variables.size();
-    std::cout   << " >> Broke " << bodyCount << " bodies, added " << newSize - oldSize << " new variables\n"
-                << ">>> Result CFG:\n"
-                << std::endl;
-    print();
+    newSize = (int)variables.size();
+    if(printToggle){
+        std::cout   << " >> Broke " << bodyCount << " bodies, added " << newSize - originalSize << " new variables\n"
+                    << ">>> Result CFG:\n"
+                    << std::endl;
+        print();
+    }
 }
 
-void CFG::toCNF() {
+void CFG::toCNF(bool printToggle) {
     // Print original CFG
-    std::cout << "Original CFG:\n\n";
-    print();
-    std::cout << "\n-------------------------------------\n" << std::endl;
+    if(printToggle){
+        std::cout << "Original CFG:\n\n";
+        print();
+        std::cout << "\n-------------------------------------\n" << std::endl;
+    }
     // Eliminate epsilon productions
-    eliminateEpsilon();
-    eliminateUnitPairs();
-    eliminateUseless();
-    fixTerminals();
-    fixVariables();
+    eliminateEpsilon(printToggle);
+    eliminateUnitPairs(printToggle);
+    eliminateUseless(printToggle);
+    fixTerminals(printToggle);
+    fixVariables(printToggle);
 }
 
-void CFG::accepts(const std::string &input) {
+bool CFG::accepts(const std::string &input , bool printToggle) {
     /*
 | {A, C, S}  |
 | {}         | {A, C, S}  |
@@ -595,37 +635,18 @@ void CFG::accepts(const std::string &input) {
          back_inserter(tokens));
     // Initialize table
     std::vector<std::vector<std::set<Variable*>>> table;
-    if(tokens.size() == 1){
-        for (int i = 0; i < input.size(); ++i) {
-            std::vector<std::set<Variable*>> current(input.length() - i , std::set<Variable*>({}));
-            table.push_back(current);
-        }
-    }
-    else{
-        for (int i = 0; i < tokens.size(); ++i) {
-            std::vector<std::set<Variable*>> current(tokens.size() - i , std::set<Variable*>({}));
-            table.push_back(current);
-        }
+    for (int i = 0; i < input.size(); ++i) {
+        std::vector<std::set<Variable*>> current(input.length() - i , std::set<Variable*>({}));
+        table.push_back(current);
     }
 
     std::vector<std::set<Variable*>>& currentRow = table[0];
     std::vector<std::set<Variable*>> nextRow;
     // Initialize first row
-    if(tokens.size() == 1){
-        for(int i = 0; i < input.size(); i++){
-            for(auto v : variables){
-                if(v->hasProduction(input[i])){
-                    currentRow[i].insert(v);
-                }
-            }
-        }
-    }
-    else{
-        for(int i = 0; i < tokens.size(); i++){
-            for(auto v : variables){
-                if(v->hasProduction(tokens[i])){
-                    currentRow[i].insert(v);
-                }
+    for(int i = 0; i < input.size(); i++){
+        for(auto v : variables){
+            if(v->hasProduction(input[i])){
+                currentRow[i].insert(v);
             }
         }
     }
@@ -660,48 +681,50 @@ void CFG::accepts(const std::string &input) {
             }
         }
     }
-    // Print table
-    // Get max width of table cell
-    for (auto & i : table) {
-        for (int j = 0; j < i.size(); ++j) {
-            if(max_elem[j] < i[j].size()){
-                max_elem[j] = (int)i[j].size();
-            }
-        }
-    }
-    int width;
-    int remain;
-    for (int i = (int)table.size() - 1; i >= 0; --i) {
-        // Find width
-        for (int j = 0 ; j < table[i].size(); ++j) {
-            width = 5 + 3 * max_elem[j] - 2;
-            remain = width;
-            std::cout << "| {";
-            remain -= 2;
-            for(Variable* v : table[i][j]){
-                std::cout << *v;
-                remain--;
-                if (v != *table[i][j].rbegin()) {
-                    std::cout << ", ";
-                    remain -= 2;
+    if(printToggle){
+        // Print table
+        // Get max width of table cell
+        for (auto & i : table) {
+            for (int j = 0; j < i.size(); ++j) {
+                if(max_elem[j] < i[j].size()){
+                    max_elem[j] = (int)i[j].size();
                 }
             }
-            std::cout << "}";
-            remain--;
-            for (int k = 0; k < remain; ++k) {
-                std::cout << " ";
-            }
         }
-        std::cout << "|" << std::endl;
+        int width;
+        int remain;
+        for (int i = (int)table.size() - 1; i >= 0; --i) {
+            // Find width
+            for (int j = 0 ; j < table[i].size(); ++j) {
+                width = 5 + 3 * max_elem[j] - 2;
+                remain = width;
+                std::cout << "| {";
+                remain -= 2;
+                for(Variable* v : table[i][j]){
+                    std::cout << *v;
+                    remain--;
+                    if (v != *table[i][j].rbegin()) {
+                        std::cout << ", ";
+                        remain -= 2;
+                    }
+                }
+                std::cout << "}";
+                remain--;
+                for (int k = 0; k < remain; ++k) {
+                    std::cout << " ";
+                }
+            }
+            std::cout << "|" << std::endl;
+        }
     }
 
-    if(tokens.size() == 1 && std::find(table[input.length() - 1][0].begin() , table[input.length() - 1][0].end() , startingVar) != table[input.length() - 1][0].end()){
+    if(std::find(table[input.length() - 1][0].begin() , table[input.length() - 1][0].end() , startingVar) != table[input.length() - 1][0].end()){
         res = true;
     }
-    else if(std::find(table[tokens.size() - 1][0].begin() , table[tokens.size() - 1][0].end() , startingVar) != table[tokens.size() - 1][0].end()){
-        res = true;
+    if(printToggle){
+        std::cout << std::boolalpha << res << std::endl;
     }
-    std::cout << std::boolalpha << res << std::endl;
+    return res;
 }
 
 void CFG::ll() {
@@ -937,7 +960,6 @@ void CFG::print() {
         for(auto p : v->getProductions()){
             prod.push_back(Variable::getProduction(p));
         }
-//        std::sort(prod.begin() , prod.end());
         for(const auto& s : prod){
             current += "  " + v->getName() + " -> " + s + " \n";
         }
@@ -951,19 +973,215 @@ void CFG::print() {
     }
 }
 
+void CFG::save() {
+    // Containers for all variables
+    json j;
+    json productions_array = json::array();
+    json variables_array = json::array();
+    json terminals_array = json::array();
+    j["Start"] = startingVar->getName();
+    for(const auto& t : terminals){
+        terminals_array.push_back(t->getName());
+    }
+    for(const auto& v : variables){
+        variables_array.push_back(v->getName());
+        for(const auto& p : v->getProductions()){
+            json newObject = json::object();
+            json currentProd = json::array();
+            for(const auto& v1 : p){
+                currentProd.push_back(v1->getName());
+            }
+            newObject["head"] = v->getName();
+            newObject["body"] = currentProd;
+            productions_array.push_back(newObject);
+//            currentProd.clear();
+        }
+    }
+    j["Terminals"] = terminals_array;
+    j["Variables"] = variables_array;
+    j["Productions"] = productions_array;
+    std::ofstream ofs;
+    ofs.open(filename, std::ofstream::out | std::ofstream::trunc);
+    ofs << std::setw(4) << j << std::endl;
+    ofs.close();
+}
+
+void CFG::split() {
+// Select variable with the largest count
+    Variable* current;
+    std::string currentName;
+    int count = 0;
+    for(const auto& v : variables){
+        if(v->getProductions().size() > count){
+            current = v;
+        }
+    }
+    currentName = current->getName();
+    // Check if original variable
+    auto newVar = new Variable();
+    if(!isdigit(currentName[currentName.length()])){
+        newVar->setName(currentName + "_1");
+    }
+    variables.push_back(newVar);
+
+    for(const auto& v : variables){
+        for(const auto& p : v->getProductions()){
+            if(p.size() == 1){
+                newVar->addProduction(p);
+            }
+        }
+    }
+    //Xi -> XiXi, Xi -> XiXj, Xi -> XjXi, Xi -> XjXj, Xj -> XiXi, Xj -> XiXj, Xj -> XjXi, Xj -> XjXj
+    current->addProduction({current , current});
+    current->addProduction({current , newVar});
+    current->addProduction({newVar , current});
+    current->addProduction({newVar , newVar});
+    newVar->addProduction({current , current});
+    newVar->addProduction({current , newVar});
+    newVar->addProduction({newVar , current});
+    newVar->addProduction({newVar , newVar});
+
+    for(const auto& v : variables){
+        for(const auto& p : v->getProductions()){
+            if(p.size() == 1) continue;
+            if(v == current && p[0] == current){
+                newVar->addProduction({newVar , p[1]});
+                newVar->addProduction({current , p[1]});
+                current->addProduction({newVar , p[1]});
+            }
+            else if(v == current && p[1] == current){
+                newVar->addProduction({p[0] , newVar});
+                newVar->addProduction({p[0] , current});
+                current->addProduction({p[0] , current});
+            }
+            else if(p[0] == current && p[1] == current){
+                v->addProduction({newVar , newVar});
+                v->addProduction({newVar , current});
+                v->addProduction({current , newVar});
+            }
+            else if(v == current){
+                newVar->addProduction(p);
+            }
+            else if(p[0] == current){
+                v->addProduction({newVar , p[1]});
+            }
+            else if(p[1] == current){
+                v->addProduction({p[0] , newVar});
+            }
+        }
+    }
+}
+
+void CFG::trainTerminals(const std::string &variable_name, const std::string &t_filename) {
+    try {
+        //* Read from file
+        std::ifstream input(t_filename);
+        if (!input) {
+            throw FileExist("TXT file was not opened");
+        }
+        if(input.is_open()){
+            std::string line;
+            std::string newTerm;
+            // Get variable to train productions
+            Variable* v = *std::find_if(variables.begin() , variables.end() ,
+                                        [&](const auto& Var){
+                                                return variable_name == Var->getName();});
+            // Check if variable is valid
+            if(v == nullptr){
+                return;
+            }
+            // Parse all terminal samples
+            while(getline(input , line)){
+                if(line.back() == '\r'){
+                    line.pop_back();
+                }
+                std::vector<Variable*> newProd;
+                for(const auto& i : line){
+                    // Check if terminal exists
+                    Variable* newT;
+                    for(const auto& t : terminals){
+                        if(t->getName()[0] == i){
+                            newT = t;
+                            break;
+                        }
+                        if(t == terminals.back()){
+                            newT = new Variable(std::string(1 , i) , {} , false , true);
+                            terminals.push_back(newT);
+                        }
+                    }
+                    if(terminals.empty()){
+                        newT = new Variable(std::string(1 , i) , {} , false , true);
+                        terminals.push_back(newT);
+                    }
+                    // Check if variable with this terminal production exists
+                    bool exists = false;
+                    for(const auto& v1 : variables){
+                        if(v1 == v){
+                            continue;
+                        }
+                        if(v1->hasProduction({newT})){
+                            newProd.push_back(v1);
+                            exists = true;
+                        }
+                    }
+                    if(!exists){
+                        auto newV = new Variable("_" + newT->getName() , {{newT}});
+                        newProd.push_back(newV);
+                        variables.push_back(newV);
+                    }
+                }
+                bool exists = false;
+                for(const auto& v1 : variables){
+                    if(v1 == v){
+                        continue;
+                    }
+                    for(const auto& p : v1->getProductions()){
+                        if(p == newProd){
+                            exists = true;
+                            newProd = p;
+                            v->addProduction(newProd);
+                            newProd.clear();
+                        }
+                    }
+                    if(!exists && !newProd.empty()){
+                        v->addProduction(newProd);
+                        newProd.clear();
+                    }
+                }
+
+            }
+        }
+        input.close();
+//        toCNF();
+//        save();
+
+    } catch(std::exception& e){
+        std::cout << e.what() << std::endl;
+    }
+
+}
+
+void CFG::trainInterval(const std::string &variable_name, int begin_num, int end_num , const std::string& t_filename) {
+    std::ofstream ofs;
+    ofs.open(t_filename, std::ofstream::out | std::ofstream::trunc);
+    for(int i = begin_num; i <= end_num; i++){
+        ofs << i << std::endl;
+    }
+    ofs.close();
+    trainTerminals(variable_name , t_filename);
+}
+
 CFG::~CFG() {
     for(auto v : variables){
         for(auto & it : v->getProductions()){
             for(auto & it1 : it){
                 if(it1->getName().empty()){
-                    std::cout << "Deleting " << *it1 << std::endl;
                     delete it1;
                 }
             }
         }
         for(auto it : v->getFollowVar()){
             if(it->getName() == "<EOS>"){
-                std::cout << "Deleting " << *it << std::endl;
                 delete it;
             }
         }

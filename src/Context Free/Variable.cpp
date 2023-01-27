@@ -4,31 +4,16 @@
 #include <utility>
 
 bool Variable::prodExists(std::vector<Variable*> &newProduction){
-    return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p){return p == newProduction;});
+    return std::any_of(production.begin() , production.end() ,
+                       [&](const std::vector<Variable*>& p){return p == newProduction;});
 }
 
-Variable::Variable(const std::string& name, const std::vector<std::vector<Variable*>>& production , bool starting ,
+Variable::Variable(const std::string& name, std::vector<std::vector<Variable*> > production , bool starting ,
                    bool terminal , bool generating) :
                     name(name), production(std::move(production)) , starting(starting) ,
-                    terminal(terminal) , nullable(false) , generating(generating) {if (terminal) firstVar = {this};}
+                    terminal(terminal) , nullable(false) , generating(generating) { if (terminal) firstVar = {this}; }
 
-Variable::Variable() : production({}) , starting(false) , terminal(false) , nullable(true) , generating(false) {}
 
-const std::string &Variable::getName() const {
-    return name;
-}
-
-void Variable::setName(const std::string &newName) {
-    Variable::name = newName;
-}
-
-std::vector<std::vector<Variable*> > Variable::getProductions() const {
-    return production;
-}
-
-void Variable::setProductions(const std::vector<std::vector<Variable*> > &newProductions) {
-    Variable::production = newProductions;
-}
 
 void Variable::addProduction(std::vector<Variable*> newProduction) {
     if(prodExists(newProduction)){
@@ -83,14 +68,6 @@ void Variable::addProduction(const std::vector<std::string>& newProduction , std
     }
 }
 
-bool Variable::isStarting() const {
-    return starting;
-}
-
-void Variable::setStarting(bool newStarting) {
-    Variable::starting = newStarting;
-}
-
 std::string Variable::getProduction(std::vector<std::string> &prod) {
     std::string tempName;
     for(const auto& s : prod){
@@ -98,14 +75,6 @@ std::string Variable::getProduction(std::vector<std::string> &prod) {
         tempName += " ";
     }
     return tempName;
-}
-
-bool Variable::isTerminal() const {
-    return terminal;
-}
-
-void Variable::setTerminal(bool newTerminal) {
-    Variable::terminal = newTerminal;
 }
 
 bool Variable::operator==(const Variable &rhs) const {
@@ -120,8 +89,7 @@ bool Variable::operator!=(const Variable &rhs) const {
 }
 
 bool Variable::operator<(const Variable &rhs) const {
-    if (name.empty()) return false;
-    return rhs.name.empty() || !(rhs.name < name);
+    return !name.empty() && (rhs.name.empty() || !(rhs.name < name));
 }
 
 bool Variable::operator>(const Variable &rhs) const {
@@ -152,14 +120,6 @@ std::string Variable::getProduction(std::vector<Variable *> &prod) {
     return output + "`";
 }
 
-bool Variable::isNullable() const {
-    return nullable;
-}
-
-void Variable::setNullable(bool newNullStat) {
-    Variable::nullable = newNullStat;
-}
-
 bool Variable::isNullVar() {
     if(name.empty() && !terminal){
         return true;
@@ -176,10 +136,6 @@ bool Variable::isNullVar() {
                 nullable = true;
                 return true;
             }
-//            if(v->isNullVar() && !v->isTerminal()){
-//                nullable = true;
-//                return true;
-//            }
         }
     }
     return false;
@@ -200,14 +156,6 @@ std::pair<bool , std::set<Variable*> > Variable::isUnit() {
         }
         return {r.size() > 1 , r};
     }
-}
-
-bool Variable::isGenerating() const {
-    return generating;
-}
-
-void Variable::setGenerating(bool newGenerating) {
-    Variable::generating = newGenerating;
 }
 
 bool Variable::isGeneratingVar() {
@@ -235,6 +183,9 @@ bool Variable::isGeneratingVar() {
                 return true;
             }
         }
+    }
+    if(starting){
+        starting = true;
     }
     return gen;
 }
@@ -395,20 +346,3 @@ void Variable::follow(Variable* var , const std::vector<Variable*>& prod) {
         }
     }
 }
-
-const std::set<Variable *> &Variable::getFirstVar() const {
-    return firstVar;
-}
-
-void Variable::setFirstVar(const std::set<Variable *> &newFirstSet) {
-    Variable::firstVar = newFirstSet;
-}
-
-const std::set<Variable *> &Variable::getFollowVar() const {
-    return followVar;
-}
-void Variable::setFollowVar(const std::set<Variable *> &newFollowSet) {
-    Variable::followVar = newFollowSet;
-}
-
-Variable::~Variable() = default;

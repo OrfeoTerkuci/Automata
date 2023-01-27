@@ -10,10 +10,11 @@ class Variable {
 private:
     std::string name;
     std::vector<std::vector<Variable*> > production;
-    bool starting;
-    bool terminal;
-    bool nullable;
-    bool generating;
+    bool starting {false};
+    bool terminal {false};
+    bool nullable {false};
+    bool generating {false};
+    bool reachable {false};
 
     std::set<Variable*> firstVar;
     std::set<Variable*> followVar;
@@ -21,18 +22,18 @@ private:
     std::set<Variable*> first(const std::vector<Variable*>& prod);
 
 public:
-    explicit Variable(const std::string& name, const std::vector<std::vector<Variable*>>& production = {},
-                      bool starting = false, bool terminal = false, bool generating = false);
+    explicit Variable(const std::string& name, std::vector<std::vector<Variable*> > production = {},
+                      bool starting = false , bool terminal = false , bool generating = false);
 
-    explicit Variable();
+    Variable() = default;
 
-    const std::string &getName() const;
+    const std::string &getName() const { return name; }
 
-    void setName(const std::string &newName);
+    void setName(const std::string &newName) { name = newName; }
 
-    std::vector<std::vector<Variable*> > getProductions() const;
+    std::vector<std::vector<Variable*> > getProductions() const { return production; }
 
-    void setProductions(const std::vector<std::vector<Variable*> > &newProductions);
+    void setProductions(const std::vector<std::vector<Variable*> > &newProductions) { production = newProductions; }
 
     void addProduction(std::vector<Variable*> newProduction);
 
@@ -42,13 +43,17 @@ public:
 
     void addProduction(const std::vector<std::string>& newProduction , std::vector<Variable*> &vars , std::vector<Variable*> &terms);
 
-    bool isStarting() const;
+    bool isStarting() const { return starting; }
 
-    void setStarting(bool newStarting);
+    void setStarting(bool newStarting) { starting = newStarting; }
 
-    bool isTerminal() const;
+    bool isTerminal() const { return terminal; }
 
-    void setTerminal(bool newTerminal);
+    void setTerminal(bool newTerminal) {terminal = newTerminal; }
+
+    bool isReachable() const { return reachable; }
+
+    void setReachable(bool newReachableStatus) { Variable::reachable = newReachableStatus; }
 
     static std::string getProduction(std::vector<std::string> &prod);
 
@@ -62,9 +67,9 @@ public:
 
     // Nullable check
 
-    bool isNullable() const;
+    bool isNullable() const { return nullable; }
 
-    void setNullable(bool newNullStat);
+    void setNullable(bool newNullStat) { nullable = newNullStat; }
 
     bool isNullVar();
 
@@ -76,9 +81,9 @@ public:
 
     // Generating check
 
-    bool isGenerating() const;
+    bool isGenerating() const { return generating; }
 
-    void setGenerating(bool newGenerating);
+    void setGenerating(bool newGenerating) { generating = newGenerating; }
 
     bool isGeneratingVar();
 
@@ -89,13 +94,13 @@ public:
 
     static void follow(Variable* var , const std::vector<Variable*>& prod);
 
-    const std::set<Variable *> &getFollowVar() const;
+    const std::set<Variable *> &getFollowVar() const { return followVar; }
 
-    void setFollowVar(const std::set<Variable *> &newFollowSet);
+    void setFollowVar(const std::set<Variable *> &newFollowSet) { followVar = newFollowSet; }
 
-    const std::set<Variable *> &getFirstVar() const;
+    const std::set<Variable *> &getFirstVar() const { return firstVar; }
 
-    void setFirstVar(const std::set<Variable *> &newFirstSet);
+    void setFirstVar(const std::set<Variable *> &newFirstSet) { firstVar = newFirstSet; }
 
     // Operator overloads
 
@@ -113,7 +118,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Variable &variable);
 
-    virtual ~Variable();
+    virtual ~Variable() = default;
 
 };
 
