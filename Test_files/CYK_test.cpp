@@ -3,6 +3,8 @@
 using namespace std;
 
 int main() {
+    freopen("../Output_files/Actual_output/CYK_output.txt","w",stdout);
+
     CFG cfg("../Input_files/input-cyk1.json");
 
     cout << "First test results: " << endl;
