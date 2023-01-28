@@ -22,5 +22,9 @@ int main(){
     // tonen op het scherm
     cout << setw(4) << j << endl;
     // manueel aanmaken
+    json j2;
+    j2["type"] = "DFA";
+    j2["alphabet"] = {"0", "1"};
+    cout << setw(4) << j2 << endl;
     return 0;
 }
