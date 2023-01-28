@@ -78,6 +78,7 @@ private:
     std::vector<Variable*> calculateGenerating();
     void eliminateNonGenerating();
     std::vector<Variable*> calculateReachable();
+    std::vector<Variable*> calculateReachable(std::set<Variable*>& reachVar);
     void eliminateUnreachable(const std::vector<Variable*>& reachVars);
     void fixTerminals(bool printToggle = true);
     void fixVariables(bool printToggle = true);

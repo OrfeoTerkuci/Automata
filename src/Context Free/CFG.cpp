@@ -100,10 +100,10 @@ void CFG::eliminateEpsilon(bool printToggle) {
     if(printToggle) {
         std::cout << " >> Eliminating epsilon productions" << std::endl;
     }
-        std::vector<Variable*> nullVar = calculateNullables();
+    std::vector<Variable*> nullVar = calculateNullables();
     if(printToggle){
         std::cout << "  Nullables are {";
-        for(auto v : nullVar){
+        for(const auto& v : nullVar){
             std::cout << v->getName();
             if(v != *nullVar.rbegin()){
                 std::cout << ", ";
@@ -115,7 +115,7 @@ void CFG::eliminateEpsilon(bool printToggle) {
     for(const auto &v : variables){
         oldSize += (int)v->getProductions().size();
     }
-    for(auto &v : nullVar){
+    for(auto& v : nullVar){
         fixNullable(v);
     }
     int newSize = 0;
@@ -305,7 +305,7 @@ void CFG::eliminateUseless(bool printToggle) {
     std::sort(genVar.begin() , genVar.end() , compareVariables);
     if(printToggle){
         std::cout << "  Generating symbols: {";
-        for(auto v : genVar){
+        for(const auto& v : genVar){
             std::cout << *v;
             if (v == *genVar.rbegin()) {
                 std::cout << "}" << std::endl;
@@ -321,7 +321,10 @@ void CFG::eliminateUseless(bool printToggle) {
     std::sort(reachVar.begin() , reachVar.end() , compareVariables);
     if(printToggle){
         std::cout << "  Reachable symbols: {";
-        for(auto v : reachVar){
+        if(reachVar.empty()){
+            std::cout << "}" << std::endl;
+        }
+        for(const auto& v : reachVar){
             std::cout << *v;
             if (v == *reachVar.rbegin()) {
                 std::cout << "}" << std::endl;
@@ -336,23 +339,26 @@ void CFG::eliminateUseless(bool printToggle) {
                         reachVar.begin() , reachVar.end() ,
                         std::inserter(usefulVar, usefulVar.end()));
     // Insert reachable terminals that might be missing
-    for(const auto& t : terminals){
-        if(t->isGenerating() && t->isReachable()){
-            if(std::find_if(usefulVar.begin() , usefulVar.end() ,
-                            [&](Variable* v){return t->getName() == v->getName();}) == usefulVar.end())
-            usefulVar.push_back(t);
-        }
-    }
-    for(const auto& v : variables){
-        if(v->isGenerating() && v->isReachable() && std::find_if(usefulVar.begin() , usefulVar.end() ,
-                        [&](Variable* v1){return v->getName() == v1->getName();}) == usefulVar.end()){
-            usefulVar.push_back(v);
-        }
-    }
-    std::sort(reachVar.begin() , reachVar.end() , compareVariables);
+//    for(const auto& t : terminals){
+//        if(t->isGenerating() && t->isReachable()){
+//            if(std::find_if(usefulVar.begin() , usefulVar.end() ,
+//                            [&](Variable* v){return t->getName() == v->getName();}) == usefulVar.end())
+//            usefulVar.push_back(t);
+//        }
+//    }
+//    for(const auto& v : variables){
+//        if(v->isGenerating() && v->isReachable() && std::find_if(usefulVar.begin() , usefulVar.end() ,
+//                        [&](Variable* v1){return v->getName() == v1->getName();}) == usefulVar.end()){
+//            usefulVar.push_back(v);
+//        }
+//    }
+    std::sort(usefulVar.begin() , usefulVar.end() , compareVariables);
     if(printToggle){
         std::cout << "  Useful symbols: {";
-        for(auto v : usefulVar){
+        if(usefulVar.empty()){
+            std::cout << "}" << std::endl;
+        }
+        for(const auto& v : usefulVar){
             std::cout << *v;
             if (v == *usefulVar.rbegin()) {
                 std::cout << "}" << std::endl;
@@ -362,7 +368,7 @@ void CFG::eliminateUseless(bool printToggle) {
         }
     }
 
-    eliminateUnreachable(usefulVar);
+    eliminateUnreachable(reachVar);
     // Results output
     int newProd = 0;
     for(auto v : variables){
@@ -414,10 +420,9 @@ void CFG::eliminateNonGenerating() {
     }
 }
 
-std::vector<Variable *> CFG::calculateReachable() {
-    static std::set<Variable*> reachVar = {startingVar};
+std::vector<Variable*> CFG::calculateReachable(std::set<Variable*>& reachVar) {
     int oldSize = (int)reachVar.size();
-    for (auto v: reachVar) {
+    for (auto& v: reachVar) {
         for (const auto &p: v->getProductions()) {
             for (auto v1: p) {
                 if (v1->isTerminal() || v1->isGenerating()) {
@@ -428,9 +433,15 @@ std::vector<Variable *> CFG::calculateReachable() {
         }
     }
     if(oldSize == reachVar.size()){
-        return {reachVar.begin() , reachVar.end()};
+        return { reachVar.begin() , reachVar.end() };
     }
-    return calculateReachable();
+    return calculateReachable(reachVar);
+}
+
+std::vector<Variable *> CFG::calculateReachable() {
+    std::set<Variable*> reachVar = {startingVar};
+    startingVar->setReachable(true);
+    return calculateReachable(reachVar);
 }
 
 void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
@@ -438,7 +449,8 @@ void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
         if((*it)->isTerminal()){
             continue;
         }
-        if(!(std::find(reachVars.begin(), reachVars.end(), (*it)) != reachVars.end())){
+        if(!(*it)->isReachable()){
+            (*it)->eliminateNonReach();
             it = variables.erase(it);
         }
     }
@@ -446,7 +458,8 @@ void CFG::eliminateUnreachable(const std::vector<Variable *>& reachVars) {
         if(!(*it)->isTerminal()){
             continue;
         }
-        if(!(std::find(reachVars.begin(), reachVars.end(), (*it)) != reachVars.end())){
+        if(!(*it)->isReachable()){
+            (*it)->eliminateNonReach();
             it = terminals.erase(it);
         }
     }
@@ -1170,7 +1183,6 @@ void CFG::trainInterval(const std::string &variable_name, int begin_num, int end
     ofs.close();
     trainTerminals(variable_name , t_filename);
 }
-
 CFG::~CFG() {
     for(auto v : variables){
         for(auto & it : v->getProductions()){

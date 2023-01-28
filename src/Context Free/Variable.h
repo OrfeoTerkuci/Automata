@@ -12,7 +12,7 @@ private:
     std::vector<std::vector<Variable*> > production;
     bool starting {false};
     bool terminal {false};
-    bool nullable {false};
+    bool nullable {true};
     bool generating {false};
     bool reachable {false};
 
@@ -88,6 +88,8 @@ public:
     bool isGeneratingVar();
 
     void eliminateNonGen();
+
+    void eliminateNonReach();
 
     // FIRST and FOLLOW sets
     std::set<Variable*> calculateFirst();

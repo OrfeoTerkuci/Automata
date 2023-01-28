@@ -11,7 +11,10 @@ bool Variable::prodExists(std::vector<Variable*> &newProduction){
 Variable::Variable(const std::string& name, std::vector<std::vector<Variable*> > production , bool starting ,
                    bool terminal , bool generating) :
                     name(name), production(std::move(production)) , starting(starting) ,
-                    terminal(terminal) , nullable(false) , generating(generating) { if (terminal) firstVar = {this}; }
+                    terminal(terminal) , generating(generating) {
+    if (terminal) firstVar = {this};
+    nullable = name.empty();
+}
 
 
 
@@ -121,18 +124,18 @@ std::string Variable::getProduction(std::vector<Variable *> &prod) {
 }
 
 bool Variable::isNullVar() {
-    if(name.empty() && !terminal){
+    if(name.empty()){
         return true;
     }
     if(terminal){
         return false;
     }
     for(const auto& p : production){
-        for(auto v : p){
+        for(auto& v : p){
             if(v == this){
                 continue;
             }
-            if(v->isNullable() && !v->isTerminal()){
+            if(v->isNullable()){
                 nullable = true;
                 return true;
             }
@@ -199,6 +202,23 @@ void Variable::eliminateNonGen() {
                 if(!v->isGenerating()){
                     it = production.erase(it);
                     eval = true;
+                    break ;
+                }
+            }
+        }
+    }
+}
+
+void Variable::eliminateNonReach() {
+    bool eval = true;
+    while(eval){
+        eval = false;
+        for(auto it = production.begin(); it != production.end(); it++){
+            for(auto v : *it){
+                if(!v->isReachable()){
+                    it = production.erase(it);
+                    eval = true;
+                    break ;
                 }
             }
         }
@@ -216,6 +236,7 @@ bool Variable::hasProduction(const char &t) const {
     return false;
 }
 
+
 bool Variable::hasProduction(const std::string &t) const{
     for(const auto& p : production){
         for(const auto& v : p){
@@ -226,7 +247,6 @@ bool Variable::hasProduction(const std::string &t) const{
     }
     return false;
 }
-
 
 bool Variable::hasProduction(const std::vector<Variable*>& p) const {
     return std::any_of(production.begin() , production.end() , [&](const std::vector<Variable*>& p1){ return p1 == p;});
@@ -300,7 +320,6 @@ std::set<Variable*> Variable::first(const std::vector<Variable*>& prod) {
     firstVar = {};
     return {};
 }
-
 void Variable::follow(Variable* var , const std::vector<Variable*>& prod) {
     // Starting variable
     if(var->starting){
