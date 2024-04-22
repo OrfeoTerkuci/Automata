@@ -468,4 +468,8 @@ ENFA RE::toENFA() {
     }
 }
 
+void RE::print() const {
+    // An RE constructed from a loop with multiple symbols will write them alphabetically, so (e+g+r)* is okay but (g+r+e)* is not.
+}
+
 RE::~RE() = default;

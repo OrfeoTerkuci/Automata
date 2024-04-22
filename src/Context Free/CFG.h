@@ -24,7 +24,7 @@ public:
      */
     FileExist(const FileExist& ref) noexcept : error(ref.error) {}
 
-    const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+    const char* what() const override {
         return error.c_str();
     }
 
@@ -47,7 +47,7 @@ public:
      */
     FileEmpty(const FileEmpty& ref) noexcept : error(ref.error) {}
 
-    const char* what() const _GLIBCXX_TXN_SAFE_DYN _GLIBCXX_NOTHROW override {
+    const char* what() const override {
         return error.c_str();
     }
 

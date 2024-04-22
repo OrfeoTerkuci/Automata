@@ -644,6 +644,8 @@ bool DFA::operator==(DFA &dfa2){
     return !table[ { b1->getName() , b2->getName() } ];
 }
 
+RE DFA::toRE() { return RE(); }
+
 DFA::~DFA()
 {
     for(auto n : nodes){

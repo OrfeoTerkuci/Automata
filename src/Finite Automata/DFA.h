@@ -5,6 +5,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include "RE.h"
 
 class Node;
 class transition;
@@ -155,6 +156,9 @@ public:
      * @return false if not equivalent
      */
     bool operator==(DFA &dfa2);
+
+    // Conversion functions
+    RE toRE();
 
     // Destructor
 

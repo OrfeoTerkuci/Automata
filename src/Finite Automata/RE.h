@@ -157,6 +157,9 @@ public:
      */
     ENFA toENFA();
 
+    // Print function
+    void print() const;
+
     // Destructor
     virtual ~RE();
 };
