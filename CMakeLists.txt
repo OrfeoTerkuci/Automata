@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD 14)
 # Ba1INF
 set(DFA_sources
         "src/Finite Automata/DFA.cpp"
+        "src/Finite Automata/RE.cpp"
+        "src/Finite Automata/ENFA.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
         "src/Finite Automata/transitionNFA.cpp"
@@ -19,6 +21,8 @@ set(DFA_sources
 set(NFA_sources
         "src/Finite Automata/DFA.cpp"
         "src/Finite Automata/NFA.cpp"
+        "src/Finite Automata/RE.cpp"
+        "src/Finite Automata/ENFA.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
         "src/Finite Automata/transitionNFA.cpp"
@@ -27,6 +31,7 @@ set(NFA_sources
 set(MSSC_sources
         "src/Finite Automata/ENFA.cpp"
         "src/Finite Automata/DFA.cpp"
+        "src/Finite Automata/RE.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
         "src/Finite Automata/transitionNFA.cpp"
@@ -36,6 +41,15 @@ set(RE_sources
         "src/Finite Automata/RE.cpp"
         "src/Finite Automata/ENFA.cpp"
         "src/Finite Automata/DFA.cpp"
+        "src/Finite Automata/Node.cpp"
+        "src/Finite Automata/transition.cpp"
+        "src/Finite Automata/transitionNFA.cpp"
+        )
+
+set(STATE_ELIMINATION_sources
+        "src/Finite Automata/ENFA.cpp"
+        "src/Finite Automata/DFA.cpp"
+        "src/Finite Automata/RE.cpp"
         "src/Finite Automata/Node.cpp"
         "src/Finite Automata/transition.cpp"
         "src/Finite Automata/transitionNFA.cpp"
@@ -79,22 +93,24 @@ add_executable(RE ${RE_sources} Test_files/REGEX_test.cpp)
 
 add_executable(TFA ${DFA_sources} Test_files/TFA_test.cpp)
 
-add_executable(CFG ${CFG_sources} Test_files/CFG_test.cpp)
+add_executable(STATE_ELIM ${STATE_ELIMINATION_sources} Test_files/StateElimination_test.cpp)
 
-add_executable(CNF ${CFG_sources} "Test_files/CNF_test.cpp")
+# add_executable(CFG ${CFG_sources} Test_files/CFG_test.cpp)
 
-add_executable(CYK ${CFG_sources} "Test_files/CYK_test.cpp")
+# add_executable(CNF ${CFG_sources} "Test_files/CNF_test.cpp")
 
-add_executable(PDA ${PDA_sources})
+# add_executable(CYK ${CFG_sources} "Test_files/CYK_test.cpp")
 
-add_executable(LL1 ${CFG_sources} "Test_files/LL1_test.cpp")
+# add_executable(PDA ${PDA_sources})
 
-INSTALL(TARGETS DFA NFA SSC MSSC PA RE TFA CFG CNF CYK PDA LL1 DESTINATION "${CMAKE_BINARY_DIR}/installed")
+# add_executable(LL1 ${CFG_sources} "Test_files/LL1_test.cpp")
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
-endif()
+# INSTALL(TARGETS DFA NFA SSC MSSC PA RE TFA CFG CNF CYK PDA LL1 DESTINATION "${CMAKE_BINARY_DIR}/installed")
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+#     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
+# endif()
+
+# set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+# set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+# include(CPack)

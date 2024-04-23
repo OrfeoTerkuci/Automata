@@ -3,14 +3,13 @@
 
 #include <iostream>
 
-
 class Node;
-class transition
-{
+class transition {
 private:
     Node* beginNode;
     Node* endNode;
     char inputA;
+
 public:
     transition(Node* beginNode, Node* endNode, char inputA);
     explicit transition(transition* refTran);
@@ -24,4 +23,4 @@ public:
     ~transition();
 };
 
-#endif //AUTOMATA_TRANSITION_H
+#endif // AUTOMATA_TRANSITION_H

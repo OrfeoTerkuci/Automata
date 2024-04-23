@@ -5,12 +5,12 @@
 #include <set>
 
 class Node;
-class transitionNFA
-{
+class transitionNFA {
 private:
     std::set<Node*> beginNodes;
     std::set<Node*> endNodes;
     char inputA;
+
 public:
     transitionNFA(std::set<Node*> beginNodes, std::set<Node*> endNodes, char inputA);
     explicit transitionNFA(transitionNFA* refTran);
@@ -24,4 +24,4 @@ public:
     ~transitionNFA();
 };
 
-#endif //AUTOMATA_TRANSITIONNFA_H
+#endif // AUTOMATA_TRANSITIONNFA_H

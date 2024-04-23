@@ -1,31 +1,19 @@
 #include "transition.h"
 #include "Node.h"
 
-transition::transition(Node* beginNode, Node* endNode, char inputA) : beginNode(beginNode) , endNode(endNode) , inputA(inputA){}
+transition::transition(Node* beginNode, Node* endNode, char inputA)
+    : beginNode(beginNode), endNode(endNode), inputA(inputA) {}
 
-transition::transition(transition* refTran) :   beginNode( refTran->getBeginNode() ) ,
-                                                endNode( refTran->getEndNode() ) ,
-                                                inputA( refTran->getInput() ){}
-                                                
-transition::transition() : beginNode(nullptr) , endNode(nullptr) , inputA(' ') {}
+transition::transition(transition* refTran)
+    : beginNode(refTran->getBeginNode()), endNode(refTran->getEndNode()), inputA(refTran->getInput()) {}
 
-Node* transition::getBeginNode(){
-    return beginNode;
-}
-void transition::setBeginNode(Node* n){
-    beginNode = n;
-}
-Node* transition::getEndNode(){
-    return endNode;
-}
-void transition::setEndNode(Node* e){
-    endNode = e;
-}
-char transition::getInput() const{
-    return inputA;
-}
-void transition::setInput(char a){
-    inputA = a;
-}
+transition::transition() : beginNode(nullptr), endNode(nullptr), inputA(' ') {}
 
-transition::~transition()= default;
+Node* transition::getBeginNode() { return beginNode; }
+void transition::setBeginNode(Node* n) { beginNode = n; }
+Node* transition::getEndNode() { return endNode; }
+void transition::setEndNode(Node* e) { endNode = e; }
+char transition::getInput() const { return inputA; }
+void transition::setInput(char a) { inputA = a; }
+
+transition::~transition() = default;
