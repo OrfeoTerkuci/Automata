@@ -1,5 +1,5 @@
-#include "../src/Finite Automata/RE.h"
-#include "../src/Finite Automata/ENFA.h"
+#include "../src/Finite_Automata/RE.h"
+#include "../src/Finite_Automata/ENFA.h"
 #include <iostream>
 
 using namespace std;

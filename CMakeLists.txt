@@ -10,73 +10,73 @@ set(CMAKE_CXX_STANDARD 14)
 
 # Ba1INF
 set(DFA_sources
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/RE.cpp"
-        "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
+        "src/Finite_Automata/DFA.cpp"
+        "src/Finite_Automata/RE.cpp"
+        "src/Finite_Automata/ENFA.cpp"
+        "src/Finite_Automata/Node.cpp"
+        "src/Finite_Automata/transition.cpp"
+        "src/Finite_Automata/transitionNFA.cpp"
         )
 
 set(NFA_sources
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/NFA.cpp"
-        "src/Finite Automata/RE.cpp"
-        "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
+        "src/Finite_Automata/DFA.cpp"
+        "src/Finite_Automata/NFA.cpp"
+        "src/Finite_Automata/RE.cpp"
+        "src/Finite_Automata/ENFA.cpp"
+        "src/Finite_Automata/Node.cpp"
+        "src/Finite_Automata/transition.cpp"
+        "src/Finite_Automata/transitionNFA.cpp"
         )
 
 set(MSSC_sources
-        "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/RE.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
+        "src/Finite_Automata/ENFA.cpp"
+        "src/Finite_Automata/DFA.cpp"
+        "src/Finite_Automata/RE.cpp"
+        "src/Finite_Automata/Node.cpp"
+        "src/Finite_Automata/transition.cpp"
+        "src/Finite_Automata/transitionNFA.cpp"
         )
 
 set(RE_sources
-        "src/Finite Automata/RE.cpp"
-        "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
+        "src/Finite_Automata/RE.cpp"
+        "src/Finite_Automata/ENFA.cpp"
+        "src/Finite_Automata/DFA.cpp"
+        "src/Finite_Automata/Node.cpp"
+        "src/Finite_Automata/transition.cpp"
+        "src/Finite_Automata/transitionNFA.cpp"
         )
 
 set(STATE_ELIMINATION_sources
-        "src/Finite Automata/ENFA.cpp"
-        "src/Finite Automata/DFA.cpp"
-        "src/Finite Automata/RE.cpp"
-        "src/Finite Automata/Node.cpp"
-        "src/Finite Automata/transition.cpp"
-        "src/Finite Automata/transitionNFA.cpp"
+        "src/Finite_Automata/ENFA.cpp"
+        "src/Finite_Automata/DFA.cpp"
+        "src/Finite_Automata/RE.cpp"
+        "src/Finite_Automata/Node.cpp"
+        "src/Finite_Automata/transition.cpp"
+        "src/Finite_Automata/transitionNFA.cpp"
         )
 
 # Ba2INF
 
 set(CFG_sources
-        "src/Context Free/CFG.cpp"
-        "src/Context Free/Variable.cpp"
+        "src/Context_Free/CFG.cpp"
+        "src/Context_Free/Variable.cpp"
         )
 
 set(PDA_sources
         Test_files/PDA_test.cpp
-        "src/Context Free/PDA.h"
-        "src/Context Free/PDA.cpp"
-        "src/Context Free/CFG.h"
-        "src/Context Free/CFG.cpp"
-        "src/Context Free/State.cpp"
-        "src/Context Free/Transition.cpp"
-        "src/Context Free/Variable.h"
-        "src/Context Free/Variable.cpp"
+        "src/Context_Free/PDA.h"
+        "src/Context_Free/PDA.cpp"
+        "src/Context_Free/CFG.h"
+        "src/Context_Free/CFG.cpp"
+        "src/Context_Free/State.cpp"
+        "src/Context_Free/Transition.cpp"
+        "src/Context_Free/Variable.h"
+        "src/Context_Free/Variable.cpp"
         )
 
 set(LL1_sources
-        "src/Context Free/CFG.cpp"
-        "src/Context Free/Variable.cpp"
+        "src/Context_Free/CFG.cpp"
+        "src/Context_Free/Variable.cpp"
         )
 
 add_executable(DFA ${DFA_sources} Test_files/DFA_test.cpp)

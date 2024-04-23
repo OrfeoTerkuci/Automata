@@ -1,5 +1,5 @@
-#include "../src/Finite Automata/ENFA.h"
-#include "../src/Finite Automata/DFA.h"
+#include "../src/Finite_Automata/ENFA.h"
+#include "../src/Finite_Automata/DFA.h"
 using namespace std;
 
 int main() {
