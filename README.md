@@ -1,6 +1,6 @@
 # Automata
 
-# Description
+## Description
 
 Implementation of various automata and related algorithms in C++. Part of the "Languages and Automata" and "Machines and Computability" course at the University of Antwerp,
 that goes over the theory of automata, finite state machines, regular expressions, context-free grammars, pushdown automata, and Turing machines.
