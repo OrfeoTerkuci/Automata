@@ -5,16 +5,16 @@
 #include <set>
 
 class Node;
-class transitionNFA {
+class TransitionNFA {
 private:
     std::set<Node*> beginNodes;
     std::set<Node*> endNodes;
     char inputA;
 
 public:
-    transitionNFA(std::set<Node*> beginNodes, std::set<Node*> endNodes, char inputA);
-    explicit transitionNFA(transitionNFA* refTran);
-    transitionNFA();
+    TransitionNFA(std::set<Node*> beginNodes, std::set<Node*> endNodes, char inputA);
+    explicit TransitionNFA(TransitionNFA* refTran);
+    TransitionNFA();
     std::set<Node*> getBeginNodes();
     void setBeginNodes(std::set<Node*> n);
     std::set<Node*> getEndNodes();
@@ -22,9 +22,9 @@ public:
     char getInput() const;
     void setInput(char a);
 
-    bool operator==(const transitionNFA& t) const;
+    bool operator==(const TransitionNFA& t) const;
 
-    ~transitionNFA();
+    ~TransitionNFA();
 };
 
 #endif // AUTOMATA_TRANSITIONNFA_H

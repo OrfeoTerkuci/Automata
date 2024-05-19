@@ -4,16 +4,16 @@
 #include <iostream>
 
 class Node;
-class transition {
+class Transition {
 private:
     Node* beginNode;
     Node* endNode;
     char inputA;
 
 public:
-    transition(Node* beginNode, Node* endNode, char inputA);
-    explicit transition(transition* refTran);
-    transition();
+    Transition(Node* beginNode, Node* endNode, char inputA);
+    explicit Transition(Transition* refTran);
+    Transition();
     Node* getBeginNode();
     void setBeginNode(Node* n);
     Node* getEndNode();
@@ -21,9 +21,9 @@ public:
     char getInput() const;
     void setInput(char a);
 
-    bool operator==(const transition& t) const;
+    bool operator==(const Transition& t) const;
 
-    ~transition();
+    ~Transition();
 };
 
 #endif // AUTOMATA_TRANSITION_H

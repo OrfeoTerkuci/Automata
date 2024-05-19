@@ -1,21 +1,21 @@
-#include "transition.h"
+#include "Transition.h"
 #include "Node.h"
 
-transition::transition(Node* beginNode, Node* endNode, char inputA)
+Transition::Transition(Node* beginNode, Node* endNode, char inputA)
     : beginNode(beginNode), endNode(endNode), inputA(inputA) {}
 
-transition::transition(transition* refTran)
+Transition::Transition(Transition* refTran)
     : beginNode(refTran->getBeginNode()), endNode(refTran->getEndNode()), inputA(refTran->getInput()) {}
 
-transition::transition() : beginNode(nullptr), endNode(nullptr), inputA(' ') {}
+Transition::Transition() : beginNode(nullptr), endNode(nullptr), inputA(' ') {}
 
-Node* transition::getBeginNode() { return beginNode; }
-void transition::setBeginNode(Node* n) { beginNode = n; }
-Node* transition::getEndNode() { return endNode; }
-void transition::setEndNode(Node* e) { endNode = e; }
-char transition::getInput() const { return inputA; }
-void transition::setInput(char a) { inputA = a; }
-bool transition::operator==(const transition& t) const {
+Node* Transition::getBeginNode() { return beginNode; }
+void Transition::setBeginNode(Node* n) { beginNode = n; }
+Node* Transition::getEndNode() { return endNode; }
+void Transition::setEndNode(Node* e) { endNode = e; }
+char Transition::getInput() const { return inputA; }
+void Transition::setInput(char a) { inputA = a; }
+bool Transition::operator==(const Transition& t) const {
         return beginNode == t.beginNode && endNode == t.endNode && inputA == t.inputA;
     }
-transition::~transition() = default;
+Transition::~Transition() = default;

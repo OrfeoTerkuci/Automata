@@ -2,8 +2,8 @@
 #include "../json.hpp"
 #include "DFA.h"
 #include "Node.h"
-#include "transition.h"
-#include "transitionNFA.h"
+#include "Transition.h"
+#include "TransitionNFA.h"
 #include <fstream>
 #include <iomanip>
 
@@ -64,7 +64,7 @@ ENFA::ENFA(const std::string& filename) {
                 endState = n;
             }
         }
-        auto* newTransition = new transition(beginState, endState, inputA);
+        auto* newTransition = new Transition(beginState, endState, inputA);
         if (inputA == ENFA::eps) {
             epsTransitions.insert(newTransition);
         }
@@ -82,9 +82,9 @@ std::set<char> ENFA::getAlphabet() const { return ENFA::alphabet; }
 std::set<Node*> ENFA::getNodes() const { return ENFA::nodes; }
 std::set<Node*> ENFA::getFinal() const { return ENFA::finalNodes; }
 std::set<Node*> ENFA::getBegin() const { return ENFA::beginNodes; }
-std::set<transition*> ENFA::getTransitions() const { return ENFA::transitions; }
+std::set<Transition*> ENFA::getTransitions() const { return ENFA::transitions; }
 
-std::set<transition*> ENFA::getEpsTransitions() const { return ENFA::epsTransitions; }
+std::set<Transition*> ENFA::getEpsTransitions() const { return ENFA::epsTransitions; }
 
 char ENFA::getEps() const { return ENFA::eps; }
 
@@ -92,15 +92,15 @@ void ENFA::setAlphabet(std::set<char> newAlphabet) { ENFA::alphabet = newAlphabe
 void ENFA::setNodes(std::set<Node*> newNodes) { ENFA::nodes = newNodes; }
 void ENFA::setFinal(std::set<Node*> newFinalNodes) { ENFA::finalNodes = newFinalNodes; }
 void ENFA::setBegin(std::set<Node*> newBeginNodes) { ENFA::beginNodes = newBeginNodes; }
-void ENFA::setTransitions(std::set<transition*> newTransitions) { ENFA::transitions = newTransitions; }
+void ENFA::setTransitions(std::set<Transition*> newTransitions) { ENFA::transitions = newTransitions; }
 
-void ENFA::setEpsTransitions(std::set<transition*> newEpsTransitions) { ENFA::epsTransitions = newEpsTransitions; }
+void ENFA::setEpsTransitions(std::set<Transition*> newEpsTransitions) { ENFA::epsTransitions = newEpsTransitions; }
 
 void ENFA::setEps(char newEps) { ENFA::eps = newEps; }
 
 std::set<Node*> ENFA::transit(const std::set<Node*>& begin, char a) {
     std::set<Node*> c;
-    for (transition* t : transitions) {
+    for (Transition* t : transitions) {
         for (Node* n : begin) {
             if (t->getBeginNode() == n && t->getInput() == a) {
                 c.insert(t->getEndNode());
@@ -116,7 +116,7 @@ std::set<Node*> ENFA::eclose(std::set<Node*> begin) {
     while (eval) {
         int oldSize = end.size();
         for (Node* n : end) {
-            for (transition* t : epsTransitions) {
+            for (Transition* t : epsTransitions) {
                 if (t->getBeginNode() == n) {
                     end.emplace(t->getEndNode());
                 }
@@ -127,7 +127,7 @@ std::set<Node*> ENFA::eclose(std::set<Node*> begin) {
     return end;
 }
 
-void ENFA::eliminateExtra(std::set<transitionNFA*>& currentSet) {
+void ENFA::eliminateExtra(std::set<TransitionNFA*>& currentSet) {
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++) {
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++) {
             if (it1 == it2) {
@@ -150,9 +150,9 @@ void ENFA::eliminateExtra(std::set<transitionNFA*>& currentSet) {
     }
 }
 
-void ENFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*>& tempTransitions) {
+void ENFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<TransitionNFA*>& tempTransitions) {
     bool evaluate = true;
-    transitionNFA* newTransition;
+    TransitionNFA* newTransition;
     while (evaluate) {
         // Remember old size
         int oldSize = newNodes.size();
@@ -167,7 +167,7 @@ void ENFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*
                 newNodes.insert(tempNodes);
                 if (!tempNodes.empty()) {
                     // Add used transitions
-                    newTransition = new transitionNFA();
+                    newTransition = new TransitionNFA();
                     newTransition->setBeginNodes(oldTemp);
                     // Add endState nodes to transition
                     newTransition->setEndNodes(tempNodes);
@@ -216,12 +216,12 @@ DFA ENFA::toDFA() {
     std::set<Node*> dfaNodes;
     std::set<Node*> dfaBegin = eclose(beginNodes);
     std::set<Node*> dfaFinalNodes;
-    std::set<transition*> dfaTransitions;
+    std::set<Transition*> dfaTransitions;
     // Lazy evaluation beginState
     // Create powerset to push to DFA
     std::set<std::set<Node*>> newNodes = {eclose(beginNodes)};
     // Create temporary transitions container
-    std::set<transitionNFA*> tempTransitions;
+    std::set<TransitionNFA*> tempTransitions;
     // Evaluate
     evaluate(newNodes, tempTransitions);
     eliminateExtra(tempTransitions);
@@ -263,7 +263,7 @@ DFA ENFA::toDFA() {
         }
         newName += "}";
         // Check all transitions
-        for (transitionNFA* t : tempTransitions) {
+        for (TransitionNFA* t : tempTransitions) {
             // Check if transition begins at this set
             if (t->getBeginNodes() == currentSet) {
                 t->setBeginNodes({newNode});
@@ -287,8 +287,8 @@ DFA ENFA::toDFA() {
         }
     }
     // Convert all transitions to dfa transitions
-    for (transitionNFA* t : tempTransitions) {
-        dfaTransitions.insert(new transition(*t->getBeginNodes().begin(), *t->getEndNodes().begin(), t->getInput()));
+    for (TransitionNFA* t : tempTransitions) {
+        dfaTransitions.insert(new Transition(*t->getBeginNodes().begin(), *t->getEndNodes().begin(), t->getInput()));
         delete t;
     }
     // Set all the containters to the dfa
@@ -348,7 +348,7 @@ void ENFA::printStats() {
     // Print all the transitions
     for (char c : alphabet) {
         int no_transitions = 0;
-        for (transition* t : transitions) {
+        for (Transition* t : transitions) {
             if (t->getInput() == c) {
                 no_transitions++;
             }
@@ -362,7 +362,7 @@ void ENFA::printStats() {
     for (Node* n : nodes) {
         // Get number of transitions
         int node_degree = 0;
-        for (transition* t : transitions) {
+        for (Transition* t : transitions) {
             if (t->getBeginNode() == n) {
                 // Increase degree
                 node_degree++;

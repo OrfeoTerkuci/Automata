@@ -1,8 +1,8 @@
 #include "RE.h"
 #include "ENFA.h"
 #include "Node.h"
-#include "transition.h"
-#include "transitionNFA.h"
+#include "Transition.h"
+#include "TransitionNFA.h"
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -26,7 +26,7 @@ ENFA* RE::createEpsilon(std::string beginName, std::string endName) const {
     Node* begin = new Node(beginName, true, false);
     Node* end = new Node(endName, false, true);
     // Create epsilon transition
-    auto* newTrans = new transition(begin, end, eps);
+    auto* newTrans = new Transition(begin, end, eps);
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     // Set all parameters
@@ -61,7 +61,7 @@ ENFA* RE::createSingleChar(std::string beginName, std::string endName, char a) c
     Node* begin = new Node(beginName, true, false);
     Node* end = new Node(endName, false, true);
     // Create epsilon transition
-    auto* newTrans = new transition(begin, end, a);
+    auto* newTrans = new Transition(begin, end, a);
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     // Set all parameters
@@ -85,8 +85,8 @@ ENFA* RE::createPlus(std::vector<ENFA*>& ref, int& count) {
     // Create containers
     std::set<char> alphabet;
     std::set<Node*> nodes = {begin, end};
-    std::set<transition*> transitions;
-    std::set<transition*> eps_transitions;
+    std::set<Transition*> transitions;
+    std::set<Transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     ENFA* e;
@@ -110,22 +110,22 @@ ENFA* RE::createPlus(std::vector<ENFA*>& ref, int& count) {
     e = ref[0];
     f = ref[1];
     // Create new transition from beginState node to beginState node of the ENFA
-    auto* newTransE_begin = new transition(begin, *e->getBegin().begin(), eps);
+    auto* newTransE_begin = new Transition(begin, *e->getBegin().begin(), eps);
     newTransE_begin->getEndNode()->setStarting(false);
     transitions.insert(newTransE_begin);
 
     // Create new transition from endState node of the ENFA to the endState node
-    auto* newTransE_end = new transition(*e->getFinal().begin(), end, eps);
+    auto* newTransE_end = new Transition(*e->getFinal().begin(), end, eps);
     newTransE_end->getBeginNode()->setAccepting(false);
     transitions.insert(newTransE_end);
 
     // Create new transition from beginState node to beginState node of the ENFA
-    auto* newTransF_begin = new transition(begin, *f->getBegin().begin(), eps);
+    auto* newTransF_begin = new Transition(begin, *f->getBegin().begin(), eps);
     newTransF_begin->getEndNode()->setStarting(false);
     transitions.insert(newTransF_begin);
 
     // Create new transition from endState node of the ENFA to the endState node
-    auto* newTransF_end = new transition(*f->getFinal().begin(), end, eps);
+    auto* newTransF_end = new Transition(*f->getFinal().begin(), end, eps);
     newTransF_end->getBeginNode()->setAccepting(false);
     transitions.insert(newTransF_end);
 
@@ -183,12 +183,12 @@ ENFA* RE::createConcatenation(ENFA& R, ENFA& S) const {
     // Create containers
     std::set<char> alphabet;
     std::set<Node*> nodes;
-    std::set<transition*> transitions;
-    std::set<transition*> eps_transitions;
+    std::set<Transition*> transitions;
+    std::set<Transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     // Create new transition
-    auto* newTrans = new transition(*R.getFinal().begin(), *S.getBegin().begin(), eps);
+    auto* newTrans = new Transition(*R.getFinal().begin(), *S.getBegin().begin(), eps);
     transitions.insert(newTrans);
     // Set all parameters
     newENFA->setEps(eps);
@@ -213,14 +213,14 @@ ENFA* RE::createConcatenation(ENFA& R, ENFA& S) const {
     }
     newENFA->setNodes(nodes);
     // Copy transitions
-    for (transition* t : R.getTransitions()) {
+    for (Transition* t : R.getTransitions()) {
         transitions.insert(t);
     }
-    for (transition* t : S.getTransitions()) {
+    for (Transition* t : S.getTransitions()) {
         transitions.insert(t);
     }
     newENFA->setTransitions(transitions);
-    for (transition* t : transitions) {
+    for (Transition* t : transitions) {
         if (t->getInput() == newENFA->getEps()) {
             eps_transitions.insert(t);
         }
@@ -234,8 +234,8 @@ ENFA* RE::createConcatenation(std::vector<ENFA*> ref) const {
     // Create containers
     std::set<char> alphabet;
     std::set<Node*> nodes;
-    std::set<transition*> transitions;
-    std::set<transition*> eps_transitions;
+    std::set<Transition*> transitions;
+    std::set<Transition*> eps_transitions;
     // Create new ENFA
     ENFA* newENFA = new ENFA();
     for (int i = 0; i < ref.size(); i++) {
@@ -243,7 +243,7 @@ ENFA* RE::createConcatenation(std::vector<ENFA*> ref) const {
         ENFA* current = ref[i];
         ENFA* next;
         // Make new empty transition
-        transition* newTrans;
+        Transition* newTrans;
         // Get alphabet
         for (char c : current->getAlphabet()) {
             alphabet.insert(c);
@@ -253,7 +253,7 @@ ENFA* RE::createConcatenation(std::vector<ENFA*> ref) const {
             // Get the next enfa
             next = ref[i + 1];
             // Create new epsilon transition
-            newTrans = new transition(*current->getFinal().begin(), *next->getBegin().begin(), eps);
+            newTrans = new Transition(*current->getFinal().begin(), *next->getBegin().begin(), eps);
             newTrans->getBeginNode()->setAccepting(false);
             newTrans->getEndNode()->setStarting(false);
             transitions.insert(newTrans);
@@ -287,8 +287,8 @@ ENFA* RE::createStar(std::string beginName, std::string endName, ENFA& R) const 
     // Create new containers and copy elements from ref ENFA
     std::set<char> alphabet = R.getAlphabet();
     std::set<Node*> nodes = R.getNodes();
-    std::set<transition*> transitions = R.getTransitions();
-    std::set<transition*> eps_transitions = R.getEpsTransitions();
+    std::set<Transition*> transitions = R.getTransitions();
+    std::set<Transition*> eps_transitions = R.getEpsTransitions();
     // Create the new start and endState state
     Node* begin = new Node(beginName, true, false);
     Node* end = new Node(endName, false, true);
@@ -296,13 +296,13 @@ ENFA* RE::createStar(std::string beginName, std::string endName, ENFA& R) const 
     nodes.insert(end);
     // Create new transitions
     // New beginState node -> R beginState node
-    auto* newBeginTrans = new transition(begin, *R.getBegin().begin(), eps);
-    auto* newEndTrans = new transition(*R.getFinal().begin(), end, eps);
+    auto* newBeginTrans = new Transition(begin, *R.getBegin().begin(), eps);
+    auto* newEndTrans = new Transition(*R.getFinal().begin(), end, eps);
     newBeginTrans->getEndNode()->setStarting(false);
     newEndTrans->getBeginNode()->setAccepting(false);
     // Loop transitions
-    auto* newR_Loop = new transition(*R.getFinal().begin(), *R.getBegin().begin(), eps);
-    auto* out_Loop = new transition(begin, end, eps);
+    auto* newR_Loop = new Transition(*R.getFinal().begin(), *R.getBegin().begin(), eps);
+    auto* out_Loop = new Transition(begin, end, eps);
     // Insert all the transitions
     transitions.insert(newBeginTrans);
     transitions.insert(newEndTrans);

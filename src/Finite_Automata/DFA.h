@@ -8,8 +8,8 @@
 
 class RE;
 class Node;
-class transition;
-class transitionNFA;
+class Transition;
+class TransitionNFA;
 
 class DFA {
 private:
@@ -18,16 +18,16 @@ private:
     std::set<Node*> nodes;
     std::set<Node*> finalNodes;
     std::set<Node*> beginNodes;
-    std::set<transition*> transitions;
+    std::set<Transition*> transitions;
     // TFA components
     std::map<std::set<std::string>, bool> table;
     std::set<std::set<Node*>> markedPairs;
 
 private:
     // PA operations
-    void evaluate(std::set<std::set<Node*>>& begin, std::set<transitionNFA*>& tempTransitions);
-    static void eliminateExtra(std::set<transitionNFA*>& currentSet);
-    static void eliminateExtra(std::set<transition*>& trans);
+    void evaluate(std::set<std::set<Node*>>& begin, std::set<TransitionNFA*>& tempTransitions);
+    static void eliminateExtra(std::set<TransitionNFA*>& currentSet);
+    static void eliminateExtra(std::set<Transition*>& trans);
     // Transition function
     Node* transit(Node* begin, char a);
     std::set<std::set<Node*>> findTransition(std::set<Node*>& beginNodesVector, char c);
@@ -83,9 +83,9 @@ public:
 
     /**
      * @brief Get the transitions
-     * @return std::set<transition*> All the transitions in the DFA
+     * @return std::set<Transition*> All the transitions in the DFA
      */
-    std::set<transition*> getTransitions() const;
+    std::set<Transition*> getTransitions() const;
 
     // Setters
 
@@ -115,9 +115,9 @@ public:
 
     /**
      * @brief Setter for the transitions
-     * @param newTransitions A set of transition pointers for the new transitions in the DFA
+     * @param newTransitions A set of Transition pointers for the new transitions in the DFA
      */
-    void setTransitions(std::set<transition*> newTransitions);
+    void setTransitions(std::set<Transition*> newTransitions);
 
     // Standard DFA operations
     /**

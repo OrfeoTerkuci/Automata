@@ -2,8 +2,8 @@
 #include "../json.hpp"
 #include "DFA.h"
 #include "Node.h"
-#include "transition.h"
-#include "transitionNFA.h"
+#include "Transition.h"
+#include "TransitionNFA.h"
 #include <fstream>
 #include <iomanip>
 
@@ -58,7 +58,7 @@ NFA::NFA(const std::string& filename) {
                 endState = n;
             }
         }
-        auto* newTransition = new transition(beginState, endState, inputA);
+        auto* newTransition = new Transition(beginState, endState, inputA);
         transitions.insert(newTransition);
     }
 }
@@ -69,20 +69,20 @@ std::set<char> NFA::getAlphabet() const { return NFA::alphabet; }
 std::set<Node*> NFA::getNodes() const { return NFA::nodes; }
 std::set<Node*> NFA::getFinal() const { return NFA::finalNodes; }
 std::set<Node*> NFA::getBegin() const { return NFA::beginNodes; }
-std::set<transition*> NFA::getTransitions() const { return NFA::transitions; }
+std::set<Transition*> NFA::getTransitions() const { return NFA::transitions; }
 
 void NFA::setAlphabet(std::set<char> newAlphabet) { NFA::alphabet = newAlphabet; }
 void NFA::setNodes(std::set<Node*> newNodes) { NFA::nodes = newNodes; }
 void NFA::setFinal(std::set<Node*> newFinalNodes) { NFA::finalNodes = newFinalNodes; }
 void NFA::setBegin(std::set<Node*> newBeginNodes) { NFA::beginNodes = newBeginNodes; }
-void NFA::setTransitions(std::set<transition*> newTransitions) { NFA::transitions = newTransitions; }
+void NFA::setTransitions(std::set<Transition*> newTransitions) { NFA::transitions = newTransitions; }
 
 std::set<Node*> NFA::transit(const std::set<Node*>& begin, char a) {
     std::set<Node*> c;
     if (alphabet.find(a) == alphabet.end()) {
         return {nullptr};
     }
-    for (transition* t : transitions) {
+    for (Transition* t : transitions) {
         for (Node* n : begin) {
             if (t->getBeginNode() == n && t->getInput() == a) {
                 c.insert(t->getEndNode());
@@ -92,9 +92,9 @@ std::set<Node*> NFA::transit(const std::set<Node*>& begin, char a) {
     return c;
 }
 
-void NFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*>& tempTransitions) {
+void NFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<TransitionNFA*>& tempTransitions) {
     bool evaluate = true;
-    transitionNFA* newTransition;
+    TransitionNFA* newTransition;
 
     while (evaluate) {
         // Remember old size
@@ -109,7 +109,7 @@ void NFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*>
                 newNodes.insert(tempNodes);
                 if (!tempNodes.empty()) {
                     // Add used transitions
-                    newTransition = new transitionNFA();
+                    newTransition = new TransitionNFA();
                     newTransition->setBeginNodes(oldTemp);
                     // Add endState nodes to transition
                     newTransition->setEndNodes(tempNodes);
@@ -125,7 +125,7 @@ void NFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*>
     }
 }
 
-void NFA::eliminateExtra(std::set<transitionNFA*>& currentSet) {
+void NFA::eliminateExtra(std::set<TransitionNFA*>& currentSet) {
     for (auto it1 = currentSet.begin(); it1 != currentSet.end(); it1++) {
         for (auto it2 = currentSet.begin(); it2 != currentSet.end(); it2++) {
             if (it1 == it2) {
@@ -175,12 +175,12 @@ DFA NFA::toDFA() {
     std::set<Node*> dfaNodes;
     std::set<Node*> dfaBegin;
     std::set<Node*> dfaFinalNodes;
-    std::set<transition*> dfaTransitions;
+    std::set<Transition*> dfaTransitions;
     // Lazy evaluation beginState
     // Create powerset to push to DFA
     std::set<std::set<Node*>> newNodes = {beginNodes};
     // Create temporary transitions container
-    std::set<transitionNFA*> tempTransitions;
+    std::set<TransitionNFA*> tempTransitions;
     evaluate(newNodes, tempTransitions);
     eliminateExtra(tempTransitions);
     // Create new states
@@ -213,7 +213,7 @@ DFA NFA::toDFA() {
             count++;
         }
         // Check all transitions
-        for (transitionNFA* t : tempTransitions) {
+        for (TransitionNFA* t : tempTransitions) {
             // Check if transition begins at this set
             if (t->getBeginNodes() == currentSet) {
                 t->setBeginNodes({newNode});
@@ -237,8 +237,8 @@ DFA NFA::toDFA() {
         }
     }
     // Convert all transitions to dfa transitions
-    for (transitionNFA* t : tempTransitions) {
-        dfaTransitions.insert(new transition(*t->getBeginNodes().begin(), *t->getEndNodes().begin(), t->getInput()));
+    for (TransitionNFA* t : tempTransitions) {
+        dfaTransitions.insert(new Transition(*t->getBeginNodes().begin(), *t->getEndNodes().begin(), t->getInput()));
         delete t;
     }
     // Set all the containters to the dfa
