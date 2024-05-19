@@ -1,10 +1,14 @@
 # Automata
 
-### Overview
-V = Implemented   
+# Description
+
+Implementation of various automata and related algorithms in C++. Part of the "Languages and Automata" course at the University of Antwerp.
+
+## Overview
+
+V = Implemented
 X = Not implemented  
 Blank = TODO  
-
 
 | Functionality                    | Status |
 |:---------------------------------|:------:|
@@ -23,8 +27,6 @@ Blank = TODO
 | CNF                              |   V    |
 | LL                               |   V    |
 
-### Features
+## Features
 
-
-
-### Commentary
+## Commentary
