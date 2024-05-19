@@ -18,17 +18,9 @@ public:
      */
     explicit FileExist(std::string  error) : error(std::move(error)) {}
 
-    /**
-     * Copy constructor for FileExists type exception
-     * @param ref Reference to another FileExists object
-     */
-    FileExist(const FileExist& ref) noexcept : error(ref.error) {}
-
-    const char* what() const override {
+    const char* what() const noexcept override {
         return error.c_str();
     }
-
-    ~FileExist() override = default;
 };
 
 class FileEmpty : public std::exception {
@@ -47,7 +39,7 @@ public:
      */
     FileEmpty(const FileEmpty& ref) noexcept : error(ref.error) {}
 
-    const char* what() const override {
+    const char* what() const noexcept override {
         return error.c_str();
     }
 
