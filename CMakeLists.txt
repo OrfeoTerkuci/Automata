@@ -4,7 +4,7 @@ project(Automata VERSION 1.1.0)
 #include(CTest)
 #enable_testing()
 
-set(CMAKE_CXX_FLAGS_INIT "-Werror -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_INIT "-Werror -Wall -Wextra -Wpedantic -march=native")
 
 set(CMAKE_CXX_STANDARD 14)
 
