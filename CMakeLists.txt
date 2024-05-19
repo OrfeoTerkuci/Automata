@@ -63,7 +63,6 @@ set(CFG_sources
         )
 
 set(PDA_sources
-        Test_files/PDA_test.cpp
         "src/Context_Free/PDA.h"
         "src/Context_Free/PDA.cpp"
         "src/Context_Free/CFG.h"
@@ -95,21 +94,21 @@ add_executable(TFA ${DFA_sources} Test_files/TFA_test.cpp)
 
 add_executable(STATE_ELIM ${STATE_ELIMINATION_sources} Test_files/StateElimination_test.cpp)
 
-# add_executable(CFG ${CFG_sources} Test_files/CFG_test.cpp)
+add_executable(CFG ${CFG_sources} Test_files/CFG_test.cpp)
 
-# add_executable(CNF ${CFG_sources} "Test_files/CNF_test.cpp")
+add_executable(CNF ${CFG_sources} Test_files/CNF_test.cpp)
 
-# add_executable(CYK ${CFG_sources} "Test_files/CYK_test.cpp")
+add_executable(CYK ${CFG_sources} Test_files/CYK_test.cpp)
 
-# add_executable(PDA ${PDA_sources})
+add_executable(PDA ${PDA_sources} Test_files/PDA_test.cpp)
 
-# add_executable(LL1 ${CFG_sources} "Test_files/LL1_test.cpp")
+add_executable(LL1 ${CFG_sources} Test_files/LL1_test.cpp)
 
-# INSTALL(TARGETS DFA NFA SSC MSSC PA RE TFA CFG CNF CYK PDA LL1 DESTINATION "${CMAKE_BINARY_DIR}/installed")
+INSTALL(TARGETS DFA NFA SSC MSSC PA RE TFA CFG CNF CYK PDA LL1 DESTINATION "${CMAKE_BINARY_DIR}/installed")
 
-# if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-#     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
-# endif()
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE)
+endif()
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
