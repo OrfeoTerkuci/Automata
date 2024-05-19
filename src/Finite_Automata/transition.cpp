@@ -15,5 +15,7 @@ Node* transition::getEndNode() { return endNode; }
 void transition::setEndNode(Node* e) { endNode = e; }
 char transition::getInput() const { return inputA; }
 void transition::setInput(char a) { inputA = a; }
-
+bool transition::operator==(const transition& t) const {
+        return beginNode == t.beginNode && endNode == t.endNode && inputA == t.inputA;
+    }
 transition::~transition() = default;

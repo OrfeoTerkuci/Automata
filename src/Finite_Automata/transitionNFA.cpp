@@ -15,5 +15,7 @@ std::set<Node*> transitionNFA::getEndNodes() { return endNodes; }
 void transitionNFA::setEndNodes(std::set<Node*> e) { endNodes = e; }
 char transitionNFA::getInput() const { return inputA; }
 void transitionNFA::setInput(char a) { inputA = a; }
-
+bool transitionNFA::operator==(const transitionNFA& t) const {
+    return beginNodes == t.beginNodes && endNodes == t.endNodes && inputA == t.inputA;
+}
 transitionNFA::~transitionNFA() = default;

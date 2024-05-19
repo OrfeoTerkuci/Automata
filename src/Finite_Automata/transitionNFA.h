@@ -21,6 +21,9 @@ public:
     void setEndNodes(std::set<Node*> e);
     char getInput() const;
     void setInput(char a);
+
+    bool operator==(const transitionNFA& t) const;
+
     ~transitionNFA();
 };
 

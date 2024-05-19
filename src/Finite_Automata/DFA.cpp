@@ -48,8 +48,8 @@ DFA::DFA(const std::string& filename) {
     for (auto t : ts) {
         std::string beginNodeName = t["from"];
         std::string endNodeName = t["to"];
-        std::string t_input = t["input"];
-        char inputA = t_input[0];
+        std::string transitionInput = t["input"];
+        char inputA = transitionInput[0];
         for (Node* n : nodes) {
             if (n->getName() == beginNodeName) {
                 beginState = n;
@@ -61,7 +61,7 @@ DFA::DFA(const std::string& filename) {
         auto* newTransition = new transition(beginState, endState, inputA);
         transitions.insert(newTransition);
     }
-    //* Create beginning TFA table
+    //* Create starting TFA table
     createTable();
 }
 
@@ -146,7 +146,9 @@ DFA::DFA(DFA& dfa1, DFA& dfa2, bool intersect) {
                 t->setEndNodes({newNode});
             }
         }
+        //* Reverse the name
         std::reverse(newName.begin(), newName.end());
+        //* Set the node's properties
         newNode->setName(newName);
         newNode->setStarting(starting);
         newNode->setAccepting(accepting);
@@ -197,31 +199,28 @@ void DFA::evaluate(std::set<std::set<Node*>>& newNodes, std::set<transitionNFA*>
         // Loop through all node pairs
         for (const std::set<Node*>& currentNodes : newNodes) {
             // Remember beginning
-            std::set<Node*> oldTemp;
-            // Loop through the alphabet
+            std::set<Node*> newEndNode;
+            // Loop through the alphabet and do a transition for each letter
             for (char c : alphabet) {
-                // Loop through both nodes
-                for (Node* tempNode : currentNodes) {
+                // Get the endState node of the transition
+                for (Node* n : currentNodes) {
                     // Add endState node of transition
-                    oldTemp.insert(transit(tempNode, c));
+                    newEndNode.insert(transit(n, c));
                 }
                 // Add newly acquired pair
-                newNodes.insert(oldTemp);
+                newNodes.insert(newEndNode);
                 // Add transitions
-                if (!oldTemp.empty()) {
+                if (!newEndNode.empty()) {
                     // Add used transitions
-                    newTransition = new transitionNFA();
-                    newTransition->setBeginNodes(currentNodes);
-                    // Add endState nodes to transition
-                    newTransition->setEndNodes(oldTemp);
-                    newTransition->setInput(c);
+                    newTransition = new transitionNFA(currentNodes, newEndNode, c);
                     // Add transition to container
                     tempTransitions.insert(newTransition);
                 }
                 // Reset the new node
-                oldTemp.clear();
+                newEndNode.clear();
             }
         }
+        // Only evaluate if new nodes were added
         evaluate = oldSize != newNodes.size();
     }
 }
@@ -241,7 +240,7 @@ void DFA::eliminateExtra(std::set<transitionNFA*>& currentSet) {
             std::set<Node*> e2 = t2->getEndNodes();
             char c1 = t1->getInput();
             char c2 = t2->getInput();
-            if (b1 == b2 && e1 == e2 && c1 == c2) {
+            if (t1 == t2) {
                 delete t2;
                 it2 = currentSet.erase(it2);
             }
@@ -264,7 +263,7 @@ void DFA::eliminateExtra(std::set<transition*>& trans) {
             Node* e2 = t2->getEndNode();
             char c1 = t1->getInput();
             char c2 = t2->getInput();
-            if (b1 == b2 && e1 == e2 && c1 == c2) {
+            if (t1 == t2) {
                 delete t2;
                 it2 = trans.erase(it2);
             }

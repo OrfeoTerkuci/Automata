@@ -20,6 +20,9 @@ public:
     void setEndNode(Node* e);
     char getInput() const;
     void setInput(char a);
+
+    bool operator==(const transition& t) const;
+
     ~transition();
 };
 
