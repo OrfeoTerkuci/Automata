@@ -3,7 +3,7 @@
 using namespace std;
 
 int main() {
-    freopen("../Output_files/Actual_output/CFG_output.txt","w",stdout);
+    freopen("../Output_files/Actual_output/CNF_output.txt","w",stdout);
     CFG cfg("../Input_files/input-cnf1.json");
     cfg.toCNF();
     cout << endl;

@@ -3,18 +3,17 @@
 using namespace std;
 
 int main() {
-    freopen("../Output_files/Actual_output/CYK_output.txt","w",stdout);
 
     CFG cfg("../Input_files/input-cyk1.json");
 
     cout << "First test results: " << endl;
-    cfg.accepts("baaba"); //moet true geven
-    cfg.accepts("abba"); //moet false geven
+    cfg.accepts("baaba"); // True
+    cfg.accepts("abba");  // False
 
     CFG cfg2("../Input_files/input-cyk2.json");
 
     cout << "Second test results: " << endl;
-    cfg2.accepts("aaabb");
-    cfg2.accepts("aaabbb");
+    cfg2.accepts("aaabb");  // False
+    cfg2.accepts("aaabbb"); // True
     return 0;
 }
